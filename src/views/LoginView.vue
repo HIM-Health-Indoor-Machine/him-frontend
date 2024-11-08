@@ -5,44 +5,40 @@
                 <div class="title">HIM</div>
                 <div class="subtitle">Health Indoor Machine</div>
             </div>
-            <h2 class="welcome-message">Welcome Back!</h2>
-            <p class="intro-text">Log in to start your workout journey!</p>
+            <h2 class="welcome-message">환영합니다!</h2>
+            <p class="intro-text">HIM으로 힘을 길러보세요!</p>
 
             <div class="social-buttons">
                 <button @click="socialLogin('Google')" class="social-button">
                     <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google" class="icon">
                     Google
                 </button>
-                <button @click="socialLogin('Facebook')" class="social-button">
-                    <img src="https://img.icons8.com/color/48/000000/facebook-new.png" alt="Facebook" class="icon">
-                    Facebook
-                </button>
             </div>
 
-            <div class="divider-text">or use your email</div>
+            <div class="divider-text">또는 이메일로 로그인해보세요!</div>
 
             <form @submit.prevent="login">
                 <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" v-model="email" class="input-field" placeholder="Email">
+                    <label class="form-label">이메일</label>
+                    <input type="email" v-model="email" class="input-field" placeholder="him@google.com">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Password</label>
+                    <label class="form-label">비밀번호</label>
                     <input type="password" v-model="password" class="input-field" placeholder="Password">
                 </div>
                 <div class="form-options">
                     <label class="checkbox-container">
                         <input type="checkbox" v-model="rememberMe" class="form-checkbox">
-                        <span class="checkbox-label">Remember me</span>
+                        <span class="checkbox-label">아이디 저장</span>
                     </label>
-                    <a href="#" class="forgot-password">Forgot Password?</a>
+                    <a href="#" class="forgot-password">비밀번호를 잊어버리셨나요?</a>
                 </div>
-                <button type="submit" class="login-button">LOG IN</button>
+                <button type="submit" class="login-button">로그인</button>
             </form>
 
             <div class="footer-text">
-                <span>Don't have an account? </span>
-                <a href="#" class="create-account-link">Create an account</a>
+                <span>계정이 필요하신가요? </span>
+                <a href="#" class="create-account-link">회원가입</a>
             </div>
         </div>
 
@@ -128,8 +124,8 @@ html {
 } */
 
 .login-container {
-    max-width: 28rem; /* max-w-md */
-    width: 100%; /* w-full */
+    max-width: 28rem;
+    width: 100%;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 20px;
     padding: 2rem;
@@ -140,98 +136,98 @@ html {
 
 .login-header {
     text-align: center;
-    margin-bottom: 1.5rem; /* mb-6 */
+    margin-bottom: 1.5rem;
 }
 
 .title {
-    font-size: 1.875rem; /* text-3xl */
-    font-weight: 700; /* font-bold */
-    color: #ff7043; /* text-orange-500 */
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #ff7043;
 }
 
 .subtitle {
-    font-size: 1.125rem; /* text-lg */
-    font-weight: 600; /* font-semibold */
-    color: #718096; /* text-gray-600 */
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #718096;
 }
 
 .welcome-message {
-    font-size: 1.5rem; /* text-2xl */
-    font-weight: 700; /* font-bold */
+    font-size: 1.5rem;
+    font-weight: 700;
     text-align: center;
-    color: #ff7043; /* text-orange-500 */
-    margin-bottom: 1rem; /* mb-4 */
+    color: #ff7043;
+    margin-bottom: 1rem;
 }
 
 .intro-text {
     text-align: center;
-    color: #718096; /* text-gray-600 */
-    margin-bottom: 1.5rem; /* mb-6 */
+    color: #718096;
+    margin-bottom: 1.5rem;
 }
 
 .social-buttons {
     display: flex;
     justify-content: center;
-    gap: 1rem; /* space-x-4 */
-    margin-bottom: 1.5rem; /* mb-6 */
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .social-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48%; /* w-1/2 */
-    padding: 0.5rem; /* py-2 */
-    border: 1px solid #d1d5db; /* border-gray-300 */
-    border-radius: 0.5rem; /* rounded-lg */
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
     transition: background-color 0.3s;
 }
 
 .social-button:hover {
-    background-color: #f3f4f6; /* hover:bg-gray-100 */
+    background-color: #f3f4f6;
 }
 
 .icon {
-    height: 1.25rem; /* h-5 */
-    width: 1.25rem; /* w-5 */
-    margin-right: 0.5rem; /* mr-2 */
+    height: 1.25rem;
+    width: 1.25rem;
+    margin-right: 0.5rem;
 }
 
 .divider-text {
     text-align: center;
-    color: #a0aec0; /* text-gray-500 */
-    margin-bottom: 1rem; /* mb-4 */
+    color: #a0aec0;
+    margin-bottom: 1rem;
 }
 
 .form-group {
-    margin-bottom: 1.5rem; /* mb-6 */
+    margin-bottom: 1.5rem;
 }
 
 .form-label {
     display: block;
-    color: #4a5568; /* text-gray-700 */
-    margin-bottom: 0.5rem; /* mb-2 */
+    color: #4a5568;
+    margin-bottom: 0.5rem;
 }
 
 .input-field {
-    width: 100%; /* w-full */
-    padding: 0.75rem; /* px-3 py-2 */
-    border: 1px solid #cfd8dc; /* gray border */
-    border-radius: 0.5rem; /* rounded-lg */
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #cfd8dc;
+    border-radius: 0.5rem;
     transition: border-color 0.3s;
     box-sizing: border-box;
 }
 
 .input-field:focus {
-    border-color: #ff7043; /* border focus color */
-    box-shadow: 0 0 0 4px rgba(255, 112, 67, 0.2); /* outline */
+    border-color: #ff7043;
+    box-shadow: 0 0 0 4px rgba(255, 112, 67, 0.2);
 }
 
 .form-options {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem; /* mb-4 */
+    margin-bottom: 1rem;
 }
 
 .checkbox-container {
@@ -240,54 +236,55 @@ html {
 }
 
 .form-checkbox {
-    height: 1rem; /* h-4 */
-    width: 1rem; /* w-4 */
-    accent-color: #ff7043; /* text-orange-500 */
+    height: 1rem;
+    width: 1rem;
+    accent-color: #ff7043;
 }
 
 .checkbox-label {
-    margin-left: 0.5rem; /* ml-2 */
-    color: #4a5568; /* text-gray-700 */
+    margin-left: 0.5rem;
+    color: #4a5568;
 }
 
 .forgot-password {
-    color: #ff7043; /* text-orange-500 */
+    color: #ff7043;
     text-decoration: none;
     cursor: pointer;
 }
 
 .forgot-password:hover {
-    text-decoration: underline; /* hover:underline */
+    text-decoration: underline;
 }
 
 .login-button {
-    width: 100%; /* w-full */
+    width: 100%;
     color: white;
-    padding: 0.5rem; /* py-2 */
-    border-radius: 0.5rem; /* rounded-lg */
+    padding: 0.5rem;
+    border-radius: 0.5rem;
     background-color: #ff7043;
     font-weight: bold;
+    font-size: 1rem;
     transition: background-color 0.3s;
 }
 
 .login-button:hover {
-    background-color: #f06292; /* hover color */
+    background-color: #f06292;
 }
 
 .footer-text {
     text-align: center;
-    margin-top: 1.5rem; /* mt-6 */
-    color: #718096; /* text-gray-600 */
+    margin-top: 1.5rem;
+    color: #718096;
 }
 
 .create-account-link {
-    color: #ff7043; /* text-orange-500 */
+    color: #ff7043;
     text-decoration: none;
     cursor: pointer;
 }
 
 .create-account-link:hover {
-    text-decoration: underline; /* hover:underline */
+    text-decoration: underline;
 }
 
 .floating-icon {
