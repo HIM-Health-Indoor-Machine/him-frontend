@@ -5,38 +5,29 @@
                 <div class="title">HIM</div>
                 <div class="subtitle">Health Indoor Machine</div>
             </div>
-            <h2 class="welcome-message">Create an Account</h2>
-            <p class="intro-text">Join us and start your fitness journey today!</p>
+            <h2 class="welcome-message">회원가입</h2>
+            <p class="intro-text">HIM은 당신에게 힘이 되기 위해 노력합니다!</p>
 
             <form>
                 <div class="form-group-horizontal">
-                    <input type="text" placeholder="First Name" class="input-field half-width">
-                    <input type="text" placeholder="Last Name" class="input-field half-width">
+                    <input type="text" placeholder="이름" class="input-field half-width">
                 </div>
                 <div class="form-group">
-                    <input type="email" placeholder="Email" class="input-field full-width">
+                    <input type="email" placeholder="이메일" class="input-field full-width">
                 </div>
                 <div class="form-group">
-                    <input type="password" placeholder="Enter a strong password" class="input-field full-width">
+                    <input type="password" placeholder="비밀번호를 입력해주세요." class="input-field full-width">
                 </div>
-                <div class="form-options">
-                    <input type="checkbox" id="terms" class="form-checkbox">
-                    <label for="terms" class="terms-label">I agree to the <a href="#" class="link">Terms &
-                            Conditions</a></label>
+                <div class="form-group">
+                    <input type="password" placeholder="비밀번호를 다시 입력해주세요." class="input-field full-width">
                 </div>
-                <button type="submit" class="signup-button">SIGN UP</button>
+                <button type="submit" class="signup-button">회원가입</button>
             </form>
 
-            <p class="social-text">Or sign up using</p>
+            <p class="social-text">또는 구글 로그인도 가능합니다!</p>
             <div class="social-buttons">
                 <button class="social-button">
                     <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google" class="icon">
-                </button>
-                <button class="social-button">
-                    <img src="https://img.icons8.com/color/48/000000/facebook-new.png" alt="Facebook" class="icon">
-                </button>
-                <button class="social-button">
-                    <img src="https://img.icons8.com/color/48/000000/twitter.png" alt="Twitter" class="icon">
                 </button>
             </div>
         </div>
@@ -110,12 +101,14 @@ onMounted(() => {
 }
 
 .title {
+    text-align: center;
     font-size: 1.875rem;
     font-weight: 700;
     color: #ff7043;
 }
 
 .subtitle {
+    text-align: center;
     font-size: 1.125rem;
     font-weight: 600;
     color: #718096;
@@ -192,6 +185,7 @@ onMounted(() => {
     background-color: #ff7043;
     border: 1px solid #ff7043;
     font-weight: bold;
+    font-size: 1rem;
     transition: background-color 0.3s;
 }
 
