@@ -88,6 +88,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 전체 화면 설정 - 전역 CSS와 충돌했을 때 대비용으로 남겨두었습니다. */
 /* body,
 html {
     font-family: 'Comic Neue', 'Poppins', sans-serif;
@@ -102,7 +103,6 @@ html {
 } */
 
 .main {
-    /* all: unset; */
     font-family: 'Comic Neue', 'Poppins', sans-serif;
     background: linear-gradient(to bottom, #e0f7df, #c8e6c9);
     overflow: hidden;
@@ -113,15 +113,6 @@ html {
     align-items: center;
     justify-content: center;
 }
-
-/* .main {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-} */
 
 .login-container {
     max-width: 28rem;

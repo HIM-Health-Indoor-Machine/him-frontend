@@ -75,11 +75,11 @@ async function startPixiAndTM() {
     // 애니메이션 제어 변수 초기화
     let frame = 0;
     let frameCounter = 0;
-    const frameInterval = 10; // 이미지 전환 속도
+    const frameInterval = 10;
     let counterValue = 0;
     let isFalling = false;
 
-    // 러너 애니메이션 업데이트 함수
+
     function updateRunnerAnimation() {
         frameCounter++;
         if (frameCounter >= frameInterval) {
@@ -92,16 +92,14 @@ async function startPixiAndTM() {
     // TM.js 초기화
     await tmInit();
 
-    // 카운터 업데이트 함수
     async function updateCounter() {
         const newCounterValue = await getCounter();
         if (newCounterValue > counterValue && !isGameOver.value) {
-            runner.x = 100 + newCounterValue * 30; // counter 값에 따라 위치 이동
+            runner.x = 100 + newCounterValue * 30;
         }
         counterValue = newCounterValue;
     }
 
-    // 러너를 왼쪽으로 이동시키는 함수
     function moveRunnerLeft() {
         if (!isGameOver.value) {
             runner.x -= 1;
@@ -112,24 +110,21 @@ async function startPixiAndTM() {
         }
     }
 
-    // 게임 오버 함수
     function gameOver() {
         isGameOver.value = true;
         isFalling = true;
         runner.texture = runnerTextures[0];
     }
 
-    // 러너가 바닥으로 떨어지는 함수
     function makeRunnerFall() {
         if (isFalling) {
             runner.y += 5;
             if (runner.y >= app.value.screen.height - runner.height) {
-                runner.y = app.value.screen.height - runner.height; // 바닥에 도달하면 멈춤
+                runner.y = app.value.screen.height - runner.height;
             }
         }
     }
 
-    // 러너가 오른쪽 경계에 도달했는지 확인하는 함수
     function checkRunnerRight() {
         const rightLimit = app.value.screen.width - runner.width;
         if (runner.x >= rightLimit && !isGameOver.value) {
@@ -138,7 +133,6 @@ async function startPixiAndTM() {
         }
     }
 
-    // 성공 함수
     function success() {
         isSuccess.value = true;
         isFalling = false;
@@ -146,14 +140,12 @@ async function startPixiAndTM() {
         stopRunnerOnSuccess();
     }
 
-    // 성공 시, 캐릭터를 멈춘다.
     function stopRunnerOnSuccess() {
         if (isSuccess.value) {
             app.value.ticker.stop();
         }
     }
 
-    // 매 프레임마다 업데이트 로직 추가
     app.value.ticker.add(() => {
         updateCounter();
         if (!isGameOver.value && !isSuccess.value) {
@@ -165,14 +157,12 @@ async function startPixiAndTM() {
     });
 }
 
-// 게임 시작 버튼 함수
 function startGame() {
     startPixiAndTM();
 }
 </script>
 
 <style scoped>
-/* Pixi.js를 전체 화면으로 설정 */
 #pixi-container {
     position: fixed;
     top: 0;
@@ -182,7 +172,6 @@ function startGame() {
     z-index: -1;
 }
 
-/* UI 컨테이너 */
 #ui-container {
     display: flex;
     flex-direction: column;
@@ -228,7 +217,6 @@ function startGame() {
     box-shadow: none;
 }
 
-/* 결과 및 카운트 스타일 */
 #label-container,
 #counter-container {
     font-size: 1.5rem;
@@ -237,7 +225,6 @@ function startGame() {
     color: #4b5563;
 }
 
-/* 웹캠 컨테이너 - 우측 하단 배치 */
 #webcam-container {
     position: fixed;
     bottom: 20px;
@@ -251,7 +238,6 @@ function startGame() {
     z-index: 2;
 }
 
-/* GAME OVER 및 SUCCESS 오버레이 */
 #game-over-overlay,
 #success-overlay {
     position: fixed;
@@ -271,7 +257,6 @@ function startGame() {
     font-size: 10rem;
     font-weight: bold;
     text-align: center;
-    /* display: none; */
 }
 
 #game-over-text {

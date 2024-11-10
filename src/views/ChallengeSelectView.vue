@@ -378,7 +378,7 @@ onMounted(addFloatingIcons);
     cursor: pointer;
     width: 80%;
     transition: background-color 0.3s;
-    margin: 10px auto; /* 자동으로 좌우 중앙 정렬 */
+    margin: 10px auto;
 }
 
 .action-button:hover {
@@ -408,7 +408,6 @@ onMounted(addFloatingIcons);
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* padding: 0px; */
     font-size: 24px;
     cursor: pointer;
     background-color: rgba(255, 245, 238, 0.9);
@@ -420,8 +419,8 @@ onMounted(addFloatingIcons);
 }
 
 .edit-form {
-    background-color: transparent; /* edit-box 배경색과 중첩 방지 */
-    border: none; /* edit-box의 테두리를 사용 */
+    background-color: transparent;
+    border: none;
     padding: 0;
     font-size: 14px;
     line-height: 1.4;
