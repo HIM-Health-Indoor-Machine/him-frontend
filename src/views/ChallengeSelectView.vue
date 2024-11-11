@@ -147,7 +147,7 @@ const saveChallenge = () => {
             icon: editChallenge.type === "Push Up" ? "💪" : "🏋️‍♂️",
             date: editChallenge.date,
             goal: editChallenge.goal,
-            progress: challenges.value[editIndex.value].progress // 기존 진행도 유지
+            progress: challenges.value[editIndex.value].progress
         };
         isEditing.value = false;
     } else {
