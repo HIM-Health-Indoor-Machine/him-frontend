@@ -1,13 +1,11 @@
 <template>
     <div>
         <div class="main-container">
-            <!-- 반짝이는 별 효과 추가 -->
             <div class="sparkle"></div>
             <div class="sparkle"></div>
             <div class="sparkle"></div>
             <div class="sparkle"></div>
 
-            <!-- 헤더 -->
             <div class="header">Choose Your Workout!</div>
 
             <!-- 운동 타입 선택 -->
@@ -60,15 +58,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
-// 선택된 운동과 난이도
 const selectedType = ref(null);
 const selectedLevel = ref(null);
 
-// 선택 함수
 const selectType = (type) => { selectedType.value = type; };
 const selectLevel = (level) => { selectedLevel.value = level; };
 
-// 게임 시작 함수
 const startGame = () => {
     if (selectedType.value && selectedLevel.value) {
         alert(`Starting ${selectedType.value} at ${selectedLevel.value} level!`);
@@ -94,7 +89,7 @@ onMounted(addFloatingIcons);
 </script>
 
 <style scoped>
-/* 전체 화면 설정 */
+/* 전체 화면 설정 - 전역 CSS와 충돌했을 때 대비용으로 남겨두었습니다. */
 /* body,
 html {
     height: 100%;
@@ -108,7 +103,6 @@ html {
     overflow: hidden;
 } */
 
-/* 메인 컨테이너 */
 .main-container {
     display: flex;
     flex-direction: column;
@@ -118,7 +112,6 @@ html {
     z-index: 1;
 }
 
-/* 반짝이는 별 효과 */
 @keyframes sparkle {
 
     0%,
@@ -166,16 +159,13 @@ html {
     animation-delay: 1.5s;
 }
 
-/* 새로운 옵션 컨테이너 - 가로 정렬 */
 .option-container {
     display: flex;
     gap: 80px;
     justify-content: center;
     margin: 50px 0
-        /* px 0; */
 }
 
-/* 정사각형 스타일 */
 .option-card.square {
     width: 200px;
     height: 200px;
@@ -183,15 +173,11 @@ html {
 }
 
 
-/* 구름 모양 스타일 */
 .option-card.cloud {
     width: 220px;
     height: 120px;
-    /* background: #ffd1dc; */
     border-radius: 50% 50% 40% 40%;
-    /* 구름 모양을 위한 둥근 모서리 */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-    /* 약간의 그림자 효과 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -204,7 +190,6 @@ html {
     cursor: pointer;
 }
 
-/* 구름 텍스트 스타일 */
 .option-card.cloud::after {
     content: '☁️';
     position: absolute;
@@ -214,13 +199,11 @@ html {
     opacity: 0.1;
 }
 
-/* 구름 버튼 호버 시 확대와 색상 변환 */
 .option-card.cloud:hover {
     transform: scale(1.05);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }
 
-/* 떠다니는 효과 추가 */
 @keyframes float-hover {
     0% {
         transform: translateY(0);
@@ -239,7 +222,6 @@ html {
     animation: float-hover 3s ease-in-out infinite;
 }
 
-/* 헤더 스타일 */
 .header {
     font-size: 2.5rem;
     font-weight: bold;
@@ -252,7 +234,6 @@ html {
     position: relative;
 }
 
-/* 카드 옵션 스타일 */
 .option-card {
     width: 180px;
     height: 180px;
@@ -274,19 +255,15 @@ html {
     transform: scale(1.1);
 }
 
-/* 카드 애니메이션 */
 .option-card:hover {
     transform: scale(1.05);
     background: #ffb3c1;
-    /* transform: rotate(5deg); */
 }
 
-/* 아이콘 스타일 */
 .option-icon {
     font-size: 3rem;
 }
 
-/* 귀여운 선택 텍스트 */
 .choice-label {
     margin-top: 8px;
     font-size: 1.7rem;
@@ -294,7 +271,6 @@ html {
     font-weight: 600;
 }
 
-/* 시작 버튼 */
 .start-game-btn {
     padding: 30px 50px;
     background-color: #ff7043;

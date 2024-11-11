@@ -2,22 +2,21 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '@/views/LoginView.vue';
 import SignUpView from '@/views/SignUpView.vue';
-import MyPageView from '@/views/MyPageView.vue';
+import HomeView from '@/views/HomeView.vue';
 import ChallengeSelectView from '@/views/ChallengeSelectView.vue';
 import GameSelectView from '@/views/GameSelectView.vue';
 import GamePlayView from '@/views/GamePlayView.vue';
-
 import LoadingScreen from '@/components/LoadingScreen.vue';
-import ModeSelect from '@/components/ModeSelect.vue';
 import FailScreen from '@/components/FailScreen.vue';
 import SuccessScreen from '@/components/SuccessScreen.vue';
 
 const routes = [
+
   {
     // path: '/',
-    path: '/my-page-view',
-    name: 'MyPageView',
-    component: MyPageView,
+    path: '/home-view',
+    name: 'HomeView',
+    component: HomeView,
   },
   {
     // path: '/',
@@ -30,12 +29,6 @@ const routes = [
     path: '/challenge-select-view',
     name: 'ChallengeSelectView',
     component: ChallengeSelectView,
-  },
-  {
-    // path: '/',
-    path: '/mode-select',
-    name: 'ModeSelect',
-    component: ModeSelect,
   },
   {
     // path: '/',

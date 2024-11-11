@@ -32,7 +32,6 @@
             </div>
         </div>
 
-        <!-- Floating icons -->
         <div v-for="(icon, index) in floatingIcons" :key="index" class="floating-icon"
             :style="{ top: icon.top, left: icon.left, animationDuration: icon.speed }">
             {{ icon.icon }}
@@ -64,20 +63,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* body, html {
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
-    background: linear-gradient(to bottom, #e0f7df, #c8e6c9);
-    overflow: hidden;
-    margin: 0;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-} */
-
 .main {
-    /* all: unset; */
     font-family: 'Comic Neue', 'Poppins', sans-serif;
     background: linear-gradient(to bottom, #e0f7df, #c8e6c9);
     overflow: hidden;

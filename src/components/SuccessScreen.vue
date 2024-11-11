@@ -4,18 +4,15 @@
             <div id="success-text">SUCCESS!</div>
             <div id="celebration-message">축하합니다! 목표를 달성했습니다!</div>
 
-            <!-- 경험치 증가 바 -->
             <div class="exp-tier-container">
-                <div class="tier-icon current-tier">🏆</div> <!-- 현재 티어 -->
+                <img class="exp-tier-pic" :src="curTierIcon" alt="현재 티어 사진" />
                 <div class="exp-bar-container">
                     <div class="exp-bar-fill" :style="{ width: expFilledBarWidth + '%' }"></div>
                 </div>
-                <div class="tier-icon next-tier">🌟</div> <!-- 다음 티어 -->
+                <img class="exp-tier-pic" :src="nextTierIcon" alt="다음 티어 사진" />
             </div>
 
-
             <div class="exp-value" :style="{ '--total-exp': `'${addedExpString}'` }">현재 경험치: {{ expValue }} EXP</div>
-
 
             <button class="celebrate-button" @click="restartGame">NEW GAME</button>
 
@@ -28,16 +25,21 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
+import curTierImage from '@/assets/images/tier/tier_IRON.png';
+import nextTierImage from '@/assets/images/tier/tier_BRONZE.png';
+
+const curTierIcon = ref(curTierImage)
+const nextTierIcon = ref(nextTierImage)
 
 const isGameSuccess = ref(true);
 const fireworks = ref([]);
-const currentExp = ref(400); // 기존 경험치
-const addedExp = ref(30);   // 새로 추가되는 경험치
-const targetExp = ref(1000); // 목표 경험치
-const expValue = ref(currentExp.value);  // 초기 경험치는 현재 경험치로 설정
-const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100); // 목표 대비 현재 경험치 비율
+const currentExp = ref(400);
+const addedExp = ref(30);
+const targetExp = ref(1000);
+const expValue = ref(currentExp.value);
+const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100);
 
-const totalExp = currentExp.value + addedExp.value; // 목표 경험치로 제한된 최종 값
+const totalExp = currentExp.value + addedExp.value;
 
 // 경험치 증가에 따라 경험치 바 반영
 const increaseExp = () => {
@@ -132,24 +134,16 @@ body {
 .exp-tier-container {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 10px;
     width: 700px;
 }
 
-.tier-icon {
-    font-size: 2rem;
-    color: #4CAF50;
-    transition: transform 0.3s ease;
-}
-
-.current-tier {
-    color: #FFD700;
-    text-shadow: 0 0 6px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.6);
-}
-
-.next-tier {
-    color: #E0E0E0;
-    text-shadow: 0 0 6px rgba(224, 224, 224, 0.8), 0 0 10px rgba(224, 224, 224, 0.6);
+.exp-tier-pic {
+    width: 70px;
+    height: 74px;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 .exp-bar-container {
@@ -158,7 +152,6 @@ body {
     height: 30px;
     background: linear-gradient(135deg, #f0f0f0, #dcdcdc);
     border-radius: 15px;
-    margin-top: 20px;
     overflow: hidden;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }

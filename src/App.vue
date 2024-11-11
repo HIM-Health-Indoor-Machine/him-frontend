@@ -5,10 +5,6 @@ import { RouterView } from 'vue-router';
 
 <template>
   <div>
-      <header>
-        <h1>Header</h1>
-      </header>
-
       <RouterView />
 
   </div>
