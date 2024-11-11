@@ -14,6 +14,10 @@
                         <form @submit.prevent="saveChallenge">
                             <div class="challenge-info">
                                 <label style="text-align: center;">🔥 운동 타입</label>
+                                <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
+                                <input type="text" v-model="editChallenge.name" class="input-field"
+                                    placeholder="예: '30일 푸쉬업 챌린지'">
+                            </div>
                                 <div style="display: flex; justify-content: space-around; align-items: center;">
                                     <label>
                                         <input type="radio" v-model="editChallenge.type" value="Push Up">
@@ -44,6 +48,7 @@
                         <div class="challenge-info">🎯 목표: {{ challenge.goal }}</div>
                         <div class="progress-bar">
                             <div class="progress-fill" :style="{ width: challenge.progress + '%' }"></div>
+                            <div class="banner">{{ challenge.name }}</div>
                         </div>
                     </div>
                 </div>
@@ -53,6 +58,11 @@
                 </div>
                 <div v-if="isCreating" class="challenge-box new-challenge-form open">
                     <form @submit.prevent="saveChallenge">
+                        <div class="challenge-info">
+                            <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
+                            <input type="text" v-model="newChallenge.name" class="input-field"
+                                placeholder="예: '30일 푸쉬업 챌린지'">
+                        </div>
                         <div class="challenge-info">
                             <label style="text-align: center;">🔥 운동 타입</label>
                             <div style="display: flex; justify-content: space-around; align-items: center;">
@@ -92,16 +102,16 @@
 import { ref, reactive, onMounted } from 'vue';
 
 const challenges = ref([
-    { name: "Push Up", icon: "💪", date: "2023-12-31", goal: 30, progress: 60 },
-    { name: "Squat", icon: "🏋️‍♂️", date: "2024-01-15", goal: 20, progress: 40 }
+    { name: "파워푸쉬업7일", type: "Push Up", icon: "💪", date: "2023-12-31", goal: 30, progress: 60 },
+    { name: "꾸준스쾃30일", type: "Squat", icon: "🏋️‍♂️", date: "2024-01-15", goal: 20, progress: 40 }
 ]);
 const isCreating = ref(false);
 const isEditing = ref(false);
 const editIndex = ref(null);
-const newChallenge = reactive({ type: "Push Up", date: "", goal: null });
+const newChallenge = reactive({ name: "", type: "Push Up", date: "", goal: null });
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️", "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
 const floatingIcons = ref([]);
-const editChallenge = reactive({ type: "", date: "", goal: null }); // 수정용 객체
+const editChallenge = reactive({ name: "", type: "", date: "", goal: null });
 
 const deleteChallenge = (index) => {
     challenges.value.splice(index, 1);
@@ -114,7 +124,8 @@ const toggleEdit = (index) => {
         isEditing.value = true;
         editIndex.value = index;
         const challenge = challenges.value[index];
-        editChallenge.type = challenge.name;
+        editChallenge.name = challenge.name;
+        editChallenge.type = challenge.type;
         editChallenge.date = challenge.date;
         editChallenge.goal = challenge.goal;
     }
@@ -125,6 +136,7 @@ const toggleForm = () => {
 };
 
 const resetForm = () => {
+    newChallenge.name = "";
     newChallenge.type = "Push Up";
     newChallenge.date = "";
     newChallenge.goal = null;
@@ -134,7 +146,8 @@ const resetForm = () => {
 const saveChallenge = () => {
     if (newChallenge.date && newChallenge.goal) {
         challenges.value.push({
-            name: newChallenge.type,
+            name: newChallenge.name,
+            type: newChallenge.type,
             icon: newChallenge.type === "Push Up" ? "💪" : "🏋️‍♂️",
             date: newChallenge.date,
             goal: newChallenge.goal,
@@ -143,7 +156,8 @@ const saveChallenge = () => {
         resetForm();
     } else if (editChallenge.date && editChallenge.goal) {
         challenges.value[editIndex.value] = {
-            name: editChallenge.type,
+            name: editChallenge.name,
+            type: editChallenge.type,
             icon: editChallenge.type === "Push Up" ? "💪" : "🏋️‍♂️",
             date: editChallenge.date,
             goal: editChallenge.goal,
@@ -216,9 +230,10 @@ onMounted(addFloatingIcons);
 }
 
 .challenge-box {
-    width: 220px;
-    height: 280px;
+    width: 18vw;
+    height: 45vh;
     flex-shrink: 0;
+    justify-content: center;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 20px;
     padding: 1rem;
@@ -226,6 +241,17 @@ onMounted(addFloatingIcons);
     text-align: center;
     position: relative;
     transition: transform 0.3s, box-shadow 0.3s;
+    z-index: -1;
+}
+
+.challenge-info-container {
+  position: absolute;
+  top: 12%;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
 }
 
 .challenge-info {
@@ -269,6 +295,49 @@ onMounted(addFloatingIcons);
     z-index: 10;
 }
 
+.banner {
+  position: relative;
+  display: block;
+  margin: 20px auto;
+  width: 80%;
+  max-width: 300px;
+  height: 50px;
+  border: 1px solid #8a1;
+  font: bold 25px/50px 'Rye';
+  text-align: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15) inset,
+              0 4px 8px rgba(0, 0, 0, 0.15);
+    margin: 0px;
+}
+
+.banner::before,
+.banner::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -15%;
+  top: 30%;
+  display: block;
+  width: 10%;
+  border: 25px solid;
+  border-color: #4caf50;
+  border-right: 15px solid #2e7d32;
+  border-bottom-color: #388e3c;
+  border-left-color: transparent;
+  transform: rotate(-5deg);
+}
+
+.banner::after {
+  left: auto;
+  right: -15%;
+  border-left: 15px solid #2e7d32;
+  border-right: 25px solid transparent;
+  transform: rotate(5deg);
+}
+
 @keyframes floatIcons {
     from {
         transform: translateY(0);
@@ -300,7 +369,7 @@ onMounted(addFloatingIcons);
 
 
 .new-challenge-box div:first-child {
-    font-size: 100px;
+    font-size: 150px;
     font-weight: 700;
     color: #ff7043;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
