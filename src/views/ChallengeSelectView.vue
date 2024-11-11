@@ -5,19 +5,22 @@
                 <span class="header">Challenge Selection</span>
             </div>
             <div class="challenge-container">
-                <div v-for="(challenge, index) in challenges" :key="index" :class="['challenge-box', isEditing && editIndex === index ? 'edit-box' : '']">
-                    <div class="icon-container">
+                <div v-for="(challenge, index) in challenges" :key="index"
+                    :class="['challenge-box', isEditing && editIndex === index ? 'edit-box' : '']">
+                    <div v-if="!(isEditing && editIndex === index)" class="icon-container">
                         <span @click="toggleEdit(index)" class="icon-button">✏️</span>
                         <span @click="deleteChallenge(index)" class="icon-button delete-icon">🗑️</span>
                     </div>
                     <div v-if="isEditing && editIndex === index" class="edit-form open">
+                        <span @click="isEditing = false" class="icon-button close-button">❌</span>
                         <form @submit.prevent="saveChallenge">
                             <div class="challenge-info">
-                                <label style="text-align: center;">🔥 운동 타입</label>
                                 <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
                                 <input type="text" v-model="editChallenge.name" class="input-field"
                                     placeholder="예: '30일 푸쉬업 챌린지'">
                             </div>
+                            <div class="challenge-info">
+                                <label style="text-align: center; font-size: 1.2rem;">🔥 운동 타입</label>
                                 <div style="display: flex; justify-content: space-around; align-items: center;">
                                     <label>
                                         <input type="radio" v-model="editChallenge.type" value="Push Up">
@@ -30,12 +33,13 @@
                                 </div>
                             </div>
                             <div class="challenge-info">
-                                <label>⏰ 종료 날짜</label>
+                                <label style="font-size: 1.2rem;">⏰ 종료 날짜</label>
                                 <input type="date" v-model="editChallenge.date" class="input-field">
                             </div>
                             <div class="challenge-info">
-                                <label>🎯 하루 목표 갯수</label>
-                                <input type="number" v-model="editChallenge.goal" class="input-field" placeholder="예: 30">
+                                <label style="font-size: 1.2rem;">🎯 하루 목표 갯수</label>
+                                <input type="number" v-model="editChallenge.goal" class="input-field"
+                                    placeholder="예: 30">
                             </div>
                             <div class="button-container">
                                 <button type="submit" class="action-button">저장</button>
@@ -43,12 +47,14 @@
                         </form>
                     </div>
                     <div v-else>
-                        <div class="challenge-info">{{ challenge.icon }} {{ challenge.name }}</div>
-                        <div class="challenge-info">⏰ {{ challenge.date }}</div>
-                        <div class="challenge-info">🎯 목표: {{ challenge.goal }}</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" :style="{ width: challenge.progress + '%' }"></div>
+                        <div class="challenge-info-container">
                             <div class="banner">{{ challenge.name }}</div>
+                            <div class="challenge-info">{{ challenge.icon }} {{ challenge.type }}</div>
+                            <div class="challenge-info">⏰ {{ challenge.date }}</div>
+                            <div class="challenge-info">🎯 목표: {{ challenge.goal }}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" :style="{ width: challenge.progress + '%' }"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -58,13 +64,14 @@
                 </div>
                 <div v-if="isCreating" class="challenge-box new-challenge-form open">
                     <form @submit.prevent="saveChallenge">
+                        <span @click="isCreating = false" class="icon-button close-button2">❌</span>
                         <div class="challenge-info">
                             <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
                             <input type="text" v-model="newChallenge.name" class="input-field"
                                 placeholder="예: '30일 푸쉬업 챌린지'">
                         </div>
                         <div class="challenge-info">
-                            <label style="text-align: center;">🔥 운동 타입</label>
+                            <label style="text-align: center; font-size: 1.2rem;">🔥 운동 타입</label>
                             <div style="display: flex; justify-content: space-around; align-items: center;">
                                 <label>
                                     <input type="radio" v-model="newChallenge.type" value="Push Up">
@@ -77,11 +84,11 @@
                             </div>
                         </div>
                         <div class="challenge-info">
-                            <label>⏰ 종료 날짜</label>
+                            <label style="font-size: 1.2rem;">⏰ 종료 날짜</label>
                             <input type="date" v-model="newChallenge.date" class="input-field">
                         </div>
                         <div class="challenge-info">
-                            <label>🎯 하루 목표 갯수</label>
+                            <label style="font-size: 1.2rem;">🎯 하루 목표 갯수</label>
                             <input type="number" v-model="newChallenge.goal" class="input-field" placeholder="예: 30">
                         </div>
                         <div class="button-container">
@@ -364,7 +371,7 @@ onMounted(addFloatingIcons);
     font-weight: bold;
     color: #ff7043;
     cursor: pointer;
-    animation: pulse 1.5s infinite; 
+    animation: pulse 1.5s infinite;
 }
 
 
@@ -409,7 +416,7 @@ onMounted(addFloatingIcons);
 .challenge-info {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .floating-icon {
@@ -465,7 +472,7 @@ onMounted(addFloatingIcons);
 .icon-button {
     cursor: pointer;
     font-size: 18px;
-    transition: transform 0.2s;
+    transition: color 0.3s;
 }
 
 .icon-button:hover {
@@ -490,6 +497,7 @@ onMounted(addFloatingIcons);
 .edit-form {
     background-color: transparent;
     border: none;
+    justify-content: center;
     padding: 0;
     font-size: 14px;
     line-height: 1.4;
@@ -513,6 +521,24 @@ onMounted(addFloatingIcons);
 
 .delete-icon {
     color: #f44336;
+}
+
+.close-button {
+    position: absolute;
+    top: -1%;
+    right: -1%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-button2 {
+    position: absolute;
+    top: 2%;
+    right: 2%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s;
 }
 
 @keyframes float {
