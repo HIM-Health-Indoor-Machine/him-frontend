@@ -9,9 +9,9 @@ import GamePlayView from '@/views/GamePlayView.vue';
 import LoadingScreen from '@/components/LoadingScreen.vue';
 import FailScreen from '@/components/FailScreen.vue';
 import SuccessScreen from '@/components/SuccessScreen.vue';
+import ChallengePlayView from '@/views/ChallengePlayView.vue';
 
 const routes = [
-
   {
     // path: '/',
     path: '/home-view',
@@ -65,6 +65,12 @@ const routes = [
     path: '/game-play-view',
     name: 'GamePlayView',
     component: GamePlayView,
+  },
+  {
+    path: '/',
+    // path: '/challenge-play-view',
+    name: 'ChallengePlayView',
+    component: ChallengePlayView,
   },
 ];
 

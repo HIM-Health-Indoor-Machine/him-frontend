@@ -1,4 +1,4 @@
-const URL = '/assets/model/';
+const URL = '/model/';
 let model, webcam, labelContainer, maxPredictions, counter = 0, lastLabel = "";
 
 async function getCounter() {
@@ -14,30 +14,37 @@ async function init() {
     maxPredictions = model.getTotalClasses();
 
     const flip = true;
-    webcam = new tmImage.Webcam(400, 300, flip); // ver4: 웹캠 설정 (비율 4:3)
+    // 웹캠을 전체 화면으로 설정
+    webcam = new tmImage.Webcam(window.innerWidth, window.innerHeight, flip);
     try {
         await webcam.setup(); // 웹캠 접근 허용 요청
         await webcam.play();
         document.getElementById("webcam-container").appendChild(webcam.canvas);
+        webcam.canvas.style.width = '100%'
+        webcam.canvas.style.height = '100%'
     } catch (error) {
         console.error("웹캠 설정 실패: ", error);
     }
 
     window.requestAnimationFrame(loop); // 루프 시작
 
+
     // 예측 결과 표시할 공간
     labelContainer = document.getElementById("label-container");
-    labelContainer.innerHTML = ""; // label-container 비우기
-
-    for (let i = 0; i < maxPredictions; i++) {
-        labelContainer.appendChild(document.createElement("div"));
+    if (labelContainer) {
+        labelContainer.innerHTML = ""; // label-container 비우기
+        for (let i = 0; i < maxPredictions; i++) {
+            labelContainer.appendChild(document.createElement("div"));
+        }
     }
 }
 
 async function loop() {
-    webcam.update();
-    await predict();
-    window.requestAnimationFrame(loop);
+    if (webcam) {
+        webcam.update();
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
 }
 
 async function predict() {
@@ -47,7 +54,9 @@ async function predict() {
     // 푸쉬업과 푸쉬다운 상태를 감지
     for (let i = 0; i < maxPredictions; i++) {
         const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-        labelContainer.childNodes[i].innerHTML = classPrediction;
+        if (labelContainer && labelContainer.childNodes[i]) {
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+        }
 
         if (prediction[i].probability.toFixed(2) > 0.7) {
             currentLabel = prediction[i].className; // 확률이 70% 이상인 상태를 현재 상태로 설정
@@ -57,7 +66,11 @@ async function predict() {
     // 상태 변화 감지 로직 (pushdown -> pushup)
     if (lastLabel === "pushdown" && currentLabel === "pushup") {
         counter++; // 카운트 증가
-        document.getElementById("counter").innerText = counter; // 화면에 카운트 업데이트
+
+        const counterElement = document.getElementById("counter");
+        if (counterElement) {
+            counterElement.innerText = counter; // 화면에 카운트 업데이트
+        }
     }
 
     lastLabel = currentLabel; // 마지막 상태 업데이트
