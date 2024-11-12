@@ -1,6 +1,5 @@
 <template>
     <div>
-        <!-- Pixi.js 전체 화면 -->
         <transition name="fade" mode="out-in">
             <template v-if="countdown > 0">
                 <div class="countdown-container">
@@ -11,16 +10,12 @@
                 <div>
                     <div id="pixi-container"></div>
 
-                    <!-- UI 컨테이너 -->
                     <div id="ui-container">
                         <div id="label-container">Prediction Label</div>
                         <div id="counter-container">Count: <span id="counter">{{ counter }}</span></div>
                     </div>
-
-                    <!-- 웹캠 컨테이너 -->
                     <div id="webcam-container"></div>
 
-                    <!-- 게임 상태 오버레이 -->
                     <div id="game-over-overlay" v-if="isGameOver">
                         <div id="game-over-text">GAME OVER</div>
                     </div>
@@ -37,7 +32,6 @@
 <script setup>
 import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 import { Application, Sprite, Assets, Text } from 'pixi.js';
-// TM.js 기능 가져오기
 import { getCounter, init as tmInit } from '@/utils/teachableMachineForGame';
 
 const app = ref(null);
@@ -54,8 +48,6 @@ onUnmounted(() => {
     }
 });
 
-
-// Pixi.js 애플리케이션 및 게임 로직 초기화
 async function startPixiAndTM() {
     app.value = new Application();
     await app.value.init({
@@ -78,13 +70,11 @@ async function startPixiAndTM() {
         await Assets.load('/images/rabbit/rabbit9.png')
     ];
 
-    // 배경 이미지 추가
     const background = new Sprite(backgroundTexture);
     background.width = app.value.screen.width;
     background.height = app.value.screen.height;
     app.value.stage.addChild(background);
 
-    // 러너(캐릭터) 초기화
     const runner = new Sprite(runnerTextures[0]);
     runner.x = 200;
     const gameOverLimit = 40;
@@ -92,13 +82,11 @@ async function startPixiAndTM() {
     runner.scale.set(0.5);
     app.value.stage.addChild(runner);
 
-    // 애니메이션 제어 변수 초기화
     let frame = 0;
     let frameCounter = 0;
     const frameInterval = 10;
     let counterValue = 0;
     let isFalling = false;
-
 
     function updateRunnerAnimation() {
         frameCounter++;
@@ -109,7 +97,6 @@ async function startPixiAndTM() {
         }
     }
 
-    // TM.js 초기화
     await tmInit();
 
     async function updateCounter() {
