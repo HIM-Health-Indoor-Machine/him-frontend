@@ -1,39 +1,59 @@
 <template>
     <div>
         <!-- Pixi.js 전체 화면 -->
-        <div id="pixi-container"></div>
+        <transition name="fade" mode="out-in">
+            <template v-if="countdown > 0">
+                <div class="countdown-container">
+                    <div :key="countdown" id="countdown-container">{{ countdown }}</div>
+                </div>
+            </template>
+            <template v-else>
+                <div>
+                    <div id="pixi-container"></div>
 
-        <!-- UI 컨테이너 -->
-        <div id="ui-container">
-            <div id="title">Teachable Machine Game</div>
-            <button id="start-button" @click="startGame">START</button>
-            <div id="label-container">Prediction Label</div>
-            <div id="counter-container">Count: <span id="counter">{{ counter }}</span></div>
-        </div>
+                    <!-- UI 컨테이너 -->
+                    <div id="ui-container">
+                        <div id="label-container">Prediction Label</div>
+                        <div id="counter-container">Count: <span id="counter">{{ counter }}</span></div>
+                    </div>
 
-        <!-- 웹캠 컨테이너 -->
-        <div id="webcam-container"></div>
+                    <!-- 웹캠 컨테이너 -->
+                    <div id="webcam-container"></div>
 
-        <!-- 게임 상태 오버레이 -->
-        <div id="game-over-overlay" v-if="isGameOver">
-            <div id="game-over-text">GAME OVER</div>
-        </div>
-        <div id="success-overlay" v-if="isSuccess">
-            <div id="success-text">SUCCESS</div>
-        </div>
+                    <!-- 게임 상태 오버레이 -->
+                    <div id="game-over-overlay" v-if="isGameOver">
+                        <div id="game-over-text">GAME OVER</div>
+                    </div>
+                    <div id="success-overlay" v-if="isSuccess">
+                        <div id="success-text">SUCCESS</div>
+                    </div>
+                </div>
+
+            </template>
+        </transition>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 import { Application, Sprite, Assets, Text } from 'pixi.js';
- // TM.js 기능 가져오기
-import { getCounter, init as tmInit } from '@/utils/teachableMachine';
+// TM.js 기능 가져오기
+import { getCounter, init as tmInit } from '@/utils/teachableMachineForGame';
 
 const app = ref(null);
 const counter = ref(0);
 const isGameOver = ref(false);
 const isSuccess = ref(false);
+
+const countdown = ref(4);
+let updateInterval = null;
+
+onUnmounted(() => {
+    if (updateInterval) {
+        clearInterval(updateInterval);
+    }
+});
+
 
 // Pixi.js 애플리케이션 및 게임 로직 초기화
 async function startPixiAndTM() {
@@ -45,17 +65,17 @@ async function startPixiAndTM() {
     });
     document.getElementById("pixi-container").appendChild(app.value.canvas);
 
-    const backgroundTexture = await Assets.load('/assets/images/background/background3.png');
+    const backgroundTexture = await Assets.load('/images/background/background3.png');
     const runnerTextures = [
-        await Assets.load('/assets/images/rabbit/rabbit1.png'),
-        await Assets.load('/assets/images/rabbit/rabbit2.png'),
-        await Assets.load('/assets/images/rabbit/rabbit3.png'),
-        await Assets.load('/assets/images/rabbit/rabbit4.png'),
-        await Assets.load('/assets/images/rabbit/rabbit5.png'),
-        await Assets.load('/assets/images/rabbit/rabbit6.png'),
-        await Assets.load('/assets/images/rabbit/rabbit7.png'),
-        await Assets.load('/assets/images/rabbit/rabbit8.png'),
-        await Assets.load('/assets/images/rabbit/rabbit9.png')
+        await Assets.load('/images/rabbit/rabbit1.png'),
+        await Assets.load('/images/rabbit/rabbit2.png'),
+        await Assets.load('/images/rabbit/rabbit3.png'),
+        await Assets.load('/images/rabbit/rabbit4.png'),
+        await Assets.load('/images/rabbit/rabbit5.png'),
+        await Assets.load('/images/rabbit/rabbit6.png'),
+        await Assets.load('/images/rabbit/rabbit7.png'),
+        await Assets.load('/images/rabbit/rabbit8.png'),
+        await Assets.load('/images/rabbit/rabbit9.png')
     ];
 
     // 배경 이미지 추가
@@ -157,9 +177,28 @@ async function startPixiAndTM() {
     });
 }
 
-function startGame() {
-    startPixiAndTM();
+function startCountdown() {
+    function countdownStep() {
+        if (countdown.value > 0) {
+            countdown.value -= 1;
+
+            console.log(countdown.value)
+
+            nextTick(() => {
+                setTimeout(countdownStep, 1100);
+            });
+        } else {
+            countdown.value = 0;
+            startPixiAndTM();
+        }
+    }
+
+    countdownStep();
 }
+
+onMounted(() => {
+    startCountdown();
+})
 </script>
 
 <style scoped>
@@ -181,40 +220,6 @@ function startGame() {
     position: relative;
     height: 95vh;
     gap: 10px;
-}
-
-#title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #ff7043;
-    background: #fff7e0;
-    padding: 10px 20px;
-    border-radius: 20px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
-    margin-top: 20px;
-    text-align: center;
-}
-
-#start-button {
-    padding: 15px 30px;
-    background-color: #ff7043;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-#start-button:hover {
-    background-color: #f06292;
-}
-
-#start-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-    box-shadow: none;
 }
 
 #label-container,
@@ -265,5 +270,76 @@ function startGame() {
 
 #success-text {
     color: green;
+}
+
+#countdown-container {
+    font-size: 15rem;
+    font-weight: bold;
+    color: #ff3b3b;
+    text-shadow: 0px 0px 15px rgba(255, 0, 0, 0.8);
+    animation: countdown-zoom 1s ease-in-out, fadeIn 1s ease-in-out;
+}
+
+@keyframes countdown-zoom {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.countdown-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.8));
+    animation: background-pulse 1s infinite alternate ease-in-out;
+    z-index: 10;
+}
+
+#countdown-text {
+    font-size: 15rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes background-pulse {
+    0% {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    50% {
+        background-color: rgba(50, 0, 0, 0.9);
+    }
+
+    100% {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
 }
 </style>
