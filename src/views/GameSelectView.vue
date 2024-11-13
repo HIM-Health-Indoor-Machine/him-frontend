@@ -57,6 +57,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const selectedType = ref(null);
 const selectedLevel = ref(null);
@@ -66,7 +69,13 @@ const selectLevel = (level) => { selectedLevel.value = level; };
 
 const startGame = () => {
     if (selectedType.value && selectedLevel.value) {
-        alert(`Starting ${selectedType.value} at ${selectedLevel.value} level!`);
+        router.push({
+            name: 'GamePlayView',
+            query: {
+                type: selectedType.value,
+                level: selectedLevel.value
+            }
+        });
     }
 };
 
