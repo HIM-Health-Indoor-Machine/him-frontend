@@ -11,7 +11,7 @@ watch(
   (newRouteName) => {
     showHeader.value = ['ChallengeSelectView', 'GameSelectView'].includes(newRouteName);
   },
-  { immediate: true } // 초기값 설정
+  { immediate: true }
 );
 </script>
 
