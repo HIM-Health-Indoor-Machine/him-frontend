@@ -1,35 +1,51 @@
 <template>
-    <div class="main">
+    <div>
         <div class="signup-container">
-            <div class="text-center mb-6">
-                <div class="title">HIM</div>
+            <div class="login-header">
+                <div class="title">
+                    <div class="logo-container">
+                        <img src="@/assets/images/logo/logo.png" alt="로고 아이콘" class="logo-icon" />
+                        HIM
+                    </div>
+                </div>
                 <div class="subtitle">Health Indoor Machine</div>
             </div>
-            <h2 class="welcome-message">회원가입</h2>
-            <p class="intro-text">HIM은 당신에게 힘이 되기 위해 노력합니다!</p>
+            <!-- <div class="text-center mb-6">
+                <div class="title">HIM</div>
+                <div class="subtitle">Health Indoor Machine</div>
+            </div> -->
+            <h2 class="welcome-message">환영합니다!</h2>
+            <p class="intro-text">HIM으로 힘을 길러보세요!</p>
 
-            <form>
-                <div class="form-group-horizontal">
-                    <input type="text" placeholder="이름" class="input-field half-width">
-                </div>
-                <div class="form-group">
-                    <input type="email" placeholder="이메일" class="input-field full-width">
-                </div>
-                <div class="form-group">
-                    <input type="password" placeholder="비밀번호를 입력해주세요." class="input-field full-width">
-                </div>
-                <div class="form-group">
-                    <input type="password" placeholder="비밀번호를 다시 입력해주세요." class="input-field full-width">
-                </div>
-                <button type="submit" class="signup-button">회원가입</button>
-            </form>
+            <div class="divider-text">소셜 로그인도 가능합니다!</div>
 
-            <p class="social-text">또는 구글 로그인도 가능합니다!</p>
             <div class="social-buttons">
-                <button class="social-button">
+                <button @click="socialLogin('Google')" class="social-button">
                     <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google" class="icon">
+                    Google
                 </button>
             </div>
+
+            <form @submit.prevent="signUp">
+                <div class="form-group">
+                    <label class="form-label">이름</label>
+                    <input type="name" v-model="password" class="input-field" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">이메일</label>
+                    <input type="email" v-model="email" class="input-field" placeholder="him@google.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">비밀번호</label>
+                    <input type="password" v-model="password" class="input-field" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">비밀번호 재입력</label>
+                    <input type="passwordRetype" v-model="password" class="input-field" placeholder="Password">
+                </div>
+                
+                <button type="submit" class="signup-button">회원가입하기</button>
+            </form>
         </div>
 
         <div v-for="(icon, index) in floatingIcons" :key="index" class="floating-icon"
@@ -42,9 +58,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
+const name = ref('');
+const email = ref('');
+const password = ref('');
+const passwordRetype = ref('');
+const rememberMe = ref(false);
 const floatingIcons = ref([]);
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️", "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
 
+const signUp = () => {
+    if (email.value && password.value) {
+        alert(`환영합니다, ${email.value}! 로그인되었습니다.`);
+    } else {
+        alert("이메일과 비밀번호를 입력하세요.");
+    }
+};
 
 const createFloatingIcons = () => {
     for (let i = 0; i < 60; i++) {
@@ -63,39 +91,34 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.main {
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
-    background: linear-gradient(to bottom, #e0f7df, #c8e6c9);
-    overflow: hidden;
-    margin: 0;
-    height: 95vh;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .signup-container {
     max-width: 28rem;
-    width: 100%;
+    width: 100vw;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 3rem;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     z-index: 10;
     position: relative;
+    transition: all 0.3s ease-in-out;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
 }
 
 .title {
-    text-align: center;
-    font-size: 1.875rem;
+    /* text-align: center; */
+    font-size: 5rem;
     font-weight: 700;
-    color: #ff7043;
+    color: #2cca95;
+    -webkit-text-stroke: 2px #000;
 }
 
 .subtitle {
-    text-align: center;
-    font-size: 1.125rem;
+    /* text-align: center; */
+    font-size: 1.5rem;
     font-weight: 600;
     color: #718096;
 }
@@ -105,23 +128,35 @@ onMounted(() => {
     font-weight: 700;
     text-align: center;
     color: #ff7043;
-    margin-bottom: 1rem;
 }
 
 .intro-text {
+    font-size: 1.3rem;
     text-align: center;
     color: #718096;
     margin-bottom: 1.5rem;
 }
 
-.form-group-horizontal {
+.logo-container {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    justify-content: center;
+    align-items: center;
+    gap: 2%;
+}
+
+.logo-icon {
+    width: 30%;
 }
 
 .form-group {
     margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    color: #4a5568;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
 }
 
 .input-field {
@@ -136,12 +171,6 @@ onMounted(() => {
 .input-field:focus {
     border-color: #ff7043;
     box-shadow: 0 0 0 4px rgba(255, 112, 67, 0.2);
-}
-
-.form-options {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
 }
 
 .form-checkbox {
@@ -169,44 +198,54 @@ onMounted(() => {
     padding: 0.5rem;
     border-radius: 0.5rem;
     background-color: #ff7043;
-    border: 1px solid #ff7043;
+    border: 2px solid #f3a566;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 1.5rem;
     transition: background-color 0.3s;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+    cursor: pointer;
 }
 
 .signup-button:hover {
     background-color: #f06292;
 }
 
-.social-text {
-    text-align: center;
-    color: #718096;
-    margin-top: 1.5rem;
-}
-
 .social-buttons {
     display: flex;
     justify-content: center;
     gap: 1rem;
-    margin-top: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .social-button {
-    background-color: #e2e8f0;
-    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
     padding: 0.5rem;
-    border-radius: 50%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
     transition: background-color 0.3s;
+    color: #718096;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+    cursor: pointer;
 }
 
 .social-button:hover {
-    background-color: #cbd5e0;
+    background-color: #d5d5df;
+}
+
+.divider-text {
+    text-align: center;
+    color: #a0aec0;
+    margin-bottom: 1rem;
 }
 
 .icon {
-    height: 1.5rem;
-    width: 1.5rem;
+    height: 1.25rem;
+    width: 1.25rem;
+    margin-right: 0.5rem;
 }
 
 .floating-icon {

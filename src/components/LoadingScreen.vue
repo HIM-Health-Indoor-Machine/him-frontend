@@ -24,11 +24,11 @@ import { ref, onMounted } from 'vue';
 const isLoading = ref(true);
 const progress = ref(0);
 const characters = ref([
-    { icon: '🐱', x: 10, y: 0 },
-    { icon: '🐶', x: 30, y: 0 },
-    { icon: '🐰', x: 50, y: 0 },
-    { icon: '🦊', x: 70, y: 0 },
-    { icon: '🐻', x: 90, y: 0 }
+    { icon: '🐱', x: 7, y: 0 },
+    { icon: '🐶', x: 27, y: 0 },
+    { icon: '🐰', x: 47, y: 0 },
+    { icon: '🦊', x: 67, y: 0 },
+    { icon: '🐻', x: 87, y: 0 }
 ]);
 
 const progressWidth = ref(0);
@@ -69,7 +69,7 @@ onMounted(() => {
     justify-content: center;
     background: linear-gradient(to bottom, #e6f7ff, #ccf2ff);
     color: #333;
-    font-family: 'Comic Neue', sans-serif;
+    transition: all 0.3s ease-in-out;
 }
 
 .loading-text {
@@ -94,7 +94,7 @@ onMounted(() => {
 
 .loading-bar-container {
     position: relative;
-    width: 80%;
+    width: 90%;
     height: 25px;
     background-color: #e0e0e0;
     border-radius: 15px;

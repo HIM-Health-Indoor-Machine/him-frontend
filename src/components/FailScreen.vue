@@ -36,6 +36,7 @@ const retryGame = () => {
     z-index: 100;
     color: white;
     text-align: center;
+    transition: all 0.3s ease-in-out;
 }
 
 #game-over-text {
@@ -86,6 +87,7 @@ const retryGame = () => {
 }
 
 .retry-button {
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
     margin-top: 30px;
     padding: 15px 30px;
     background-color: #ff3b3b;
