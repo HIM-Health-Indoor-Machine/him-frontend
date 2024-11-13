@@ -30,9 +30,13 @@
 </template>
 
 <script setup>
+import { useRouter, useRoute } from 'vue-router';
 import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 import { Application, Sprite, Assets, Text } from 'pixi.js';
 import { getCounter, init as tmInit } from '@/utils/teachableMachineForGame';
+
+const router = useRouter();
+const route = useRoute();
 
 const app = ref(null);
 const counter = ref(0);
@@ -47,6 +51,9 @@ onUnmounted(() => {
         clearInterval(updateInterval);
     }
 });
+
+const selectedType = route.query.type;
+const selectedLevel = route.query.level;
 
 async function startPixiAndTM() {
     app.value = new Application();
@@ -121,6 +128,7 @@ async function startPixiAndTM() {
         isGameOver.value = true;
         isFalling = true;
         runner.texture = runnerTextures[0];
+        router.push({ name: 'FailScreen' });
     }
 
     function makeRunnerFall() {
@@ -145,6 +153,7 @@ async function startPixiAndTM() {
         isFalling = false;
         runner.texture = runnerTextures[0];
         stopRunnerOnSuccess();
+        router.push({ name: 'SuccessScreen' });
     }
 
     function stopRunnerOnSuccess() {

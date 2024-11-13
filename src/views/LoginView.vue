@@ -43,7 +43,7 @@
 
             <div class="footer-text">
                 <span>계정이 필요하신가요? </span>
-                <a href="#" class="create-account-link">회원가입</a>
+                <RouterLink :to="{ name: 'SignUpView' }" class="create-account-link">회원가입</RouterLink>
             </div>
         </div>
 
