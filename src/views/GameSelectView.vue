@@ -94,11 +94,12 @@ onMounted(addFloatingIcons);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 3px;
     position: relative;
     z-index: 1;
     transition: all 0.3s ease-in-out;
-
+    padding-top: 150px;
+    padding-bottom: 70px;
 }
 
 @keyframes sparkle {
