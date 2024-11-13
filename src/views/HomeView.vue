@@ -133,14 +133,14 @@
 
                     <!-- 버튼 -->
                     <div class="button-container">
-                        <button class="custom-button">
+                        <button @click="startChallenge" class="custom-button">
                             <span>🏆 챌린지 시작</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="5"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                             </svg>
                         </button>
-                        <button class="custom-button">
+                        <button @click="startGame" class="custom-button">
                             <span>🎮 게임 시작</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="5"
                                 stroke="currentColor">
@@ -185,6 +185,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 import exampleImage from '@/assets/images/character/example.jpg';
 
@@ -198,6 +199,8 @@ import diamondImage from '@/assets/images/tier/tier_DIAMOND.png';
 import masterImage from '@/assets/images/tier/tier_MASTER.png';
 import legendImage from '@/assets/images/tier/tier_LEGEND.png';
 import goatImage from '@/assets/images/tier/tier_GOAT.png';
+
+const router = useRouter();
 
 const showRankings = ref(false);
 const tierImages = {
@@ -241,6 +244,13 @@ const user = ref({
     exp: 2300,
     maxExp: 3000,
 });
+
+const startChallenge = () => {
+  router.push({ name: 'ChallengePlayView' });
+};
+const startGame = () => {
+  router.push({ name : 'GamePlayView' })  
+};
 
 const expPercent = computed(() => (user.value.exp / user.value.maxExp) * 100);
 
