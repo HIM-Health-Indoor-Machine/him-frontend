@@ -326,7 +326,6 @@ onMounted(() => {
     gap: 20px;
     padding: 20px;
     box-sizing: border-box;
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
     background: linear-gradient(to bottom, #e0f7df, #c8e6c9);
     color: #333;
     position: relative;
@@ -417,7 +416,6 @@ onMounted(() => {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     border-radius: 20px;
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
     color: #333;
     gap: 20px;
     width: 95%;
@@ -431,7 +429,6 @@ onMounted(() => {
     padding: 10px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s, box-shadow 0.3s;
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
     font-size: 1rem;
     color: #444;
     display: flex;
@@ -460,7 +457,6 @@ onMounted(() => {
     margin-bottom: 10px;
     font-size: 1.2em;
     color: #444;
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
     text-align: center;
     display: inline-flex;
     align-items: center;
@@ -812,6 +808,7 @@ onMounted(() => {
 }
 
 .custom-button {
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -844,7 +841,6 @@ onMounted(() => {
 /* 캘린더 */
 .calendar {
     flex: 2.5;
-
     display: flex;
     flex-direction: column;
     background: #fff;
@@ -879,7 +875,7 @@ onMounted(() => {
 .weekday {
     display: inline-block;
     width: 100%;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: bold;
     text-align: center;
     color: #ff7043;
@@ -914,6 +910,8 @@ onMounted(() => {
     cursor: pointer;
     transition: transform 0.3s;
     box-shadow: none;
+    padding: 50px;
+    font-weight: 900;
 }
 
 .month-btn:hover {

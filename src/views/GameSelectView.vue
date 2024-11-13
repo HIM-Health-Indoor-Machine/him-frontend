@@ -6,7 +6,7 @@
             <div class="sparkle"></div>
             <div class="sparkle"></div>
 
-            <div class="header">Choose Your Workout!</div>
+            <div class="header">게임을 선택해주세요!</div>
 
             <!-- 운동 타입 선택 -->
             <div class="option-container">
@@ -43,7 +43,7 @@
 
             <!-- 게임 시작 버튼 -->
             <button class="start-game-btn" @click="startGame" :disabled="!selectedType || !selectedLevel">
-                Let's Start!
+                시작하기!
             </button>
 
         </div>
@@ -98,27 +98,17 @@ onMounted(addFloatingIcons);
 </script>
 
 <style scoped>
-/* 전체 화면 설정 - 전역 CSS와 충돌했을 때 대비용으로 남겨두었습니다. */
-/* body,
-html {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(to bottom, #f8fce7, #d2f1d8);
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
-    color: #333;
-    overflow: hidden;
-} */
 
 .main-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 3px;
     position: relative;
     z-index: 1;
+    transition: all 0.3s ease-in-out;
+    padding-top: 150px;
+    padding-bottom: 70px;
 }
 
 @keyframes sparkle {
@@ -281,6 +271,7 @@ html {
 }
 
 .start-game-btn {
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
     padding: 30px 50px;
     background-color: #ff7043;
     color: white;

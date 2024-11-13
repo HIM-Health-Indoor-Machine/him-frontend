@@ -1,8 +1,13 @@
 <template>
-    <div class="main">
+    <div>
         <div class="login-container">
             <div class="login-header">
-                <div class="title">HIM</div>
+                <div class="title">
+                    <div class="logo-container">
+                        <img src="@/assets/images/logo/logo.png" alt="로고 아이콘" class="logo-icon" />
+                        HIM
+                    </div>
+                </div>
                 <div class="subtitle">Health Indoor Machine</div>
             </div>
             <h2 class="welcome-message">환영합니다!</h2>
@@ -33,7 +38,7 @@
                     </label>
                     <a href="#" class="forgot-password">비밀번호를 잊어버리셨나요?</a>
                 </div>
-                <button type="submit" class="login-button">로그인</button>
+                <button type="submit" class="login-button">로그인하기</button>
             </form>
 
             <div class="footer-text">
@@ -88,41 +93,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 전체 화면 설정 - 전역 CSS와 충돌했을 때 대비용으로 남겨두었습니다. */
-/* body,
-html {
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
-    background: linear-gradient(to bottom, #e0f7df, #c8e6c9);
-    overflow: hidden;
-    margin: 0;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-} */
-
-.main {
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
-    background: linear-gradient(to bottom, #e0f7df, #c8e6c9);
-    overflow: hidden;
-    margin: 0;
-    height: 95vh;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .login-container {
     max-width: 28rem;
-    width: 100%;
+    width: 100vw;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 3rem;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     z-index: 10;
     position: relative;
+    transition: all 0.3s ease-in-out;
 }
 
 .login-header {
@@ -131,13 +111,14 @@ html {
 }
 
 .title {
-    font-size: 1.875rem;
+    font-size: 5rem;
     font-weight: 700;
-    color: #ff7043;
+    color: #2cca95;
+    -webkit-text-stroke: 2px #000;
 }
 
 .subtitle {
-    font-size: 1.125rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: #718096;
 }
@@ -147,13 +128,24 @@ html {
     font-weight: 700;
     text-align: center;
     color: #ff7043;
-    margin-bottom: 1rem;
 }
 
 .intro-text {
+    font-size: 1.3rem;
     text-align: center;
     color: #718096;
     margin-bottom: 1.5rem;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2%;
+}
+
+.logo-icon {
+    width: 30%;
 }
 
 .social-buttons {
@@ -171,11 +163,15 @@ html {
     padding: 0.5rem;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
+    font-size: 1rem;
     transition: background-color 0.3s;
+    color: #718096;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+    cursor: pointer;
 }
 
 .social-button:hover {
-    background-color: #f3f4f6;
+    background-color: #d5d5df;
 }
 
 .icon {
@@ -197,6 +193,7 @@ html {
 .form-label {
     display: block;
     color: #4a5568;
+    font-size: 1.3rem;
     margin-bottom: 0.5rem;
 }
 
@@ -252,10 +249,12 @@ html {
     color: white;
     padding: 0.5rem;
     border-radius: 0.5rem;
+    border: 2px solid #f3a566;
     background-color: #ff7043;
-    font-weight: bold;
-    font-size: 1rem;
+    font-size: 1.5rem;
     transition: background-color 0.3s;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+    cursor: pointer;
 }
 
 .login-button:hover {

@@ -1,15 +1,26 @@
 <script setup>
-import { RouterView } from 'vue-router';
+import { RouterView, useRoute } from 'vue-router';
+import { computed, watch, ref } from 'vue';
+import Header from './components/HeaderNav.vue'
 
+const route = useRoute();
+const showHeader = ref(false);
+
+watch(
+  () => route.name,
+  (newRouteName) => {
+    showHeader.value = ['ChallengeSelectView', 'GameSelectView'].includes(newRouteName);
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
   <div>
-      <RouterView />
-
+    <Header v-if="showHeader" ></Header>
+    <RouterView />
   </div>
 </template>
 
 <style scoped>
-
 </style>

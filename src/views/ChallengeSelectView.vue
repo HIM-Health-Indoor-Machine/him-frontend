@@ -2,7 +2,7 @@
     <div>
         <div class="main-container">
             <div class="header-container">
-                <span class="header">Challenge Selection</span>
+                <span class="header">챌린지 선택하기</span>
             </div>
             <div class="challenge-container">
                 <div v-for="(challenge, index) in challenges" :key="index"
@@ -114,7 +114,7 @@ const router = useRouter();
 
 const challenges = ref([
     { id: 1, name: "파워푸쉬업7일", type: "Push Up", icon: "💪", date: "2023-12-31", goal: 30, progress: 60 },
-    { id: 2, name: "꾸준스쾃30일", type: "Squat", icon: "🏋️‍♂️", date: "2024-01-15", goal: 20, progress: 40 }
+    { id: 2, name: "꾸준스쿼트30일", type: "Squat", icon: "🏋️‍♂️", date: "2024-01-15", goal: 20, progress: 40 }
 ]);
 const isCreating = ref(false);
 const isEditing = ref(false);
@@ -202,24 +202,12 @@ onMounted(addFloatingIcons);
 </script>
 
 <style scoped>
-/* 전체 화면 설정 - 전역 CSS와 충돌했을 때 대비용으로 남겨두었습니다. */
-/* html, body {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    background: linear-gradient(to bottom, #e0f7df, #c8e6c9);
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
-    overflow: hidden;
-    color: #333;
-} */
-
 .main-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    transition: all 0.3s ease-in-out;
 }
 
 .challenge-container {
@@ -232,6 +220,7 @@ onMounted(addFloatingIcons);
     overflow-x: auto;
     white-space: nowrap;
     scroll-behavior: smooth;
+    transition: all 0.3s ease-in-out;
 }
 
 .challenge-container::-webkit-scrollbar {
@@ -263,13 +252,13 @@ onMounted(addFloatingIcons);
 }
 
 .challenge-info-container {
-  position: absolute;
-  top: 12%;
-  width: 90%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 10px;
+    position: absolute;
+    top: 12%;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
 }
 
 .challenge-info {
@@ -301,7 +290,7 @@ onMounted(addFloatingIcons);
 }
 
 .header {
-    font-size: 40px;
+    font-size: 3rem;
     font-weight: bold;
     color: #ff7043;
     padding: 8px 20px;
@@ -314,46 +303,47 @@ onMounted(addFloatingIcons);
 }
 
 .banner {
-  position: relative;
-  display: block;
-  margin: 20px auto;
-  width: 80%;
-  max-width: 300px;
-  height: 50px;
-  border: 1px solid #8a1;
-  font: bold 25px/50px 'Rye';
-  text-align: center;
-  color: #ffffff;
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
-  border-radius: 4px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15) inset,
-              0 4px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    display: block;
+    margin: 20px auto;
+    width: 80%;
+    max-width: 300px;
+    height: 50px;
+    border: 1px solid #8a1;
+    
+    font: bold 25px/50px 'HakgyoansimDunggeunmisoTTF-B';
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    border-radius: 4px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15) inset,
+        0 4px 8px rgba(0, 0, 0, 0.15);
     margin: 0px;
 }
 
 .banner::before,
 .banner::after {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  left: -15%;
-  top: 30%;
-  display: block;
-  width: 10%;
-  border: 25px solid;
-  border-color: #4caf50;
-  border-right: 15px solid #2e7d32;
-  border-bottom-color: #388e3c;
-  border-left-color: transparent;
-  transform: rotate(-5deg);
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: -15%;
+    top: 30%;
+    display: block;
+    width: 10%;
+    border: 25px solid;
+    border-color: #4caf50;
+    border-right: 15px solid #2e7d32;
+    border-bottom-color: #388e3c;
+    border-left-color: transparent;
+    transform: rotate(-5deg);
 }
 
 .banner::after {
-  left: auto;
-  right: -15%;
-  border-left: 15px solid #2e7d32;
-  border-right: 25px solid transparent;
-  transform: rotate(5deg);
+    left: auto;
+    right: -15%;
+    border-left: 15px solid #2e7d32;
+    border-right: 25px solid transparent;
+    transform: rotate(5deg);
 }
 
 @keyframes floatIcons {
@@ -413,7 +403,6 @@ onMounted(addFloatingIcons);
     cursor: pointer;
     animation: pulse 1.5s infinite;
 }
-
 
 .new-challenge-box div:first-child {
     font-size: 150px;

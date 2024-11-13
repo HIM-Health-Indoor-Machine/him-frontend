@@ -14,7 +14,7 @@
 
             <div class="exp-value" :style="{ '--total-exp': `'${addedExpString}'` }">현재 경험치: {{ expValue }} EXP</div>
 
-            <button class="celebrate-button" @click="restartGame">NEW GAME</button>
+            <button class="new-challenge-button" @click="restartGame">NEW GAME</button>
 
             <div v-for="firework in fireworks" :key="firework.id" class="firework"
                 :style="{ left: firework.left + '%', top: firework.top + '%', backgroundColor: firework.color }">
@@ -85,20 +85,6 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
 </script>
 
 <style scoped>
-/* 전체 화면 설정 - 전역 CSS와 충돌했을 때 대비용으로 남겨두었습니다. */
-/* html,
-body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(to bottom, #f8fce7, #d2f1d8);
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
-    color: #333;
-    overflow: hidden;
-} */
-
 #success-overlay {
     position: fixed;
     top: 0;
@@ -114,6 +100,8 @@ body {
     gap: 30px;
     text-align: center;
     overflow: hidden;
+    transition: all 0.3s ease-in-out;
+
 }
 
 #success-text {
@@ -281,7 +269,8 @@ body {
     }
 }
 
-.celebrate-button {
+.new-challenge-button {
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
     margin-top: 30px;
     padding: 15px 30px;
     background-color: #4CAF50;
@@ -295,7 +284,7 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.celebrate-button:hover {
+.new-challenge-button:hover {
     background-color: #66bb6a;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
 }
