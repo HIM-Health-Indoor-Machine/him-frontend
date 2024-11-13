@@ -2,10 +2,10 @@
   <header class="header">
     <div class="container">
       <div class="left-menu">
-        <router-link :to="{ name: 'HomeView' }">
+        <RouterLink :to="{ name: 'HomeView' }">
           <img class="logo-icon" src="@/assets/images/logo/logo.png" alt="Logo Icon" />
-        </router-link>
-        <router-link :to="{ name: 'HomeView' }" class="logo">HIM</router-link>
+        </RouterLink>
+        <RouterLink :to="{ name: 'HomeView' }" class="logo">HIM</RouterLink>
       </div>
 
       <div class="right-menu">
@@ -31,8 +31,8 @@
           <b-navbar-nav>
             <b-nav-item href="#" @click="toggleProfileMenu" class="profile-button">
               <img src="@/assets/images/character/example.jpg" alt="Profile" class="profile-image">
-              <router-link :to="{ name: 'HomeView' }" class="menu-item">홈 화면으로 가기</router-link>
-              <router-link class="menu-item">로그아웃</router-link>
+              <RouterLink :to="{ name: 'HomeView' }" class="menu-item">홈 화면으로 가기</RouterLink>
+              <RouterLink class="menu-item">로그아웃</RouterLink>
             </b-nav-item>
           </b-navbar-nav>
         </b-navbar>
