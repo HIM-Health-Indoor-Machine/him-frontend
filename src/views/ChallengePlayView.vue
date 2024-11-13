@@ -85,11 +85,11 @@ function startGame() {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
     position: relative;
     height: 95vh;
     gap: 10px;
     z-index: 10;
+    transition: all 0.3s ease-in-out;
 }
 
 #ui-container {
@@ -97,7 +97,6 @@ function startGame() {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
     position: relative;
     width: 100vw;
     height: 100vh;
@@ -105,6 +104,7 @@ function startGame() {
     background: radial-gradient(circle, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.8));
     animation: background-pulse 3s infinite alternate ease-in-out;
     overflow: hidden;
+    transition: all 0.3s ease-in-out;
 }
 
 #countdown-container {
@@ -113,6 +113,7 @@ function startGame() {
     color: #ff3b3b;
     text-shadow: 0px 0px 15px rgba(255, 0, 0, 0.8);
     animation: countdown-zoom 1s ease-in-out, fadeIn 1s ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
 
 @keyframes countdown-zoom {

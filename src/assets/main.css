@@ -6,7 +6,17 @@ html {
   justify-content: center;
   margin: 0;
   background: linear-gradient(to bottom, #e0f7df, #c8e6c9);
-  font-family: 'Comic Neue', 'Poppins', sans-serif;
   overflow: hidden;
   color: #333;
+}
+
+body {
+  font-family: 'HakgyoansimDunggeunmisoTTF-B';
+}
+
+@font-face {
+  font-family: 'HakgyoansimDunggeunmisoTTF-B';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
 }

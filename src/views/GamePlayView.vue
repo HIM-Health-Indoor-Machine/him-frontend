@@ -196,6 +196,7 @@ onMounted(() => {
     width: 100vw;
     height: 100vh;
     z-index: -1;
+    transition: all 0.3s ease-in-out;
 }
 
 #ui-container {
@@ -203,7 +204,6 @@ onMounted(() => {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    font-family: 'Comic Neue', 'Poppins', sans-serif;
     position: relative;
     height: 95vh;
     gap: 10px;
@@ -228,6 +228,7 @@ onMounted(() => {
     overflow: hidden;
     background-color: rgba(255, 255, 255, 0.8);
     z-index: 2;
+    transition: all 0.3s ease-in-out;
 }
 
 #game-over-overlay,
