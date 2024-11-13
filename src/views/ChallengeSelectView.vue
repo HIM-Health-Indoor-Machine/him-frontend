@@ -55,6 +55,7 @@
                             <div class="progress-bar">
                                 <div class="progress-fill" :style="{ width: challenge.progress + '%' }"></div>
                             </div>
+                            <button class="start-button" @click="startChallenge(challenge.id)">챌린지 시작</button>
                         </div>
                     </div>
                 </div>
@@ -107,10 +108,13 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const challenges = ref([
-    { name: "파워푸쉬업7일", type: "Push Up", icon: "💪", date: "2023-12-31", goal: 30, progress: 60 },
-    { name: "꾸준스쾃30일", type: "Squat", icon: "🏋️‍♂️", date: "2024-01-15", goal: 20, progress: 40 }
+    { id: 1, name: "파워푸쉬업7일", type: "Push Up", icon: "💪", date: "2023-12-31", goal: 30, progress: 60 },
+    { id: 2, name: "꾸준스쾃30일", type: "Squat", icon: "🏋️‍♂️", date: "2024-01-15", goal: 20, progress: 40 }
 ]);
 const isCreating = ref(false);
 const isEditing = ref(false);
@@ -122,6 +126,13 @@ const editChallenge = reactive({ name: "", type: "", date: "", goal: null });
 
 const deleteChallenge = (index) => {
     challenges.value.splice(index, 1);
+};
+
+const startChallenge = (id) => {
+    router.push({ 
+        name: 'ChallengePlayView', 
+        params: { id: id } 
+    });
 };
 
 const toggleEdit = (index) => {
@@ -361,6 +372,35 @@ onMounted(addFloatingIcons);
     background-color: #ff7043;
     animation: fillProgress 1s forwards;
 }
+
+.start-button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 8px 12px; /* 패딩 줄임 */
+    background-color: #ff7043;
+    border: 3px solid #d95c37; /* 테두리 두께 줄임 */
+    border-radius: 9999px;
+    color: white;
+    font-size: 1rem; /* 폰트 크기 줄임 */
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.start-button svg {
+    width: 20%; /* 너비 줄임 */
+    height: 40%; /* 높이 줄임 */
+}
+
+.start-button span {
+    margin-right: 6px; /* 오른쪽 여백 줄임 */
+}
+
+.start-button:hover {
+    background: #f06292;
+    transform: scale(1.05);
+}
+
 
 .new-challenge-box {
     display: flex;
