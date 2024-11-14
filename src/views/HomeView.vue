@@ -13,9 +13,21 @@
                     </button>
                 </div>
                 <p class="user-email">{{ user.email }}</p>
+
+                
             </div>
 
             <div class="exp-info-container">
+                <div class="exp-detail-info-container">
+                    <div class="info-container">
+                    <img src="@/assets/images/icon/info-icon.png" @click="toggleInfo" class="info-icon">
+                    <div v-if="showInfo" class="info-popup">
+                    <p>- 챌린지와 게임 성공 시, 아이콘이 ✔️로 변경되며 경험치가 주어집니다.</p>
+                    <p>- 아직 진행하지 않은 챌린지나 게임의 경우, 아이콘이 ⏳으로 표시됩니다.</p>
+                    </div>
+                </div>
+                </div> 
+                
                 <div class="exp-card">
                     <h5 class="info-section">
                         승급 필요 경험치
@@ -201,6 +213,14 @@ import legendImage from '@/assets/images/tier/tier_LEGEND.png';
 import goatImage from '@/assets/images/tier/tier_GOAT.png';
 
 const router = useRouter();
+
+
+const showInfo = ref(false);
+
+const toggleInfo = () => {
+  showInfo.value = !showInfo.value;
+};
+
 
 const showRankings = ref(false);
 const tierImages = {
@@ -442,6 +462,44 @@ onMounted(() => {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
+.exp-detail-info-container {
+  position: relative;
+  grid-column: span 2;
+  width: auto;   
+  height: 50px; 
+  border-radius: 15px;
+  padding: 10px;  
+}
+.info-container {
+  position: relative; 
+  left: 45%; 
+  top: 75%;
+  display: inline-block;
+  z-index: 100;  
+}
+
+.info-icon {
+  cursor: pointer;
+  font-size: 20%;
+}
+
+.info-popup {
+  position: absolute;
+  top: 100%;
+  left: 10%;
+  transform: translateX(-80%);
+  margin-top: 8px;
+  padding: 12px;
+  width: 220px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  font-size: 0.9rem;
+}
+
+
 .highlight {
     color: #e74c3c;
     font-weight: bold;
@@ -463,7 +521,7 @@ onMounted(() => {
 }
 
 .info-icon {
-    font-size: 18px;
+    font-size: 1.2rem;
     margin-left: 5px;
     color: #555;
 }
