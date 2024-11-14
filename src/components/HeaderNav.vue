@@ -30,7 +30,7 @@
         <b-navbar>
           <b-navbar-nav>
             <b-nav-item href="#" @click="toggleProfileMenu" class="profile-button">
-              <img src="@/assets/images/character/example.jpg" alt="Profile" class="profile-image">
+              <img src="@/assets/images/character/character_CAT.png" alt="Profile" class="profile-image">
               <router-link :to="{ name: 'HomeView' }" class="menu-item">홈 화면으로 가기</router-link>
               <router-link class="menu-item">로그아웃</router-link>
             </b-nav-item>
