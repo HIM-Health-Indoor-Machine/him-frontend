@@ -14,7 +14,7 @@
             </div>
 
             <div class="button-container">
-                <button class="custom-button">
+                <button class="custom-button" @click="goHome">
                     <span>시작하기</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="6"
                         stroke="black">
@@ -35,8 +35,14 @@
 
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+
+const goHome = () => {
+    router.push({ name: 'HomeView' });
+}
 
 const floatingIcons = ref([]);
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️",
