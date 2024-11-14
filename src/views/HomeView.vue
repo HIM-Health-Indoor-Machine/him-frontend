@@ -8,13 +8,23 @@
 
                 <div class="profile-pic-wrapper">
                     <img class="profile-pic" :src="user.profilePic" alt="프로필 사진" />
-                    <button class="setting-button" aria-label="사진 선택">
+                    <button @click="openImageSelection" class="setting-button" aria-label="사진 선택">
                         <img src="@/assets/images/icon/setting-icon.png" alt="사진 선택 아이콘" class="setting-icon" />
                     </button>
+
+                    <div v-if="isImageSelectionOpen" class="image-selection-modal">
+                        <div class="modal-content">
+                            <h3>프로필 이미지 선택</h3>
+                            <div class="image-grid">
+                            <img v-for="(image, index) in availableImages" :key="index" :src="image" @click="selectProfileImage(image)" 
+                                class="profile-image-option" :alt="`프로필 이미지 ${index + 1}`" />
+                            </div>
+                            <button @click="closeImageSelection" class="close-button">닫기</button>
+                        </div>
+                    </div>
+
                 </div>
                 <p class="user-email">{{ user.email }}</p>
-
-                
             </div>
 
             <div class="exp-info-container">
