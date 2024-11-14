@@ -209,7 +209,14 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
-import exampleImage from '@/assets/images/character/example.jpg';
+import bearImage from '@/assets/images/character/character_BEAR.png';
+import catImage from '@/assets/images/character/character_CAT.png';
+import chickImage from '@/assets/images/character/character_CHICK.png';
+import dogImage from '@/assets/images/character/character_DOG.png';
+import koalaImage from '@/assets/images/character/character_KOALA.png';
+import monkeyImage from '@/assets/images/character/character_MONKEY.png';
+import pandaImage from '@/assets/images/character/character_PANDA.png';
+import tigerImage from '@/assets/images/character/character_TIGER.png';
 
 import ironImage from '@/assets/images/tier/tier_IRON.png';
 import bronzeImage from '@/assets/images/tier/tier_BRONZE.png';
@@ -224,13 +231,25 @@ import goatImage from '@/assets/images/tier/tier_GOAT.png';
 
 const router = useRouter();
 
-
 const showInfo = ref(false);
 
 const toggleInfo = () => {
   showInfo.value = !showInfo.value;
 };
 
+const isImageSelectionOpen = ref(false);
+
+const availableImages = ref([
+    bearImage, catImage, chickImage, dogImage, koalaImage, monkeyImage, pandaImage, tigerImage
+]);
+
+const openImageSelection = () => { isImageSelectionOpen.value = true; };
+const closeImageSelection = () => { isImageSelectionOpen.value = false; };
+
+const selectProfileImage = (image) => {
+  user.value.profilePic = image;
+  closeImageSelection();
+};
 
 const showRankings = ref(false);
 const tierImages = {
@@ -265,7 +284,7 @@ const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "
     "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
 
 const user = ref({
-    profilePic: exampleImage,
+    profilePic: catImage,
     nickname: '나는운동강아지',
     email: 'gamemaster@example.com',
     tier: 'IRON',
@@ -410,7 +429,7 @@ onMounted(() => {
 }
 
 .profile-pic {
-    width: 35%;
+    width: 50%;
     border-radius: 50%;
     border: 3px solid #ffab91;
     margin-bottom: 5px;
@@ -419,8 +438,8 @@ onMounted(() => {
 
 .setting-button {
     position: absolute;
-    top: 5%;
-    right: 25%;
+    top: 5px;
+    right: 20px;
     background: none;
     border: none;
     cursor: pointer;
@@ -431,6 +450,44 @@ onMounted(() => {
 .setting-icon {
     width: 80%;
 }
+
+.modal-content {
+  background-color: #d2d0d0;
+  color: #282626;
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+}
+
+.profile-image-option {
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.profile-image-option:hover {
+  border-color: #d8854e;
+}
+
+.close-button {
+  background-color: #ff7043;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.current-profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-top: 20px;
+}
+
 
 .user-details h2 {
     font-size: 2rem;
