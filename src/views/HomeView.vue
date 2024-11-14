@@ -635,7 +635,7 @@ onMounted(() => {
 .info-button {
     position: absolute;
     top: -5%;
-    right: -20%;
+    right: -30%;
     background: none;
     border: none;
     box-shadow: none;
