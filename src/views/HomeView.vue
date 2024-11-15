@@ -32,8 +32,15 @@
                     <div class="info-container">
                     <img src="@/assets/images/icon/info-icon.png" @click="toggleInfo" class="info-icon">
                     <div v-if="showInfo" class="info-popup">
+                    <p class="info-title">[오늘의 경험치]</p>
+                    <p>- 오늘 받을 수 있는 최대 경험치와 내가 오늘 받은 경험치가 표시됩니다.</p>
+                    <p class="info-title">[챌린지 경험치]</p>
                     <p>- 챌린지와 게임 성공 시, 아이콘이 ✔️로 변경되며 경험치가 주어집니다.</p>
                     <p>- 아직 진행하지 않은 챌린지나 게임의 경우, 아이콘이 ⏳으로 표시됩니다.</p>
+                    <p class="info-title">[패널티 경험치]</p>
+                    <p>- 챌린지를 진행하지 않으면 패널티를 받을 수 있습니다.</p>
+                    <p class="info-title">[보너스 경험치]</p>
+                    <p>- 진행 중인 챌린지를 매일 연속하여 진행하면 보너스 경험치가 주어집니다.</p>
                     </div>
                 </div>
                 </div> 
@@ -770,6 +777,11 @@ onMounted(() => {
 
 .info-icon {
     width: 60%;
+}
+
+.info-title {
+  color: #e74c3c;
+  font-weight: bold;
 }
 
 .exp-tier-container {
