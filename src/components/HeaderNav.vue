@@ -1,58 +1,92 @@
 <template>
-  <header class="header">
-    <div class="container">
+  <div class="back-rectangle"></div>
+  <div class="nav-bar">
+    <div class="nav-button">
       <div class="left-menu">
-        <router-link :to="{ name: 'HomeView' }">
+        <RouterLink :to="{ name: 'HomeView' }">
           <img class="logo-icon" src="@/assets/images/logo/logo.png" alt="Logo Icon" />
-        </router-link>
-        <router-link :to="{ name: 'HomeView' }" class="logo">HIM</router-link>
-      </div>
-
-      <div class="right-menu">
-        <nav class="nav-links">
-          <transition-group name="slide" tag="div" class="rolling-wrapper">
-            <div v-for="(item, index) in [visibleItem]" :key="index" class="nav-link rolling-item">
-              {{ item }}
-            </div>
-          </transition-group>
-        </nav>
-
-        <div class="tier-info">
-          <img class="tier-icon" src="@/assets/images/tier/tier_IRON.png" alt="Tier Icon" />
-          <span class="tier-text">IRON</span>
-          <span class="tier-text">30000 EXP</span>
-        </div>
-
-        <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: challengeProgress + '%' }"></div>
-        </div>
-
-        <b-navbar>
-          <b-navbar-nav>
-            <b-nav-item href="#" @click="toggleProfileMenu" class="profile-button">
-              <img src="@/assets/images/character/character_CAT.png" alt="Profile" class="profile-image">
-              <router-link :to="{ name: 'HomeView' }" class="menu-item">홈 화면으로 가기</router-link>
-              <router-link class="menu-item">로그아웃</router-link>
-            </b-nav-item>
-          </b-navbar-nav>
-        </b-navbar>
+        </RouterLink>
+        <div class="logo">HIM</div>
       </div>
     </div>
-  </header>
+
+    <nav class="nav-links">
+      <img src="@/assets/images/icon/heart-icon.png" alt="설명 아이콘" class="heart-icon" />
+      <transition-group name="slide" tag="div">
+        <div v-for="(item, index) in [visibleItem]" :key="index + '-' + item" class="nav-link rolling-item">
+          {{ item }}
+        </div>
+      </transition-group>
+    </nav>
+
+    <div class="right-menu">
+      <div class="tier-info">
+        <div class="tier-container">
+          <img class="tier-icon" src="@/assets/images/tier/tier_IRON.png" alt="Tier Icon" />
+          <div class="tier-text">{{ user.tier }}</div>
+        </div>
+        <div class="exp-bar-container">
+          <div class="exp-bar-fill" :style="{ width: expFilledBarWidth + '%' }"></div>
+          <div class="exp-text">{{ user.exp }} / {{ user.maxExp }} exp</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="profile-button">
+        <img :src=user.profilePic alt="Profile" class="profile-image">
+        <div class="nickname">{{ user.nickname }}</div>
+        <RouterLink :to="{ name: 'StartView' }" class="logout-item">로그아웃</RouterLink>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 
-const isProfileMenuOpen = ref(false);
+import profileImage from '@/assets/images/character/character_CAT.png';
+
+import ironImage from '@/assets/images/tier/tier_IRON.png';
+import bronzeImage from '@/assets/images/tier/tier_BRONZE.png';
+
 const currentIndex = ref(0);
-const items = ["승급 필요 경험치 700exp", "오늘 경험치 20exp"];
+const items = ["승급 필요 경험치 700exp",
+               "오늘 경험치 20exp",
+               "챌린지 1: 5 exp",
+               "Hard: 20 exp",
+               "패널티 경험치: -113 exp",
+               "보너스 경험치: D-day 4, 26",
+              ];
 
+const user = ref({
+  profilePic: profileImage,
+  nickname: '나는운동강아지',
+  email: 'gamemaster@example.com',
+  tier: 'IRON',
+  curTierIcon: ironImage,
+  nextTierIcon: bronzeImage,
+  exp: 2300,
+  maxExp: 3000,
+});
+
+const expValue = ref(0)
+const expFilledBarWidth = ref(0);
 const visibleItem = computed(() => items[currentIndex.value]);
 
-const toggleProfileMenu = () => {
-  isProfileMenuOpen.value = !isProfileMenuOpen.value;
+const increaseExp = () => {
+  let interval = setInterval(() => {
+    if (expValue.value < user.value.exp) {
+      expValue.value += 10;
+    } else {
+      clearInterval(interval);
+    }
+  }, 10);
 };
+
+watch(expValue, (newVal) => {
+  expFilledBarWidth.value = (newVal / user.value.maxExp) * 100;
+});
 
 const startRolling = () => {
   setInterval(() => {
@@ -60,19 +94,73 @@ const startRolling = () => {
   }, 2000);
 };
 
-onMounted(startRolling);
+onMounted(() => {
+  startRolling();
+  increaseExp();
+});
 </script>
 
 <style scoped>
-.header {
+.back-rectangle {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  padding: 7px 0;
-  z-index: 100;
+  top: 18px;
+  left: 28px;
+  width: 98vw;
+  height: 9vh;
+  background: #81c784;
+  border: 2px solid #000080;
+  border-radius: 10px;
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 5px;
+  left: 15px;
+  width: 98vw;
+  height: 9vh;
+  background: #a5d6a7;
+  border: 2px solid #000080;
+  border-radius: 10px;
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-button {
+  width: 200px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom, #FFFFFF, #CCCCCC);
+  border-right: 2px solid #000080;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.left-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2cca95;
+  text-decoration: none;
+  -webkit-text-stroke: 1.5px #000;
+}
+
+.logo-icon {
+  width: 100px;
 }
 
 .container {
@@ -82,116 +170,174 @@ onMounted(startRolling);
   align-items: center;
 }
 
-.left-menu {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #202a37;
-  text-decoration: none;
-}
-
-.logo-icon {
-  width: 60px;
-  margin-right: 8px;
-}
-
 .nav-links {
   display: flex;
   align-items: center;
-  margin-left: 24px;
+  flex-wrap: wrap;
+  width: 20%;
+  flex-wrap: wrap;
 }
 
 .rolling-item {
   color: #cb5b39;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   padding: 5px 10px;
-  white-space: nowrap;
+  max-width: 300px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  margin: 5px;
 }
 
-.rolling-item:hover {
-  color: #d8854e;
+@keyframes moveUp {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(-60%);
+    opacity: 1;
+  }
 }
 
-@keyframes rollUp {
-  0% { transform: translateY(100%); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes rollDown {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-100%); opacity: 0; }
+@keyframes moveOut {
+  0% {
+    transform: translateY(55%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
 }
 
 .slide-enter-active {
-  animation: rollUp 0.8s ease forwards;
+  animation: moveUp 0.8s ease forwards;
 }
 
 .slide-leave-active {
-  animation: rollDown 0.8s ease forwards;
+  animation: moveOut 0.8s ease forwards;
 }
 
 .right-menu {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .tier-info {
   display: flex;
   align-items: center;
   margin-right: 16px;
+  gap: 10px;
+}
+
+.tier-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .tier-icon {
-  width: 40px;
+  width: 43px;
   color: #4b5563;
 }
 
 .tier-text {
-  margin-left: 10px;
   color: #374151;
   font-size: 1.3rem;
   font-weight: bold;
+}
+
+.exp-bar-container {
+  width: 20vw;
+  height: 3.5vh;
+  background: #e0e0e0;
+  border-radius: 10px;
+  margin: 0 auto;
+  position: relative;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.exp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f39c12, #e67e22);
+  border-radius: 10px;
+}
+
+.exp-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.8),
+    0 0 16px rgba(255, 255, 255, 0.6),
+    0 0 24px rgba(255, 255, 255, 0.4);
+  margin-top: 20px;
+  animation: pulseGlow 2s ease-in-out infinite;
+  position: relative;
+  display: inline-block;
+  padding: 10px 20px;
+  background: linear-gradient(to right, #A8FF78, #4CAF50, #1B5E20);
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.exp-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-weight: bold;
+  color: #660000;
+  font-size: 1.2rem;
+  width: 100%;
+  text-align: center;
 }
 
 .profile-button {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  cursor: pointer;
   background: none;
   border: none;
 }
 
 .profile-image {
-  width: 48px;
-  height: 48px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
+  margin-right: 10px;
 }
 
-.progress-bar {
-  width: 120px;
-  height: 14px;
-  background-color: #cfcfcf;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-right: 16px;
+.nickname {
+  font-size: 1.5rem;
+  color: #ff7043;
+  text-decoration: none;
+  -webkit-text-stroke: 0.5px #000;
 }
 
-.progress-fill {
-  height: 100%;
-  background-color: #ff7043;
-  animation: fillProgress 1s forwards;
-}
-
-.menu-item {
+.logout-item {
   display: block;
   padding: 12px 16px;
   font-size: 1.1rem;
   color: #374151;
   text-decoration: none;
+  margin-left: 15px;
+}
+
+.logo-icon,
+.logout-item {
+  display: inline-block;
+  transition: transform 0.1s ease-in-out, background-color 0.2s;
+  cursor: pointer;
+}
+
+.logo-icon:hover,
+.logout-item:hover {
+  transform: scale(1.3);
+  border-radius: 5px;
 }
 </style>

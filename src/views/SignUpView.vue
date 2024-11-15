@@ -10,10 +10,6 @@
                 </div>
                 <div class="subtitle">Health Indoor Machine</div>
             </div>
-            <!-- <div class="text-center mb-6">
-                <div class="title">HIM</div>
-                <div class="subtitle">Health Indoor Machine</div>
-            </div> -->
             <h2 class="welcome-message">환영합니다!</h2>
             <p class="intro-text">HIM으로 힘을 길러보세요!</p>
 
@@ -109,7 +105,6 @@ onMounted(() => {
 }
 
 .title {
-    /* text-align: center; */
     font-size: 5rem;
     font-weight: 700;
     color: #2cca95;
@@ -117,7 +112,6 @@ onMounted(() => {
 }
 
 .subtitle {
-    /* text-align: center; */
     font-size: 1.5rem;
     font-weight: 600;
     color: #718096;

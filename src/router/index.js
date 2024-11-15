@@ -14,9 +14,6 @@ import StartView from '@/views/StartView.vue';
 
 const routes = [
   {
-    // path: '/',
-    path: '/home-view',
-  {
     path: '/',
     name: 'StartView',
     component: StartView,

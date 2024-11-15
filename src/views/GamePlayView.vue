@@ -16,27 +16,32 @@
                     </div>
                     <div id="webcam-container"></div>
 
-                    <div id="game-over-overlay" v-if="isGameOver">
-                        <div id="game-over-text">GAME OVER</div>
-                    </div>
-                    <div id="success-overlay" v-if="isSuccess">
-                        <div id="success-text">SUCCESS</div>
-                    </div>
+                    <button v-if="countdown === 0" @click="openEndModal" class="end-button">끝내기</button>
                 </div>
 
             </template>
         </transition>
+
+        <div v-if="isEndModalOpen" class="modal-overlay">
+            <div class="modal">
+                <p>정말 끝내시겠습니까?</p>
+                <div class="modal-buttons">
+                    <button @click="navigateToGameSelect" class="confirm-button">네</button>
+                    <button @click="closeEndModal" class="cancel-button">아니요</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 import { Application, Sprite, Assets, Text } from 'pixi.js';
-import { getCounter, init as tmInit } from '@/utils/teachableMachineForGame';
+import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForGame';
 
 const router = useRouter();
-const route = useRoute();
+const isEndModalOpen = ref(false);
 
 const app = ref(null);
 const counter = ref(0);
@@ -46,14 +51,30 @@ const isSuccess = ref(false);
 const countdown = ref(4);
 let updateInterval = null;
 
+function openEndModal() {
+    isEndModalOpen.value = true;
+}
+
+function closeEndModal() {
+    isEndModalOpen.value = false;
+}
+
+function navigateToGameSelect() {
+    isGameOver.value = true;
+    if (app.value) {
+        app.value.ticker.stop();
+    }
+    tmStop();
+    router.push({ name: 'GameSelectView' });
+}
+
 onUnmounted(() => {
     if (updateInterval) {
         clearInterval(updateInterval);
     }
-});
 
-const selectedType = route.query.type;
-const selectedLevel = route.query.level;
+    tmStop();
+});
 
 async function startPixiAndTM() {
     app.value = new Application();
@@ -163,8 +184,8 @@ async function startPixiAndTM() {
     }
 
     app.value.ticker.add(() => {
-        updateCounter();
         if (!isGameOver.value && !isSuccess.value) {
+            updateCounter();
             updateRunnerAnimation();
             moveRunnerLeft();
         }
@@ -240,35 +261,6 @@ onMounted(() => {
     transition: all 0.3s ease-in-out;
 }
 
-#game-over-overlay,
-#success-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 3;
-    pointer-events: none;
-}
-
-#game-over-text,
-#success-text {
-    font-size: 10rem;
-    font-weight: bold;
-    text-align: center;
-}
-
-#game-over-text {
-    color: red;
-}
-
-#success-text {
-    color: green;
-}
-
 #countdown-container {
     font-size: 15rem;
     font-weight: bold;
@@ -325,6 +317,77 @@ onMounted(() => {
     color: #ffffff;
     text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.8);
 }
+
+.end-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 40px;
+    background-color: #ff7043;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: background-color 0.3s;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+}
+
+.end-button:hover {
+    background-color: #f06292;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 2rem;
+    width: 500px;
+    height: 300px;
+    line-height: 0;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.confirm-button,
+.cancel-button {
+    padding: 10px 30px;
+    font-size: 2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+}
+
+.confirm-button {
+    background-color: #ff7043;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #cccccc;
+}
+
 
 @keyframes background-pulse {
     0% {

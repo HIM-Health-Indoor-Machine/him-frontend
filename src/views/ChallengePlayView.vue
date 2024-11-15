@@ -17,17 +17,37 @@
         </div>
 
         <div id="webcam-container"></div>
+
+        <button v-if="countdown === 0" @click="openSaveModal" class="save-button">저장하기</button>
+
+        <div v-if="isModalOpen" class="modal-overlay">
+            <div class="modal">
+                <p>현재까지의 운동 횟수: {{ counter }}</p>
+                <p>저장하시겠습니까?</p>
+                <div class="modal-buttons">
+                    <button @click="saveAndNavigate" class="confirm-button">저장</button>
+                    <button @click="closeModal" class="cancel-button">취소</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 import { nextTick, ref, onMounted, onUnmounted } from 'vue';
 import { getCounter, init as tmInit } from '@/utils/teachableMachineForChallenge';
 
 const counter = ref(0);
 const showCounter = ref(false);
 const countdown = ref(3);
+const isModalOpen = ref(false);
+const router = useRouter();
 let updateInterval = null;
+
+onMounted(() => {
+    startCountdown();
+});
 
 onUnmounted(() => {
     if (updateInterval) {
@@ -35,9 +55,19 @@ onUnmounted(() => {
     }
 });
 
-onMounted(() => {
-    startCountdown();
-});
+function openSaveModal() {
+    isModalOpen.value = true;
+}
+
+function closeModal() {
+    isModalOpen.value = false;
+}
+
+function saveAndNavigate() {
+    console.log(`저장된 운동 횟수: ${counter.value}`);
+    isModalOpen.value = false;
+    router.push({ name: 'ChallengeSelectView' });
+}
 
 function startCountdown() {
     function countdownStep() {
@@ -167,5 +197,75 @@ function startGame() {
     border-radius: 0;
     overflow: hidden;
     background-color: transparent;
+}
+
+.save-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 20px 40px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: background-color 0.3s;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+}
+
+.save-button:hover {
+    background-color: #45a049;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 2rem;
+    width: 500px;
+    height: 300px;
+    line-height: 0;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.confirm-button, .cancel-button {
+    padding: 10px 40px;
+    font-size: 2rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+}
+
+.confirm-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #f44336;
+    color: white;
 }
 </style>

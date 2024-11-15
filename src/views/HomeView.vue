@@ -1,7 +1,6 @@
 <template>
     <div class="mypage-container">
 
-        <!-- 유저 정보 -->
         <div class="box user-info">
             <div class="user-details">
                 <h2 class="nickname">{{ user.nickname }}</h2>
@@ -92,23 +91,20 @@
                     <h5 class="info-section">
                         보너스 경험치
                     </h5>
-                    <div class="highlight time-remaining">10 exp (Day-4)</div>
-                    <div class="highlight time-remaining">100 exp (Day-26)</div>
+                    <div class="highlight time-remaining">10 exp (D-day 4)</div>
+                    <div class="highlight time-remaining">100 exp (D-day 26)</div>
                 </div>
             </div>
         </div>
 
-
-
         <div class="right-section">
             <div class="top-section">
-                <!-- 티어 정보 -->
                 <div class="box tier-container">
                     <div class="tier">
                         <div class="tier-pic-wrapper">
                             <img class="tier-pic" :src="user.curTierIcon" alt="현재 티어 사진" />
                             <button @click="toggleRankings" class="info-button" aria-label="티어 설명">
-                                <img src="@/assets/images/icon/info-icon.png" alt="티어 설명 아이콘" class="info-icon" />
+                                <img src="@/assets/images/icon/heart-icon.png" alt="티어 설명 아이콘" class="heart-icon" />
                             </button>
                         </div>
                         <span>{{ user.tier }}</span>
@@ -117,17 +113,15 @@
                     <div class="exp-tier-container">
                         <img class="exp-tier-pic" :src="user.curTierIcon" alt="현재 티어 사진" />
                         <div class="exp-bar-container">
-                            <div class="exp-bar-fill" :style="{ width: expPercent + '%' }"></div>
-                            <div class="exp-text">{{ user.exp }} / {{ user.maxExp }}</div>
+                            <div class="exp-bar-fill" :style="{ width: expFilledBarWidth + '%' }"></div>
+                            <div class="exp-text">{{ user.exp }} / {{ user.maxExp }} exp</div>
                         </div>
                         <img class="exp-tier-pic" :src="user.nextTierIcon" alt="다음 티어 사진" />
                     </div>
                 </div>
 
-                <!-- 오버레이 -->
                 <div :class="['overlay', { show: showRankings }]" @click="toggleRankings"></div>
 
-                <!-- 티어 정보 -->
                 <div v-if="showRankings" :class="['rankings-container', { show: showRankings }]">
                     <table class="tier-table">
                         <tbody>
@@ -156,21 +150,19 @@
                     </table>
                 </div>
 
-
                 <div class="box3-and-buttons">
                     <div class="box box3">박스3</div>
 
-                    <!-- 버튼 -->
                     <div class="button-container">
                         <button @click="startChallenge" class="custom-button">
-                            <span>🏆 챌린지 시작</span>
+                            <span>🏆 챌린지 하기</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="5"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                             </svg>
                         </button>
                         <button @click="startGame" class="custom-button">
-                            <span>🎮 게임 시작</span>
+                            <span>🎮 게임 하기</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="5"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -180,7 +172,6 @@
                 </div>
             </div>
 
-            <!-- 캘린더 -->
             <div class="box calendar">
                 <div class="calendar-header">
                     <button class="month-btn" @click="prevMonth">〈</button>
@@ -204,7 +195,6 @@
             </div>
         </div>
 
-        <!-- 배경 아이콘 -->
         <div v-for="(icon, index) in floatingIcons" :key="index" class="floating-icon"
             :style="{ top: icon.top, left: icon.left, animationDuration: icon.speed }">
             {{ icon.icon }}
@@ -213,7 +203,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import bearImage from '@/assets/images/character/character_BEAR.png';
@@ -301,14 +291,29 @@ const user = ref({
     maxExp: 3000,
 });
 
-const startChallenge = () => {
-  router.push({ name: 'ChallengePlayView' });
-};
-const startGame = () => {
-  router.push({ name : 'GamePlayView' })  
+const expValue = ref(0)
+const expFilledBarWidth = ref(0);
+
+const increaseExp = () => {
+    let interval = setInterval(() => {
+        if (expValue.value < user.value.exp) {
+            expValue.value += 10;
+        } else {
+            clearInterval(interval);
+        }
+    }, 10);
 };
 
-const expPercent = computed(() => (user.value.exp / user.value.maxExp) * 100);
+watch(expValue, (newVal) => {
+    expFilledBarWidth.value = (newVal / user.value.maxExp) * 100;
+});
+
+const startChallenge = () => {
+  router.push({ name: 'ChallengeSelectView' });
+};
+const startGame = () => {
+  router.push({ name : 'GameSelectView' })  
+};
 
 const currentMonth = ref(new Date().getMonth() + 1);
 const currentYear = ref(new Date().getFullYear());
@@ -367,10 +372,10 @@ const addFloatingIcons = () => {
     }
 };
 
-onMounted(addFloatingIcons);
-
 onMounted(() => {
+    addFloatingIcons()
     generateCalendar();
+    increaseExp();
 });
 </script>
 
@@ -820,6 +825,8 @@ onMounted(() => {
     font-weight: bold;
     color: #660000;
     font-size: 1.3vw;
+    width: 100%;
+    text-align: center;
 }
 
 /* 티어 정보 섹션 */
