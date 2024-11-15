@@ -14,7 +14,7 @@
             </div>
 
             <div class="button-container">
-                <button class="custom-button">
+                <button class="custom-button" @click="navigateToLogin">
                     <span>시작하기</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="6"
                         stroke="black">
@@ -36,11 +36,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router';
 
-
+const router = useRouter();
 const floatingIcons = ref([]);
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️",
     "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
+
+function navigateToLogin() {
+    router.push({ name: 'LoginView' });
+}
 
 const createFloatingIcons = () => {
     for (let i = 0; i < 60; i++) {
@@ -127,14 +132,14 @@ onMounted(() => {
     font-size: 4rem;
     font-weight: bold;
     cursor: pointer;
-    animation: pulse 1.5s infinite;
+    animation: jittery 4s infinite;
     position: relative;
     z-index: 10;
 }
 
 .custom-button svg {
     width: 30%;
-    height: 50%;
+    height: 40%;
 }
 
 .custom-button span {
@@ -146,16 +151,39 @@ onMounted(() => {
     transform: scale(1.05);
 }
 
-@keyframes pulse {
+@keyframes jittery {
+  5%,
+  50% {
+    transform: scale(1);
+  }
 
-    0%,
-    100% {
-        transform: scale(1);
-    }
+  10% {
+    transform: scale(0.9);
+  }
 
-    50% {
-        transform: scale(1.05);
-    }
+  15% {
+    transform: scale(1.15);
+  }
+
+  20% {
+    transform: scale(1.15) rotate(-5deg);
+  }
+
+  25% {
+    transform: scale(1.15) rotate(5deg);
+  }
+
+  30% {
+    transform: scale(1.15) rotate(-3deg);
+  }
+
+  35% {
+    transform: scale(1.15) rotate(2deg);
+  }
+
+  40% {
+    transform: scale(1.15) rotate(0);
+  }
 }
 
 .floating-icon {
