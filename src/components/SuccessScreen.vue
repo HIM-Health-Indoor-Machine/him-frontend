@@ -14,7 +14,7 @@
 
             <div class="exp-value" :style="{ '--total-exp': `'${addedExpString}'` }">현재 경험치: {{ expValue }} EXP</div>
 
-            <button class="new-challenge-button" @click="restartGame">NEW GAME</button>
+            <button class="new-challenge-button" @click="newGame">새로운 챌린지하기</button>
 
             <div v-for="firework in fireworks" :key="firework.id" class="firework"
                 :style="{ left: firework.left + '%', top: firework.top + '%', backgroundColor: firework.color }">
@@ -25,23 +25,25 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import curTierImage from '@/assets/images/tier/tier_IRON.png';
 import nextTierImage from '@/assets/images/tier/tier_BRONZE.png';
+
+const router = useRouter();
 
 const curTierIcon = ref(curTierImage)
 const nextTierIcon = ref(nextTierImage)
 
 const isGameSuccess = ref(true);
 const fireworks = ref([]);
-const currentExp = ref(400);
-const addedExp = ref(30);
+const currentExp = ref(300);
+const addedExp = ref(200);
 const targetExp = ref(1000);
 const expValue = ref(currentExp.value);
 const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100);
 
 const totalExp = currentExp.value + addedExp.value;
 
-// 경험치 증가에 따라 경험치 바 반영
 const increaseExp = () => {
     let interval = setInterval(() => {
         if (expValue.value < totalExp) {
@@ -52,7 +54,6 @@ const increaseExp = () => {
     }, 30);
 };
 
-// 경험치 값 변경에 따라 바 너비 업데이트
 watch(expValue, (newVal) => {
     expFilledBarWidth.value = (newVal / targetExp.value) * 100;
 });
@@ -76,9 +77,9 @@ onMounted(() => {
     increaseExp();
 });
 
-const restartGame = () => {
+const newGame = () => {
     isGameSuccess.value = false;
-    console.log("New game started!");
+    router.push({ name: 'GameSelectView' });
 };
 
 const addedExpString = computed(() => `+${addedExp.value} EXP!`);
@@ -101,7 +102,6 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
     text-align: center;
     overflow: hidden;
     transition: all 0.3s ease-in-out;
-
 }
 
 #success-text {
@@ -271,22 +271,58 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
 
 .new-challenge-button {
     font-family: 'HakgyoansimDunggeunmisoTTF-B';
-    margin-top: 30px;
-    padding: 15px 30px;
+    margin-top: 80px;
+    padding: 20px 40px;
     background-color: #4CAF50;
     border: none;
     color: white;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
     border-radius: 12px;
     cursor: pointer;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
     transition: background-color 0.3s ease;
+    animation: jittery 4s infinite;
 }
 
 .new-challenge-button:hover {
     background-color: #66bb6a;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes jittery {
+  5%,
+  50% {
+    transform: scale(1);
+  }
+
+  10% {
+    transform: scale(0.9);
+  }
+
+  15% {
+    transform: scale(1.15);
+  }
+
+  20% {
+    transform: scale(1.15) rotate(-5deg);
+  }
+
+  25% {
+    transform: scale(1.15) rotate(5deg);
+  }
+
+  30% {
+    transform: scale(1.15) rotate(-3deg);
+  }
+
+  35% {
+    transform: scale(1.15) rotate(2deg);
+  }
+
+  40% {
+    transform: scale(1.15) rotate(0);
+  }
 }
 
 .exp-value {
