@@ -3,10 +3,9 @@
   <div class="nav-bar">
     <div class="nav-button">
       <div class="left-menu">
-        <router-link :to="{ name: 'HomeView' }">
+        <RouterLink :to="{ name: 'HomeView' }">
           <img class="logo-icon" src="@/assets/images/logo/logo.png" alt="Logo Icon" />
-        </router-link>
-        <div class="logo">HIM</div>
+        <RouterLink :to="{ name: 'HomeView' }" class="logo">HIM</RouterLink>
       </div>
     </div>
 
@@ -33,7 +32,7 @@
     </div>
 
     <div>
-      <div class="profile-button">
+      <div @click="toggleProfileMenu" class="profile-button">
         <img src="@/assets/images/character/example.jpg" alt="Profile" class="profile-image">
         <div class="nickname">{{ user.nickname }}</div>
         <RouterLink :to="{ name: 'StartView' }" class="logout-item">로그아웃</RouterLink>
