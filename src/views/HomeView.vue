@@ -422,7 +422,7 @@ onMounted(() => {
     z-index: 10;
     position: relative;
     overflow: hidden;
-    gap: 50px;
+    gap: 20px;
     transition: all 0.3s ease-in-out;
 }
 
@@ -441,7 +441,7 @@ onMounted(() => {
 }
 
 .profile-pic {
-    width: 50%;
+    width: 70%;
     border-radius: 50%;
     border: 3px solid #ffab91;
     margin-bottom: 5px;
@@ -507,7 +507,7 @@ onMounted(() => {
 }
 
 .nickname {
-    margin-bottom: 0;
+    margin-bottom: 10px;
 }
 
 /* 정보 컨테이너 */
@@ -545,9 +545,9 @@ onMounted(() => {
   position: relative;
   grid-column: span 2;
   width: auto;   
-  height: 50px; 
+  height: 0px;
   border-radius: 15px;
-  padding: 10px;  
+  padding: 10px;
 }
 .info-container {
   position: relative; 
