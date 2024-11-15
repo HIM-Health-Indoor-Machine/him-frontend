@@ -1,6 +1,6 @@
 <script setup>
 import { RouterView, useRoute } from 'vue-router';
-import { computed, watch, ref } from 'vue';
+import { watch, ref } from 'vue';
 import Header from './components/HeaderNav.vue'
 
 const route = useRoute();
@@ -9,7 +9,7 @@ const showHeader = ref(false);
 watch(
   () => route.name,
   (newRouteName) => {
-    showHeader.value = ['ChallengeSelectView', 'GameSelectView'].includes(newRouteName);
+    showHeader.value = ['ChallengeSelectView', 'GameSelectView', 'FailScreen', 'SuccessScreen'].includes(newRouteName);
   },
   { immediate: true }
 );
