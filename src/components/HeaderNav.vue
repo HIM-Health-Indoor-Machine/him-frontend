@@ -5,7 +5,8 @@
       <div class="left-menu">
         <RouterLink :to="{ name: 'HomeView' }">
           <img class="logo-icon" src="@/assets/images/logo/logo.png" alt="Logo Icon" />
-        <RouterLink :to="{ name: 'HomeView' }" class="logo">HIM</RouterLink>
+        </RouterLink>
+        <div class="logo">HIM</div>
       </div>
     </div>
 
@@ -32,8 +33,8 @@
     </div>
 
     <div>
-      <div @click="toggleProfileMenu" class="profile-button">
-        <img src="@/assets/images/character/example.jpg" alt="Profile" class="profile-image">
+      <div class="profile-button">
+        <img :src=user.profilePic alt="Profile" class="profile-image">
         <div class="nickname">{{ user.nickname }}</div>
         <RouterLink :to="{ name: 'StartView' }" class="logout-item">로그아웃</RouterLink>
       </div>
@@ -44,12 +45,11 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 
-import profileImage from '@/assets/images/character/example.jpg';
+import profileImage from '@/assets/images/character/character_CAT.png';
 
 import ironImage from '@/assets/images/tier/tier_IRON.png';
 import bronzeImage from '@/assets/images/tier/tier_BRONZE.png';
 
-const isProfileMenuOpen = ref(false);
 const currentIndex = ref(0);
 const items = ["승급 필요 경험치 700exp",
                "오늘 경험치 20exp",

@@ -7,14 +7,43 @@
 
                 <div class="profile-pic-wrapper">
                     <img class="profile-pic" :src="user.profilePic" alt="프로필 사진" />
-                    <button class="setting-button" aria-label="사진 선택">
+                    <button @click="openImageSelection" class="setting-button" aria-label="사진 선택">
                         <img src="@/assets/images/icon/setting-icon.png" alt="사진 선택 아이콘" class="setting-icon" />
                     </button>
+
+                    <div v-if="isImageSelectionOpen" class="image-selection-modal">
+                        <div class="modal-content">
+                            <h3>프로필 이미지 선택</h3>
+                            <div class="image-grid">
+                            <img v-for="(image, index) in availableImages" :key="index" :src="image" @click="selectProfileImage(image)" 
+                                class="profile-image-option" :alt="`프로필 이미지 ${index + 1}`" />
+                            </div>
+                            <button @click="closeImageSelection" class="close-button">닫기</button>
+                        </div>
+                    </div>
+
                 </div>
                 <p class="user-email">{{ user.email }}</p>
             </div>
 
             <div class="exp-info-container">
+                <div class="exp-detail-info-container">
+                    <div class="info-container">
+                    <img src="@/assets/images/icon/info-icon.png" @click="toggleInfo" class="info-icon">
+                    <div v-if="showInfo" class="info-popup">
+                    <p class="info-title">[오늘의 경험치]</p>
+                    <p>- 오늘 받을 수 있는 최대 경험치와 내가 오늘 받은 경험치가 표시됩니다.</p>
+                    <p class="info-title">[챌린지 경험치]</p>
+                    <p>- 챌린지와 게임 성공 시, 아이콘이 ✔️로 변경되며 경험치가 주어집니다.</p>
+                    <p>- 아직 진행하지 않은 챌린지나 게임의 경우, 아이콘이 ⏳으로 표시됩니다.</p>
+                    <p class="info-title">[패널티 경험치]</p>
+                    <p>- 챌린지를 진행하지 않으면 패널티를 받을 수 있습니다.</p>
+                    <p class="info-title">[보너스 경험치]</p>
+                    <p>- 진행 중인 챌린지를 매일 연속하여 진행하면 보너스 경험치가 주어집니다.</p>
+                    </div>
+                </div>
+                </div> 
+                
                 <div class="exp-card">
                     <h5 class="info-section">
                         승급 필요 경험치
@@ -177,7 +206,14 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-import exampleImage from '@/assets/images/character/example.jpg';
+import bearImage from '@/assets/images/character/character_BEAR.png';
+import catImage from '@/assets/images/character/character_CAT.png';
+import chickImage from '@/assets/images/character/character_CHICK.png';
+import dogImage from '@/assets/images/character/character_DOG.png';
+import koalaImage from '@/assets/images/character/character_KOALA.png';
+import monkeyImage from '@/assets/images/character/character_MONKEY.png';
+import pandaImage from '@/assets/images/character/character_PANDA.png';
+import tigerImage from '@/assets/images/character/character_TIGER.png';
 
 import ironImage from '@/assets/images/tier/tier_IRON.png';
 import bronzeImage from '@/assets/images/tier/tier_BRONZE.png';
@@ -191,6 +227,26 @@ import legendImage from '@/assets/images/tier/tier_LEGEND.png';
 import goatImage from '@/assets/images/tier/tier_GOAT.png';
 
 const router = useRouter();
+
+const showInfo = ref(false);
+
+const toggleInfo = () => {
+  showInfo.value = !showInfo.value;
+};
+
+const isImageSelectionOpen = ref(false);
+
+const availableImages = ref([
+    bearImage, catImage, chickImage, dogImage, koalaImage, monkeyImage, pandaImage, tigerImage
+]);
+
+const openImageSelection = () => { isImageSelectionOpen.value = true; };
+const closeImageSelection = () => { isImageSelectionOpen.value = false; };
+
+const selectProfileImage = (image) => {
+  user.value.profilePic = image;
+  closeImageSelection();
+};
 
 const showRankings = ref(false);
 const tierImages = {
@@ -225,7 +281,7 @@ const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "
     "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
 
 const user = ref({
-    profilePic: exampleImage,
+    profilePic: catImage,
     nickname: '나는운동강아지',
     email: 'gamemaster@example.com',
     tier: 'IRON',
@@ -385,7 +441,7 @@ onMounted(() => {
 }
 
 .profile-pic {
-    width: 35%;
+    width: 50%;
     border-radius: 50%;
     border: 3px solid #ffab91;
     margin-bottom: 5px;
@@ -394,8 +450,8 @@ onMounted(() => {
 
 .setting-button {
     position: absolute;
-    top: 5%;
-    right: 25%;
+    top: 5px;
+    right: 20px;
     background: none;
     border: none;
     cursor: pointer;
@@ -406,6 +462,44 @@ onMounted(() => {
 .setting-icon {
     width: 80%;
 }
+
+.modal-content {
+  background-color: #d2d0d0;
+  color: #282626;
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+}
+
+.profile-image-option {
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.profile-image-option:hover {
+  border-color: #d8854e;
+}
+
+.close-button {
+  background-color: #ff7043;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.current-profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-top: 20px;
+}
+
 
 .user-details h2 {
     font-size: 2rem;
@@ -447,6 +541,44 @@ onMounted(() => {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
+.exp-detail-info-container {
+  position: relative;
+  grid-column: span 2;
+  width: auto;   
+  height: 50px; 
+  border-radius: 15px;
+  padding: 10px;  
+}
+.info-container {
+  position: relative; 
+  left: 45%; 
+  top: 75%;
+  display: inline-block;
+  z-index: 100;  
+}
+
+.info-icon {
+  cursor: pointer;
+  font-size: 20%;
+}
+
+.info-popup {
+  position: absolute;
+  top: 100%;
+  left: 10%;
+  transform: translateX(-80%);
+  margin-top: 8px;
+  padding: 12px;
+  width: 220px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  font-size: 0.9rem;
+}
+
+
 .highlight {
     color: #e74c3c;
     font-weight: bold;
@@ -468,7 +600,7 @@ onMounted(() => {
 }
 
 .info-icon {
-    font-size: 18px;
+    font-size: 1.2rem;
     margin-left: 5px;
     color: #555;
 }
@@ -640,7 +772,7 @@ onMounted(() => {
 .info-button {
     position: absolute;
     top: -5%;
-    right: -20%;
+    right: -30%;
     background: none;
     border: none;
     box-shadow: none;
@@ -650,6 +782,11 @@ onMounted(() => {
 
 .info-icon {
     width: 60%;
+}
+
+.info-title {
+  color: #e74c3c;
+  font-weight: bold;
 }
 
 .exp-tier-container {
