@@ -1,14 +1,8 @@
 <template>
     <div>
         <div class="main-container">
-            <div class="sparkle"></div>
-            <div class="sparkle"></div>
-            <div class="sparkle"></div>
-            <div class="sparkle"></div>
-
             <div class="header">게임을 선택해주세요!</div>
 
-            <!-- 운동 타입 선택 -->
             <div class="option-container">
                 <div class="option-card square" @click="selectType('Push Up')"
                     :class="{ selected: selectedType === 'Push Up' }">
@@ -22,7 +16,6 @@
                 </div>
             </div>
 
-            <!-- 난이도 선택 -->
             <div class="option-container">
                 <div class="option-card cloud" @click="selectLevel('EASY')"
                     :class="{ selected: selectedLevel === 'EASY' }">
@@ -41,9 +34,15 @@
                 </div>
             </div>
 
-            <!-- 게임 시작 버튼 -->
-            <button class="start-game-btn" @click="startGame" :disabled="!selectedType || !selectedLevel">
-                시작하기!
+            <button @click="startGame"
+                    class="custom-button"
+                    :style="{ animation: (!selectedType || !selectedLevel) ? 'jittery 4s infinite' : '' }"
+                    :disabled="!selectedType || !selectedLevel">
+                <span>시작하기</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4"
+                width="130" height="130" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" width="80" height="80" d="M9 5l7 7-7 7" />
+                </svg>
             </button>
 
         </div>
@@ -98,7 +97,6 @@ onMounted(addFloatingIcons);
 </script>
 
 <style scoped>
-
 .main-container {
     display: flex;
     flex-direction: column;
@@ -109,53 +107,7 @@ onMounted(addFloatingIcons);
     transition: all 0.3s ease-in-out;
     padding-top: 150px;
     padding-bottom: 70px;
-}
-
-@keyframes sparkle {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.6;
-        transform: scale(1.2);
-    }
-}
-
-.sparkle {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: #ffeb3b;
-    border-radius: 50%;
-    animation: sparkle 2s infinite ease-in-out;
-}
-
-.sparkle:nth-child(1) {
-    top: 10%;
-    left: 15%;
-    animation-delay: 0.3s;
-}
-
-.sparkle:nth-child(2) {
-    top: 30%;
-    left: 80%;
-    animation-delay: 1s;
-}
-
-.sparkle:nth-child(3) {
-    top: 70%;
-    left: 20%;
-    animation-delay: 0.7s;
-}
-
-.sparkle:nth-child(4) {
-    top: 85%;
-    left: 60%;
-    animation-delay: 1.5s;
+    transition: all 0.3s ease-in-out;
 }
 
 .option-container {
@@ -225,12 +177,13 @@ onMounted(addFloatingIcons);
     font-size: 2.5rem;
     font-weight: bold;
     color: #ff7043;
-    padding: 12px 30px;
+    padding: 20px 40px;
     background: #fff7e0;
     border-radius: 25px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
     text-align: center;
     position: relative;
+    transition: all 0.3s ease-in-out;
 }
 
 .option-card {
@@ -246,7 +199,7 @@ onMounted(addFloatingIcons);
     cursor: pointer;
     position: relative;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s, background-color 0.3s;
+    transition: all 0.3s ease-in-out;
 }
 
 .option-card.selected {
@@ -270,27 +223,77 @@ onMounted(addFloatingIcons);
     font-weight: 600;
 }
 
-.start-game-btn {
+.custom-button {
     font-family: 'HakgyoansimDunggeunmisoTTF-B';
-    padding: 30px 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 12px 15px;
     background-color: #ff7043;
+    border: 4px solid #d95c37;
+    border-radius: 9999px;
     color: white;
-    border: none;
-    border-radius: 25px;
     font-size: 2rem;
+    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s;
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    animation: jittery 4s infinite;
 }
 
-.start-game-btn:hover {
-    background-color: #f06292;
+.custom-button svg {
+    width: 30%;
+    height: 20%;
 }
 
-.start-game-btn:disabled {
+.custom-button span {
+    margin-right: 8px;
+}
+
+.custom-button:hover {
+    background: #f06292;
+    transform: scale(1.05);
+}
+
+.custom-button:disabled {
     background-color: #cccccc;
+    border: #cccccc;
     cursor: not-allowed;
     box-shadow: none;
+}
+
+@keyframes jittery {
+  5%,
+  50% {
+    transform: scale(1);
+  }
+
+  10% {
+    transform: scale(0.9);
+  }
+
+  15% {
+    transform: scale(1.15);
+  }
+
+  20% {
+    transform: scale(1.15) rotate(-5deg);
+  }
+
+  25% {
+    transform: scale(1.15) rotate(5deg);
+  }
+
+  30% {
+    transform: scale(1.15) rotate(-3deg);
+  }
+
+  35% {
+    transform: scale(1.15) rotate(2deg);
+  }
+
+  40% {
+    transform: scale(1.15) rotate(0);
+  }
 }
 
 .floating-icon {

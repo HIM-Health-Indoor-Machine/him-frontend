@@ -2,15 +2,30 @@
     <div>
         <div class="main-container">
             <div class="header-container">
-                <span class="header">챌린지 선택하기</span>
+                <span class="header">챌린지를 선택해주세요!</span>
+                <div class="subtitle">또는 챌린지를 수정, 삭제 및 추가할 수 있습니다.</div>
             </div>
+
+            <div v-if="isDeleteModalOpen" class="modal-overlay">
+                <div class="modal">
+                    <p>정말 삭제하시겠습니까?</p>
+                    <div class="modal-buttons">
+                        <button @click="confirmDelete" class="confirm-button">네</button>
+                        <button @click="closeDeleteModal" class="cancel-button">아니요</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="challenge-container">
                 <div v-for="(challenge, index) in challenges" :key="index"
-                    :class="['challenge-box', isEditing && editIndex === index ? 'edit-box' : '']">
+                    :class="['challenge-box', isEditing && editIndex === index ? 'edit-box' : '', selectedChallenge === challenge ? 'selected' : '']"
+                    @click="selectChallenge(index)">
+
                     <div v-if="!(isEditing && editIndex === index)" class="icon-container">
                         <span @click="toggleEdit(index)" class="icon-button">✏️</span>
                         <span @click="deleteChallenge(index)" class="icon-button delete-icon">🗑️</span>
                     </div>
+
                     <div v-if="isEditing && editIndex === index" class="edit-form open">
                         <span @click="isEditing = false" class="icon-button close-button">❌</span>
                         <form @submit.prevent="saveChallenge">
@@ -46,6 +61,7 @@
                             </div>
                         </form>
                     </div>
+
                     <div v-else>
                         <div class="challenge-info-container">
                             <div class="banner">{{ challenge.name }}</div>
@@ -55,22 +71,25 @@
                             <div class="progress-bar">
                                 <div class="progress-fill" :style="{ width: challenge.progress + '%' }"></div>
                             </div>
-                            <button class="start-button" @click="startChallenge(challenge.id)">챌린지 시작</button>
                         </div>
                     </div>
                 </div>
+
                 <div v-if="!isCreating" @click="toggleForm" class="challenge-box new-challenge-box">
                     <div>+</div>
                     <div></div>
                 </div>
+
                 <div v-if="isCreating" class="challenge-box new-challenge-form open">
                     <form @submit.prevent="saveChallenge">
                         <span @click="isCreating = false" class="icon-button close-button2">❌</span>
+
                         <div class="challenge-info">
                             <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
                             <input type="text" v-model="newChallenge.name" class="input-field"
                                 placeholder="예: '30일 푸쉬업 챌린지'">
                         </div>
+
                         <div class="challenge-info">
                             <label style="text-align: center; font-size: 1.2rem;">🔥 운동 타입</label>
                             <div style="display: flex; justify-content: space-around; align-items: center;">
@@ -84,21 +103,34 @@
                                 </label>
                             </div>
                         </div>
+
                         <div class="challenge-info">
                             <label style="font-size: 1.2rem;">⏰ 종료 날짜</label>
                             <input type="date" v-model="newChallenge.date" class="input-field">
                         </div>
+
                         <div class="challenge-info">
                             <label style="font-size: 1.2rem;">🎯 하루 목표 갯수</label>
                             <input type="number" v-model="newChallenge.goal" class="input-field" placeholder="예: 30">
                         </div>
+
                         <div class="button-container">
                             <button type="submit" class="action-button">저장</button>
                         </div>
                     </form>
                 </div>
             </div>
+
+            <button @click="startChallenge(selectedChallenge.id)" class="custom-button" :disabled="!selectedChallenge"
+                :style="{ animation: selectedChallenge ? '' : 'jittery 4s infinite' }">
+                <span>시작하기</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4" width="130"
+                    height="130" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" width="80" height="80" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
         </div>
+        
         <div v-for="(icon, index) in floatingIcons" :key="index" class="floating-icon"
             :style="{ top: icon.top, left: icon.left, animationDuration: icon.speed }">
             {{ icon.icon }}
@@ -123,16 +155,40 @@ const newChallenge = reactive({ name: "", type: "Push Up", date: "", goal: null 
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️", "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
 const floatingIcons = ref([]);
 const editChallenge = reactive({ name: "", type: "", date: "", goal: null });
+const selectedChallenge = ref(null);
+const isDeleteModalOpen = ref(false);
+const deleteIndex = ref(null);
 
-const deleteChallenge = (index) => {
-    challenges.value.splice(index, 1);
+const selectChallenge = (index) => {
+    selectedChallenge.value = challenges.value[index];
 };
 
+const deleteChallenge = (index) => {
+    deleteIndex.value = index;
+    isDeleteModalOpen.value = true;
+};
+
+function confirmDelete() {
+    if (deleteIndex.value !== null) {
+        challenges.value.splice(deleteIndex.value, 1);
+        deleteIndex.value = null;
+    }
+    isDeleteModalOpen.value = false;
+}
+
+function closeDeleteModal() {
+    isDeleteModalOpen.value = false;
+}
+
 const startChallenge = (id) => {
-    router.push({ 
-        name: 'ChallengePlayView', 
-        params: { id: id } 
-    });
+    if (selectedChallenge.value) {
+        router.push({
+            name: 'ChallengePlayView',
+            params: { id: selectedChallenge.value.id }
+        });
+    } else {
+        alert("챌린지를 선택해주세요.");
+    }
 };
 
 const toggleEdit = (index) => {
@@ -203,10 +259,12 @@ onMounted(addFloatingIcons);
 
 <style scoped>
 .main-container {
+    position: relative;
+    top: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
     transition: all 0.3s ease-in-out;
 }
 
@@ -247,8 +305,11 @@ onMounted(addFloatingIcons);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     text-align: center;
     position: relative;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    ;
     z-index: -1;
+    cursor: pointer;
+    border: 2px solid transparent;
 }
 
 .challenge-info-container {
@@ -267,6 +328,24 @@ onMounted(addFloatingIcons);
     margin: 8px 0;
 }
 
+.challenge-box.selected {
+    border-width: 5px;
+    border-color: #ff7043;
+    animation: highlight2 0.3s forwards;
+}
+
+@keyframes highlight2 {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 112, 67, 0);
+    }
+
+    100% {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(255, 112, 67, 0.5);
+    }
+}
+
 .progress-bar {
     height: 12px;
     width: 100%;
@@ -283,23 +362,27 @@ onMounted(addFloatingIcons);
 
 .header-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
     z-index: 10;
+    color: #ff7043;
+    background: #fff7e0;
+    border-radius: 25px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 20px 40px;
+    gap: 10px
 }
 
 .header {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: bold;
-    color: #ff7043;
-    padding: 8px 20px;
-    background: rgba(255, 230, 204, 0.9);
-    border-radius: 25px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    position: relative;
-    z-index: 10;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #718096;
 }
 
 .banner {
@@ -310,7 +393,7 @@ onMounted(addFloatingIcons);
     max-width: 300px;
     height: 50px;
     border: 1px solid #8a1;
-    
+
     font: bold 25px/50px 'HakgyoansimDunggeunmisoTTF-B';
     text-align: center;
     color: #ffffff;
@@ -361,34 +444,6 @@ onMounted(addFloatingIcons);
     width: 60%;
     background-color: #ff7043;
     animation: fillProgress 1s forwards;
-}
-
-.start-button {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 8px 12px; /* 패딩 줄임 */
-    background-color: #ff7043;
-    border: 3px solid #d95c37; /* 테두리 두께 줄임 */
-    border-radius: 9999px;
-    color: white;
-    font-size: 1rem; /* 폰트 크기 줄임 */
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.start-button svg {
-    width: 20%; /* 너비 줄임 */
-    height: 40%; /* 높이 줄임 */
-}
-
-.start-button span {
-    margin-right: 6px; /* 오른쪽 여백 줄임 */
-}
-
-.start-button:hover {
-    background: #f06292;
-    transform: scale(1.05);
 }
 
 
@@ -552,6 +607,56 @@ onMounted(addFloatingIcons);
     color: #f44336;
 }
 
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 2rem;
+    width: 500px;
+    height: 300px;
+    line-height: 0;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.confirm-button, .cancel-button {
+    padding: 10px 30px;
+    font-size: 2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+}
+
+.confirm-button {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #cccccc;
+}
+
 .close-button {
     position: absolute;
     top: -1%;
@@ -568,6 +673,81 @@ onMounted(addFloatingIcons);
     font-size: 18px;
     cursor: pointer;
     transition: color 0.3s;
+}
+
+.custom-button {
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 12px 15px;
+    background-color: #ff7043;
+    border: 4px solid #d95c37;
+    border-radius: 9999px;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-sizing: border-box;
+    animation: jittery 4s infinite;
+    z-index: 10;
+}
+
+.custom-button svg {
+    width: 30%;
+    height: 20%;
+}
+
+.custom-button span {
+    margin-right: 8px;
+}
+
+.custom-button:hover {
+    background: #f06292;
+    transform: scale(1.05);
+}
+
+.custom-button:disabled {
+    background-color: #cccccc;
+    border: #cccccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+@keyframes jittery {
+
+    5%,
+    50% {
+        transform: scale(1);
+    }
+
+    10% {
+        transform: scale(0.9);
+    }
+
+    15% {
+        transform: scale(1.15);
+    }
+
+    20% {
+        transform: scale(1.15) rotate(-5deg);
+    }
+
+    25% {
+        transform: scale(1.15) rotate(5deg);
+    }
+
+    30% {
+        transform: scale(1.15) rotate(-3deg);
+    }
+
+    35% {
+        transform: scale(1.15) rotate(2deg);
+    }
+
+    40% {
+        transform: scale(1.15) rotate(0);
+    }
 }
 
 @keyframes float {
