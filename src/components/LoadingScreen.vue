@@ -1,9 +1,7 @@
 <template>
     <div class="loading-screen" v-if="isLoading">
-        <!-- 로딩 텍스트 -->
         <div class="loading-text">Loading...</div>
 
-        <!-- 로딩 바 -->
         <div class="loading-bar-container">
             <div class="loading-bar-fill" :style="{ width: progressWidth + '%' }"></div>
             <div class="loading-percent">{{ progress }}%</div>
@@ -33,7 +31,6 @@ const characters = ref([
 
 const progressWidth = ref(0);
 
-// 로딩 진행 및 캐릭터 점프 애니메이션
 const updateLoading = () => {
     const interval = setInterval(() => {
         if (progress.value < 100) {
