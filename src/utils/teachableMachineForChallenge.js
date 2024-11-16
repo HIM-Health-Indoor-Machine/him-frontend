@@ -33,10 +33,17 @@ async function init() {
         for (let i = 0; i < maxPredictions; i++) {
             labelContainer.appendChild(document.createElement("div"));
         }
+    } else {
+        console.error("'label-container' 요소가 존재하지 않습니다.");
     }
 }
 
 async function loop() {
+    if (!model || !labelContainer || animationFrameId === null) {
+        console.warn("모델이 해제되어 루프가 중단되었습니다.");
+        return;
+    }
+
     if (webcam) {
         webcam.update();
         await predict();
@@ -45,14 +52,27 @@ async function loop() {
 }
 
 async function predict() {
+    if (!model || !labelContainer) {
+        console.warn("모델이나 라벨 컨테이너가 존재하지 않습니다. 예측이 중단됩니다.");
+        return;
+    }
+
     const prediction = await model.predict(webcam.canvas);
     let currentLabel = "";
 
+    if (!labelContainer || !labelContainer.childNodes) {
+        console.error("'label-container' 요소나 자식 노드가 존재하지 않습니다.");
+        return;
+    }
+
     for (let i = 0; i < maxPredictions; i++) {
-        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-        if (labelContainer && labelContainer.childNodes[i]) {
-            labelContainer.childNodes[i].innerHTML = classPrediction;
+        if (!labelContainer.childNodes[i]) {
+            console.warn(`'labelContainer.childNodes[${i}]'가 존재하지 않습니다.`);
+            continue;
         }
+
+        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        labelContainer.childNodes[i].innerHTML = classPrediction;
 
         if (prediction[i].probability.toFixed(2) > 0.7) {
             currentLabel = prediction[i].className;
@@ -65,6 +85,8 @@ async function predict() {
         const counterElement = document.getElementById("counter");
         if (counterElement) {
             counterElement.innerText = counter;
+        } else {
+            console.warn("'#counter' 요소가 DOM에 존재하지 않습니다.");
         }
     }
 
@@ -72,12 +94,8 @@ async function predict() {
 }
 
 function stop() {
-    if (webcam && webcam.stream && webcam.stream.getTracks) {
-        webcam.stream.getTracks().forEach(track => track.stop());
-        console.log("웹캠 스트림 중지");
-    } else {
-        console.warn("웹캠이 초기화되지 않았거나 이미 중지되었습니다.");
-    }
+    webcam.stop();
+    console.log("웹캠 스트림 중지");
 
     if (animationFrameId) {
         window.cancelAnimationFrame(animationFrameId);

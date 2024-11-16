@@ -18,32 +18,61 @@ async function init() {
     try {
         await webcam.setup();
         await webcam.play();
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        const webcamContainer = document.getElementById("webcam-container");
+        if (webcamContainer) {
+            webcamContainer.appendChild(webcam.canvas);
+        } else {
+            console.error("'webcam-container' 요소가 존재하지 않습니다.");
+            return;
+        }
     } catch (error) {
         console.error("웹캠 설정 실패: ", error);
     }
 
-    window.requestAnimationFrame(loop);
+    animationFrameId = window.requestAnimationFrame(loop);
 
     labelContainer = document.getElementById("label-container");
-    labelContainer.innerHTML = "";
-
-    for (let i = 0; i < maxPredictions; i++) {
-        labelContainer.appendChild(document.createElement("div"));
+    if (labelContainer) {
+        labelContainer.innerHTML = "";
+        for (let i = 0; i < maxPredictions; i++) {
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    } else {
+        console.error("'label-container' 요소가 존재하지 않습니다.");
     }
 }
 
 async function loop() {
+    if (!model || !labelContainer || animationFrameId === null) {
+        console.warn("모델이 해제되어 루프가 중단되었습니다.");
+        return;
+    }
+
     webcam.update();
     await predict();
-    window.requestAnimationFrame(loop);
+    animationFrameId = window.requestAnimationFrame(loop);
 }
 
 async function predict() {
+    if (!model || !labelContainer) {
+        console.warn("모델이나 라벨 컨테이너가 존재하지 않습니다. 예측이 중단됩니다.");
+        return;
+    }
+
     const prediction = await model.predict(webcam.canvas);
     let currentLabel = "";
 
+    if (!labelContainer || !labelContainer.childNodes) {
+        console.error("'label-container' 요소나 자식 노드가 존재하지 않습니다.");
+        return;
+    }
+
     for (let i = 0; i < maxPredictions; i++) {
+        if (!labelContainer.childNodes[i]) {
+            console.warn(`'labelContainer.childNodes[${i}]'가 존재하지 않습니다.`);
+            continue;
+        }
+
         const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
         labelContainer.childNodes[i].innerHTML = classPrediction;
 
@@ -67,14 +96,10 @@ async function predict() {
 }
 
 function stop() {
-    if (webcam && webcam.stream && webcam.stream.getTracks) {
-        webcam.stream.getTracks().forEach(track => track.stop());
-        console.log("웹캠 스트림 중지");
-    } else {
-        console.warn("웹캠이 초기화되지 않았거나 이미 중지되었습니다.");
-    }
+    webcam.stop();
+    console.log("웹캠 스트림 중지");
 
-    if (animationFrameId) {
+    if (animationFrameId !== null) {
         window.cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
         console.log("애니메이션 루프 중지");
