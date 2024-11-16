@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="game-over-overlay" v-if="isGameOver">
+    <div id="game-over-overlay">
       <div id="game-over-text">GAME OVER</div>
       <div class="game-info">
         <p>운동 종류: {{ gameStore.typeString }}</p>
@@ -64,9 +64,15 @@ const retryGame = () => {
   animation: shake 0.5s ease-in-out infinite alternate, fadeIn 1.5s ease-in-out;
 }
 
+.game-info {
+    font-size: 1.5rem;
+    color: #aaaaaa;
+    text-align: center;
+}
+
 #retry-message {
   font-size: 1.5rem;
-  margin-top: 50px;
+  margin-top: 30px;
   color: #ff8080;
   animation: fadeIn 1.5s ease-in-out;
 }
