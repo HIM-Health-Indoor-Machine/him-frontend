@@ -57,8 +57,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useGameStore } from '@/stores/game';
 
 const router = useRouter();
+const gameStore = useGameStore();
 
 const selectedType = ref(null);
 const selectedLevel = ref(null);
@@ -76,6 +78,18 @@ const startGame = () => {
             }
         });
     }
+const startGame = async () => {
+    await gameStore.createGame(selectedType.value, selectedLevel.value, 1);
+    router.push({
+        name: 'GamePlayView',
+        state: {
+            id: gameStore.gameId,
+            type: gameStore.gameType,
+            difficultyLevel: gameStore.gameDifficultyLevel,
+            userId: gameStore.gameUserId
+        }
+    });
+};
 };
 
 const floatingIcons = ref([]);

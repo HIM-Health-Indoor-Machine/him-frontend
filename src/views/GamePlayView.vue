@@ -39,6 +39,9 @@ import { useRouter } from 'vue-router';
 import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 import { Application, Sprite, Assets, Text } from 'pixi.js';
 import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForGame';
+import { useGameStore } from '@/stores/game';
+
+const gameStore = useGameStore();
 
 const router = useRouter();
 const isEndModalOpen = ref(false);
@@ -149,7 +152,22 @@ async function startPixiAndTM() {
         isGameOver.value = true;
         isFalling = true;
         runner.texture = runnerTextures[0];
-        router.push({ name: 'FailScreen' });
+
+        console.log("FailScreen - gameId: ", gameStore.gameId);
+        console.log("FailScreen - gameType: ", gameStore.gameType);
+        console.log("FailScreen - gameDifficultyLevel: ", gameStore.gameDifficultyLevel);
+        console.log("FailScreen - gameUserId: ", gameStore.gameUserId);
+
+        tmStop();
+        router.push({
+            name: 'FailScreen',
+            state: {
+                id: gameStore.gameId,
+                type: gameStore.gameType,
+                difficultyLevel: gameStore.gameDifficultyLevel,
+                userId: gameStore.userId
+            }
+        });
     }
 
     function makeRunnerFall() {
@@ -174,7 +192,26 @@ async function startPixiAndTM() {
         isFalling = false;
         runner.texture = runnerTextures[0];
         stopRunnerOnSuccess();
-        router.push({ name: 'SuccessScreen' });
+
+        await gameStore.achieveGame(gameStore.gameId, isSuccess.value);
+
+        console.log("SuccessScreen - gameId: ", gameStore.gameId);
+        console.log("SuccessScreen - gameType: ", gameStore.gameType);
+        console.log("SuccessScreen - gameDifficultyLevel: ", gameStore.gameDifficultyLevel);
+        console.log("SuccessScreen - gameExpPoints: ", gameStore.gameExpPoints);
+        console.log("SuccessScreen - gameUserId: ", gameStore.gameUserId);
+
+        tmStop();
+        router.push({ 
+            name: 'SuccessScreen',
+            state: {
+                id: gameStore.gameId,
+                type: gameStore.gameType,
+                difficultyLevel: gameStore.gameDifficultyLevel,
+                expPoints: gameStore.gameExpPoints,
+                userId: gameStore.gameUserId
+            }
+        });
     }
 
     function stopRunnerOnSuccess() {

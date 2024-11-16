@@ -28,6 +28,9 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import curTierImage from '@/assets/images/tier/tier_IRON.png';
 import nextTierImage from '@/assets/images/tier/tier_BRONZE.png';
+import { useGameStore } from '@/stores/game';
+
+const gameStore = useGameStore();
 
 const router = useRouter();
 
@@ -37,7 +40,7 @@ const nextTierIcon = ref(nextTierImage)
 const isGameSuccess = ref(true);
 const fireworks = ref([]);
 const currentExp = ref(300);
-const addedExp = ref(200);
+const addedExp = ref(gameStore.gameExpPoints);
 const targetExp = ref(1000);
 const expValue = ref(currentExp.value);
 const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100);
