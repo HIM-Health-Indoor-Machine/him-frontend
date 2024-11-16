@@ -41,7 +41,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted, nextTick, onUnmounted } from 'vue';
-import { Application, Sprite, Assets, Text } from 'pixi.js';
+import { Application, Sprite, Assets } from 'pixi.js';
 import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForGame';
 import { useGameStore } from '@/stores/game';
 
@@ -90,7 +90,20 @@ async function startPixiAndTM() {
         height: window.innerHeight,
         backgroundColor: 0x1099bb
     });
-    document.getElementById("pixi-container").appendChild(app.value.canvas);
+    
+    const pixiContainer = document.getElementById("pixi-container");
+    if (pixiContainer) {
+        pixiContainer.appendChild(app.value.canvas);
+    } else {
+        console.error("'pixi-container' 요소가 존재하지 않습니다.");
+        return;
+    }
+
+    const webcamContainer = document.getElementById("webcam-container");
+    if (!webcamContainer) {
+        console.error("'webcam-container' 요소가 존재하지 않습니다.");
+        return;
+    }
 
     const backgroundTexture = await Assets.load('/images/background/background3.png');
     const runnerTextures = [
@@ -137,7 +150,7 @@ async function startPixiAndTM() {
     async function updateCounter() {
         const newCounterValue = await getCounter();
         if (newCounterValue > counterValue && !isGameOver.value) {
-            runner.x = 100 + newCounterValue * 30;
+            runner.x = 100 + newCounterValue * 100;
         }
         counterValue = newCounterValue;
     }
@@ -191,7 +204,7 @@ async function startPixiAndTM() {
         }
     }
 
-    function success() {
+    async function success() {
         isSuccess.value = true;
         isFalling = false;
         runner.texture = runnerTextures[0];
@@ -254,8 +267,15 @@ function startCountdown() {
     countdownStep();
 }
 
-onMounted(() => {
+onMounted(async () => {
     startCountdown();
+
+    await nextTick();
+    try {
+        console.log("초기화 준비 완료");
+    } catch (error) {
+        console.error("init 함수 실행 중 오류 발생:", error);
+    }
 })
 </script>
 
@@ -442,5 +462,15 @@ onMounted(() => {
     100% {
         background-color: rgba(0, 0, 0, 0.8);
     }
+}
+
+.game-info {
+    font-size: 1.5rem;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 </style>
