@@ -15,8 +15,9 @@
                         <div class="modal-content">
                             <h3>프로필 이미지 선택</h3>
                             <div class="image-grid">
-                            <img v-for="(image, index) in availableImages" :key="index" :src="image" @click="selectProfileImage(image)" 
-                                class="profile-image-option" :alt="`프로필 이미지 ${index + 1}`" />
+                                <img v-for="(image, index) in availableImages" :key="index" :src="image"
+                                    @click="selectProfileImage(image)" class="profile-image-option"
+                                    :alt="`프로필 이미지 ${index + 1}`" />
                             </div>
                             <button @click="closeImageSelection" class="close-button">닫기</button>
                         </div>
@@ -29,21 +30,21 @@
             <div class="exp-info-container">
                 <div class="exp-detail-info-container">
                     <div class="info-container">
-                    <img src="@/assets/images/icon/info-icon.png" @click="toggleInfo" class="info-icon">
-                    <div v-if="showInfo" class="info-popup">
-                    <p class="info-title">[오늘의 경험치]</p>
-                    <p>- 오늘 받을 수 있는 최대 경험치와 내가 오늘 받은 경험치가 표시됩니다.</p>
-                    <p class="info-title">[챌린지 경험치]</p>
-                    <p>- 챌린지와 게임 성공 시, 아이콘이 ✔️로 변경되며 경험치가 주어집니다.</p>
-                    <p>- 아직 진행하지 않은 챌린지나 게임의 경우, 아이콘이 ⏳으로 표시됩니다.</p>
-                    <p class="info-title">[패널티 경험치]</p>
-                    <p>- 챌린지를 진행하지 않으면 패널티를 받을 수 있습니다.</p>
-                    <p class="info-title">[보너스 경험치]</p>
-                    <p>- 진행 중인 챌린지를 매일 연속하여 진행하면 보너스 경험치가 주어집니다.</p>
+                        <img src="@/assets/images/icon/info-icon.png" @click="toggleInfo" class="info-icon">
+                        <div v-if="showInfo" class="info-popup">
+                            <p class="info-title">[오늘의 경험치]</p>
+                            <p>- 오늘 받을 수 있는 최대 경험치와 내가 오늘 받은 경험치가 표시됩니다.</p>
+                            <p class="info-title">[챌린지 경험치]</p>
+                            <p>- 챌린지와 게임 성공 시, 아이콘이 ✔️로 변경되며 경험치가 주어집니다.</p>
+                            <p>- 아직 진행하지 않은 챌린지나 게임의 경우, 아이콘이 ⏳으로 표시됩니다.</p>
+                            <p class="info-title">[패널티 경험치]</p>
+                            <p>- 챌린지를 진행하지 않으면 패널티를 받을 수 있습니다.</p>
+                            <p class="info-title">[보너스 경험치]</p>
+                            <p>- 진행 중인 챌린지를 매일 연속하여 진행하면 보너스 경험치가 주어집니다.</p>
+                        </div>
                     </div>
                 </div>
-                </div> 
-                
+
                 <div class="exp-card">
                     <h5 class="info-section">
                         승급 필요 경험치
@@ -151,7 +152,16 @@
                 </div>
 
                 <div class="box3-and-buttons">
-                    <div class="box box3">박스3</div>
+                    <div class="box box3 tier-container">
+                        <h5 class="info-section">
+                            예시
+                        </h5>
+                        <ul class="list-unstyled">
+                            <li class="list completed">Easy: 5 exp</li>
+                            <li class="list completed">Medium: 10 exp</li>
+                            <li class="list pending">Hard: 20 exp</li>
+                        </ul>
+                    </div>
 
                     <div class="button-container">
                         <button @click="startChallenge" class="custom-button">
@@ -203,7 +213,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import bearImage from '@/assets/images/character/character_BEAR.png';
@@ -231,7 +241,7 @@ const router = useRouter();
 const showInfo = ref(false);
 
 const toggleInfo = () => {
-  showInfo.value = !showInfo.value;
+    showInfo.value = !showInfo.value;
 };
 
 const isImageSelectionOpen = ref(false);
@@ -244,8 +254,8 @@ const openImageSelection = () => { isImageSelectionOpen.value = true; };
 const closeImageSelection = () => { isImageSelectionOpen.value = false; };
 
 const selectProfileImage = (image) => {
-  user.value.profilePic = image;
-  closeImageSelection();
+    user.value.profilePic = image;
+    closeImageSelection();
 };
 
 const showRankings = ref(false);
@@ -309,10 +319,10 @@ watch(expValue, (newVal) => {
 });
 
 const startChallenge = () => {
-  router.push({ name: 'ChallengeSelectView' });
+    router.push({ name: 'ChallengeSelectView' });
 };
 const startGame = () => {
-  router.push({ name : 'GameSelectView' })  
+    router.push({ name: 'GameSelectView' })
 };
 
 const currentMonth = ref(new Date().getMonth() + 1);
@@ -395,9 +405,6 @@ onMounted(() => {
 
 /* ===================================================== */
 .box {
-    border: 2px solid white;
-    background-color: #333;
-    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -464,40 +471,41 @@ onMounted(() => {
 }
 
 .modal-content {
-  background-color: #d2d0d0;
-  color: #282626;
-  border-radius: 8px;
-  padding: 20px;
-  width: 300px;
-  text-align: center;
+    background-color: #d2d0d0;
+    color: #282626;
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
 }
 
 .profile-image-option {
-  width: 80px;
-  height: 80px;
-  cursor: pointer;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
 }
 
 .profile-image-option:hover {
-  border-color: #d8854e;
+    border-color: #d8854e;
 }
 
 .close-button {
-  background-color: #ff7043;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+    background-color: #ff7043;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
+
 .current-profile-image {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-top: 20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-top: 20px;
 }
 
 
@@ -532,8 +540,10 @@ onMounted(() => {
     color: #444;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    overflow-y: auto;
+    max-height: 200px;
 }
 
 .exp-card:hover {
@@ -542,40 +552,41 @@ onMounted(() => {
 }
 
 .exp-detail-info-container {
-  position: relative;
-  grid-column: span 2;
-  width: auto;   
-  height: 0px;
-  border-radius: 15px;
-  padding: 10px;
+    position: relative;
+    grid-column: span 2;
+    width: auto;
+    height: 0px;
+    border-radius: 15px;
+    padding: 10px;
 }
+
 .info-container {
-  position: relative; 
-  left: 45%; 
-  top: 75%;
-  display: inline-block;
-  z-index: 100;  
+    position: relative;
+    left: 45%;
+    top: 75%;
+    display: inline-block;
+    z-index: 100;
 }
 
 .info-icon {
-  cursor: pointer;
-  font-size: 20%;
+    cursor: pointer;
+    font-size: 20%;
 }
 
 .info-popup {
-  position: absolute;
-  top: 100%;
-  left: 10%;
-  transform: translateX(-80%);
-  margin-top: 8px;
-  padding: 12px;
-  width: 220px;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-  font-size: 0.9rem;
+    position: absolute;
+    top: 100%;
+    left: 10%;
+    transform: translateX(-80%);
+    margin-top: 8px;
+    padding: 12px;
+    width: 220px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    font-size: 0.9rem;
 }
 
 
@@ -684,7 +695,7 @@ onMounted(() => {
 
 .penalty-highlight,
 .list.pending {
-    animation: shake 1s ease-in-out infinite alternate, fadeIn 1.5s ease-in-out;
+    animation: shake 1s ease-in-out infinite alternate;
 }
 
 @keyframes bounce {
@@ -717,7 +728,7 @@ onMounted(() => {
 .right-section {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 1.2;
     gap: 20px;
     transition: all 0.3s ease-in-out;
 }
@@ -733,7 +744,7 @@ onMounted(() => {
 
 /* 티어 정보 */
 .tier-container {
-    flex: 0.6;
+    flex: 0.5;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -785,8 +796,8 @@ onMounted(() => {
 }
 
 .info-title {
-  color: #e74c3c;
-  font-weight: bold;
+    color: #e74c3c;
+    font-weight: bold;
 }
 
 .exp-tier-container {
@@ -829,7 +840,6 @@ onMounted(() => {
     text-align: center;
 }
 
-/* 티어 정보 섹션 */
 .rankings-container {
     display: flex;
     flex-direction: column;
@@ -947,7 +957,7 @@ onMounted(() => {
     flex-direction: column;
     justify-content: center;
     z-index: 10;
-    gap: 30px;
+    gap: 20px;
     transition: all 0.3s ease-in-out;
 }
 
@@ -956,12 +966,12 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 12px 15px;
+    padding: 0px 15px;
     background-color: #ff7043;
     border: 4px solid #d95c37;
     border-radius: 9999px;
     color: white;
-    font-size: 1.7rem;
+    font-size: 2rem;
     font-weight: bold;
     cursor: pointer;
 }
@@ -984,7 +994,7 @@ onMounted(() => {
 
 /* 캘린더 */
 .calendar {
-    flex: 2.5;
+    flex: 3;
     display: flex;
     flex-direction: column;
     background: #fff;
