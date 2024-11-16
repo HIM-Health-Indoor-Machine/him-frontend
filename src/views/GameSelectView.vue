@@ -68,16 +68,6 @@ const selectedLevel = ref(null);
 const selectType = (type) => { selectedType.value = type; };
 const selectLevel = (level) => { selectedLevel.value = level; };
 
-const startGame = () => {
-    if (selectedType.value && selectedLevel.value) {
-        router.push({
-            name: 'GamePlayView',
-            query: {
-                type: selectedType.value,
-                level: selectedLevel.value
-            }
-        });
-    }
 const startGame = async () => {
     await gameStore.createGame(selectedType.value, selectedLevel.value, 1);
     router.push({

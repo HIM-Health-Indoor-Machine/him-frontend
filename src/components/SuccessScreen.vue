@@ -2,6 +2,10 @@
     <div>
         <div id="success-overlay" v-if="isGameSuccess">
             <div id="success-text">SUCCESS!</div>
+            <div class="game-info">
+                <p>운동 종류: {{ gameStore.typeString }}</p>
+                <div>난이도: {{ gameStore.gameDifficultyLevel }}</div>
+            </div>
             <div id="celebration-message">축하합니다! 목표를 달성했습니다!</div>
 
             <div class="exp-tier-container">
@@ -12,7 +16,11 @@
                 <img class="exp-tier-pic" :src="nextTierIcon" alt="다음 티어 사진" />
             </div>
 
-            <div class="exp-value" :style="{ '--total-exp': `'${addedExpString}'` }">현재 경험치: {{ expValue }} EXP</div>
+            <div class="exp-value" :style="addedExp !== 0 ? { '--total-exp': `'${addedExpString}'` } : {}">현재 경험치: {{
+                expValue }} EXP</div>
+            <div v-if="addedExp === 0" class="no-exp-message">
+                이미 성공한 게임이므로 경험치가 추가되지 않습니다.
+            </div>
 
             <button class="new-challenge-button" @click="newGame">새로운 챌린지하기</button>
 

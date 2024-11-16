@@ -11,6 +11,10 @@
                     <div id="pixi-container"></div>
 
                     <div id="ui-container">
+                        <div class="game-info">
+                            <p>운동 종류: {{ gameStore.typeString }}</p>
+                            <p>난이도: {{ gameStore.gameDifficultyLevel }}</p>
+                        </div>
                         <div id="label-container">Prediction Label</div>
                         <div id="counter-container">Count: <span id="counter">{{ counter }}</span></div>
                     </div>
