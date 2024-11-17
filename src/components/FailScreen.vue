@@ -2,6 +2,10 @@
   <div>
     <div id="game-over-overlay" v-if="isGameOver">
       <div id="game-over-text">GAME OVER</div>
+      <div class="game-info">
+        <p>운동 종류: {{ gameStore.typeString }}</p>
+        <div>난이도: {{ gameStore.gameDifficultyLevel }}</div>
+      </div>
       <div id="retry-message">다시 도전하려면 아래 버튼을 눌러주세요.</div>
       <button class="retry-button" @click="retryGame">다시하기</button>
       <button class="new-challenge-button" @click="newGame">새로운 게임하기</button>
@@ -10,30 +14,27 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useGameStore } from '@/stores/game';
+import { useRouter } from 'vue-router';
+
+const gameStore = useGameStore();
 
 const router = useRouter();
-const route = useRoute();
-
-const gameStarted = ref(false);
-const isGameOver = ref(true);
 
 const newGame = () => {
-  isGameOver.value = false;
   router.push({ name: 'GameSelectView' });
 };
 
 const retryGame = () => {
-  isGameOver.value = false;
-  gameStarted.value = false;
   router.push({
-        name: 'GamePlayView',
-        query: {
-            type: route.query.type,
-            level: route.query.level
-        }
-    });
+    name: 'GamePlayView',
+    state: {
+      id: gameStore.gameId,
+      type: gameStore.gameType,
+      difficultyLevel: gameStore.gameDifficultyLevel,
+      userId: gameStore.gameUserId
+    }
+  });
 };
 </script>
 
