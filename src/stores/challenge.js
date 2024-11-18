@@ -49,4 +49,14 @@ export const useChallengeStore = defineStore('challenge', () => {
 
     return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges}
     return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges, addChallenge }
+    return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges, addChallenge, updateChallenge }
+    const updateChallenge = (challengeId, challenge) => {
+        axios.put(`${REST_API_URL}/${challengeId}`, challenge)
+        .then((response) => {
+            console.log(response);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
 })

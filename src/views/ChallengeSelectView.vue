@@ -31,29 +31,28 @@
                         <form @submit.prevent="saveChallenge">
                             <div class="challenge-info">
                                 <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
-                                <input type="text" v-model="editChallenge.name" class="input-field"
-                                    placeholder="예: '30일 푸쉬업 챌린지'">
+                                    <div  placeholder="예: '30일 푸쉬업 챌린지'" disabled>{{ editChallenge.title }}</div>
                             </div>
                             <div class="challenge-info">
                                 <label style="text-align: center; font-size: 1.2rem;">🔥 운동 타입</label>
                                 <div style="display: flex; justify-content: space-around; align-items: center;">
                                     <label>
-                                        <input type="radio" v-model="editChallenge.type" value="Push Up">
+                                        <input type="radio" v-model="editChallenge.type" value="PUSHUP">
                                         💪 Push Up
                                     </label>
                                     <label>
-                                        <input type="radio" v-model="editChallenge.type" value="Squat">
+                                        <input type="radio" v-model="editChallenge.type" value="SQUAT">
                                         🏋️‍♂️ Squat
                                     </label>
                                 </div>
                             </div>
                             <div class="challenge-info">
                                 <label style="font-size: 1.2rem;">⏰ 종료 날짜</label>
-                                <input type="date" v-model="editChallenge.date" class="input-field">
+                                <input type="date" v-model="editChallenge.endDt" class="input-field">
                             </div>
                             <div class="challenge-info">
                                 <label style="font-size: 1.2rem;">🎯 하루 목표 갯수</label>
-                                <input type="number" v-model="editChallenge.goal" class="input-field"
+                                <input type="number" v-model="editChallenge.goalCnt" class="input-field"
                                     placeholder="예: 30">
                             </div>
                             <div class="button-container">
@@ -189,19 +188,22 @@ const startChallenge = (id) => {
     } else {
         alert("챌린지를 선택해주세요.");
     }
-};
+}
 
 const toggleEdit = (index) => {
+    const challenge = challenges.value[index];
     if (editIndex.value === index && isEditing.value) {
         isEditing.value = false;
     } else {
         isEditing.value = true;
         editIndex.value = index;
-        const challenge = challenges.value[index];
-        editChallenge.name = challenge.name;
+        editChallenge.id = challenge.id;
+        editChallenge.title = challenge.title;
         editChallenge.type = challenge.type;
-        editChallenge.date = challenge.date;
-        editChallenge.goal = challenge.goal;
+        editChallenge.startDt = challenge.startDt;
+        editChallenge.endDt = challenge.endDt;
+        editChallenge.goalCnt = challenge.goalCnt;
+        editChallenge.userId = challenge.userId;
     }
 };
 
