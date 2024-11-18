@@ -63,7 +63,7 @@ const routes = [
     component: GamePlayView,
   },
   {
-    path: '/challenge-play-view',
+    path: '/challenge-play-view/:challengeId',
     name: 'ChallengePlayView',
     component: ChallengePlayView,
   },
