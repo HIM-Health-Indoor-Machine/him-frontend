@@ -34,5 +34,19 @@ export const useChallengeStore = defineStore('challenge', () => {
             console.log(err);
         })
     }
+
+    const addChallenge = (challenge) => {
+        console.log(challenge);
+        axios.post(REST_API_URL, challenge)
+        .then((response) => {
+            console.log(response);
+            challenges.value.push(response.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+
     return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges}
+    return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges, addChallenge }
 })
