@@ -19,4 +19,20 @@ export const useChallengeStore = defineStore('challenge', () => {
     }
 
     return { challenges, currentChallenge, fetchCurrentChallenge }
+    const fetchChallenges = (userId, status) => {
+        axios.get(REST_API_URL, {
+            params: { userId, status }
+        })
+        .then((response) => {
+            challenges.value = response.data.map((challenge) => ({
+                ...challenge,
+                icon: challenge.type === "PUSHUP" ? "💪" : 
+                      challenge.type === "SQUAT" ? "🏋️‍♂️" : "❓"
+            }));
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+    return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges}
 })

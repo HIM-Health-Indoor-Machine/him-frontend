@@ -139,15 +139,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
+import { useChallengeStore } from '@/stores/challenge';
 
+const store = useChallengeStore();
 const router = useRouter();
 
-const challenges = ref([
-    { id: 1, name: "파워푸쉬업7일", type: "Push Up", icon: "💪", date: "2023-12-31", goal: 30, progress: 60 },
-    { id: 2, name: "꾸준스쿼트30일", type: "Squat", icon: "🏋️‍♂️", date: "2024-01-15", goal: 20, progress: 40 }
-]);
+const { challenges } = storeToRefs(store);
 const isCreating = ref(false);
 const isEditing = ref(false);
 const editIndex = ref(null);
@@ -254,7 +254,14 @@ const addFloatingIcons = () => {
     }
 };
 
-onMounted(addFloatingIcons);
+onMounted(async () => {
+    try {
+        await store.fetchChallenges(1, "ONGOING");
+    } catch (error) {
+        console.error(error);
+    }
+    addFloatingIcons();
+});
 </script>
 
 <style scoped>
