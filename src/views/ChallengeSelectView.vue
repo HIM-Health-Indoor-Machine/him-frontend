@@ -158,6 +158,12 @@ const selectedChallenge = ref(null);
 const isDeleteModalOpen = ref(false);
 const deleteIndex = ref(null);
 
+const calculateProgress = (achievedCnt, startDt, endDt) => {
+    const totalDays = Math.ceil((new Date(endDt) - new Date(startDt)) / (1000 * 60 * 60 * 24)) + 1;
+    return ((achievedCnt / totalDays) * 100).toFixed(2);
+}
+    
+ 
 const selectChallenge = (index) => {
     selectedChallenge.value = challenges.value[index];
 };
@@ -465,9 +471,8 @@ onMounted(async () => {
 
 .progress-fill {
     height: 100%;
-    width: 60%;
+    width: 0% ;
     background-color: #ff7043;
-    animation: fillProgress 1s forwards;
 }
 
 
@@ -793,12 +798,6 @@ onMounted(async () => {
 
     50% {
         transform: scale(1.05);
-    }
-}
-
-@keyframes fillProgress {
-    to {
-        width: 75%;
     }
 }
 
