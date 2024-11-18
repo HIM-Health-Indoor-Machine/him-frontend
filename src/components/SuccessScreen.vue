@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="success-overlay" v-if="isGameSuccess">
+        <div id="success-overlay">
             <div id="success-text">SUCCESS!</div>
             <div class="game-info">
                 <p>운동 종류: {{ gameStore.typeString }}</p>
@@ -22,7 +22,7 @@
                 이미 성공한 게임이므로 경험치가 추가되지 않습니다.
             </div>
 
-            <button class="new-challenge-button" @click="newGame">새로운 챌린지하기</button>
+            <button class="new-challenge-button" @click="newGame">새로운 게임하기</button>
 
             <div v-for="firework in fireworks" :key="firework.id" class="firework"
                 :style="{ left: firework.left + '%', top: firework.top + '%', backgroundColor: firework.color }">
@@ -45,7 +45,6 @@ const router = useRouter();
 const curTierIcon = ref(curTierImage)
 const nextTierIcon = ref(nextTierImage)
 
-const isGameSuccess = ref(true);
 const fireworks = ref([]);
 const currentExp = ref(300);
 const addedExp = ref(gameStore.gameExpPoints);
@@ -89,7 +88,6 @@ onMounted(() => {
 });
 
 const newGame = () => {
-    isGameSuccess.value = false;
     router.push({ name: 'GameSelectView' });
 };
 
@@ -176,6 +174,12 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
     filter: blur(8px);
     transform: translateX(-100%);
     animation: shine 2s infinite linear;
+}
+
+.game-info {
+    font-size: 1.5rem;
+    color: #7a7878;
+    text-align: center;
 }
 
 @keyframes expIncrease {
@@ -282,7 +286,7 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
 
 .new-challenge-button {
     font-family: 'HakgyoansimDunggeunmisoTTF-B';
-    margin-top: 80px;
+    margin-top: 30px;
     padding: 20px 40px;
     background-color: #4CAF50;
     border: none;
@@ -302,38 +306,39 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
 }
 
 @keyframes jittery {
-  5%,
-  50% {
-    transform: scale(1);
-  }
 
-  10% {
-    transform: scale(0.9);
-  }
+    5%,
+    50% {
+        transform: scale(1);
+    }
 
-  15% {
-    transform: scale(1.15);
-  }
+    10% {
+        transform: scale(0.9);
+    }
 
-  20% {
-    transform: scale(1.15) rotate(-5deg);
-  }
+    15% {
+        transform: scale(1.15);
+    }
 
-  25% {
-    transform: scale(1.15) rotate(5deg);
-  }
+    20% {
+        transform: scale(1.15) rotate(-5deg);
+    }
 
-  30% {
-    transform: scale(1.15) rotate(-3deg);
-  }
+    25% {
+        transform: scale(1.15) rotate(5deg);
+    }
 
-  35% {
-    transform: scale(1.15) rotate(2deg);
-  }
+    30% {
+        transform: scale(1.15) rotate(-3deg);
+    }
 
-  40% {
-    transform: scale(1.15) rotate(0);
-  }
+    35% {
+        transform: scale(1.15) rotate(2deg);
+    }
+
+    40% {
+        transform: scale(1.15) rotate(0);
+    }
 }
 
 .exp-value {
@@ -401,5 +406,11 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
         opacity: 0;
         transform: translate(-50%, -30px);
     }
+}
+
+.no-exp-message {
+    font-size: 1.5rem;
+    color: #7a7878;
+    text-align: center;
 }
 </style>

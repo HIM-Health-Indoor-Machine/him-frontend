@@ -1,16 +1,18 @@
 <template>
-    <div>
-        <div class="main-container">
+    <div class="container">
+        <div class="box box1"></div>
+
+        <div class="box box2 main-container">
             <div class="header">게임을 선택해주세요!</div>
 
             <div class="option-container">
-                <div class="option-card square" @click="selectType('Push Up')"
-                    :class="{ selected: selectedType === 'Push Up' }">
+                <div class="option-card square" @click="selectType('PUSHUP')"
+                    :class="{ selected: selectedType === 'PUSHUP' }">
                     <div class="option-icon">💪</div>
                     <div class="choice-label">Push Up</div>
                 </div>
-                <div class="option-card square" @click="selectType('Squat')"
-                    :class="{ selected: selectedType === 'Squat' }">
+                <div class="option-card square" @click="selectType('SQUAT')"
+                    :class="{ selected: selectedType === 'SQUAT' }">
                     <div class="option-icon">🏋️‍♂️</div>
                     <div class="choice-label">Squat</div>
                 </div>
@@ -34,17 +36,52 @@
                 </div>
             </div>
 
-            <button @click="startGame"
-                    class="custom-button"
-                    :style="{ animation: (!selectedType || !selectedLevel) ? 'jittery 4s infinite' : '' }"
-                    :disabled="!selectedType || !selectedLevel">
+            <button @click="startGame" class="custom-button"
+                :style="{ animation: (!selectedType || !selectedLevel) ? 'jittery 4s infinite' : '' }"
+                :disabled="!selectedType || !selectedLevel">
                 <span>시작하기</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4"
-                width="130" height="130" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" width="80" height="80" d="M9 5l7 7-7 7" />
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
             </button>
+        </div>
 
+        <div class="box box3">
+            <div class="exp-info-container">
+                <div class="exp-detail-info-container">
+                    <div class="info-container">
+                        <img src="@/assets/images/icon/info-icon.png" @click="toggleInfo" class="info-icon">
+                        <div v-if="showInfo" class="info-popup">
+                            <p class="info-title">[오늘의 게임]</p>
+                            <p>오늘 성취한 게임(✔️)과 <br> 도전하지 않은 게임(⏳) <br> 목록입니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exp-card">
+                    <h5 class="info-section">
+                        Push Up
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="list pending">Easy: 5 exp</li>
+                        <li class="list completed">Medium: 10 exp</li>
+                        <li class="list completed">Hard: 20 exp</li>
+                    </ul>
+                </div>
+
+                <div class="exp-card">
+                    <h5 class="info-section">
+                        Squat
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="list completed">Easy: 5 exp</li>
+                        <li class="list completed">Medium: 10 exp</li>
+                        <li class="list pending">Hard: 20 exp</li>
+                    </ul>
+                </div>
+
+            </div>
         </div>
 
         <div v-for="(icon, index) in floatingIcons" :key="index" class="floating-icon"
@@ -61,6 +98,8 @@ import { useGameStore } from '@/stores/game';
 
 const router = useRouter();
 const gameStore = useGameStore();
+
+const showInfo = ref(false);
 
 const selectedType = ref(null);
 const selectedLevel = ref(null);
@@ -80,6 +119,9 @@ const startGame = async () => {
         }
     });
 };
+
+const toggleInfo = () => {
+    showInfo.value = !showInfo.value;
 };
 
 const floatingIcons = ref([]);
@@ -101,6 +143,33 @@ onMounted(addFloatingIcons);
 </script>
 
 <style scoped>
+.container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.box {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    height: 70%;
+}
+
+.box1 {
+    flex: 1;
+}
+
+.box2 {
+    flex: 2;
+}
+
 .main-container {
     display: flex;
     flex-direction: column;
@@ -232,7 +301,8 @@ onMounted(addFloatingIcons);
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 12px 15px;
+    padding: 15px 20px;
+    padding-left: 70px;
     background-color: #ff7043;
     border: 4px solid #d95c37;
     border-radius: 9999px;
@@ -245,8 +315,8 @@ onMounted(addFloatingIcons);
 }
 
 .custom-button svg {
-    width: 30%;
-    height: 20%;
+    width: 75px;
+    height: 75px;
 }
 
 .custom-button span {
@@ -266,38 +336,39 @@ onMounted(addFloatingIcons);
 }
 
 @keyframes jittery {
-  5%,
-  50% {
-    transform: scale(1);
-  }
 
-  10% {
-    transform: scale(0.9);
-  }
+    5%,
+    50% {
+        transform: scale(1);
+    }
 
-  15% {
-    transform: scale(1.15);
-  }
+    10% {
+        transform: scale(0.9);
+    }
 
-  20% {
-    transform: scale(1.15) rotate(-5deg);
-  }
+    15% {
+        transform: scale(1.15);
+    }
 
-  25% {
-    transform: scale(1.15) rotate(5deg);
-  }
+    20% {
+        transform: scale(1.15) rotate(-5deg);
+    }
 
-  30% {
-    transform: scale(1.15) rotate(-3deg);
-  }
+    25% {
+        transform: scale(1.15) rotate(5deg);
+    }
 
-  35% {
-    transform: scale(1.15) rotate(2deg);
-  }
+    30% {
+        transform: scale(1.15) rotate(-3deg);
+    }
 
-  40% {
-    transform: scale(1.15) rotate(0);
-  }
+    35% {
+        transform: scale(1.15) rotate(2deg);
+    }
+
+    40% {
+        transform: scale(1.15) rotate(0);
+    }
 }
 
 .floating-icon {
@@ -315,6 +386,152 @@ onMounted(addFloatingIcons);
 
     100% {
         transform: translateY(-30px);
+    }
+}
+
+.box3 {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.exp-info-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-radius: 20px;
+    color: #333;
+    gap: 20px;
+    width: 95%;
+    height: 40%;
+    padding: 10px;
+    overflow: auto;
+    z-index: 10;
+}
+
+.exp-detail-info-container {
+    position: relative;
+    grid-column: span 2;
+    width: auto;
+    height: 0px;
+    border-radius: 15px;
+    gap: 0px;
+}
+
+.info-container {
+    position: relative;
+    display: inline-block;
+    z-index: 100;
+}
+
+.info-icon {
+    cursor: pointer;
+    font-size: 20%;
+    height: 20px;
+    width: 20px;
+}
+
+.info-title {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.info-popup {
+    position: absolute;
+    top: 70%;
+    left: 10%;
+    margin-top: 8px;
+    padding: 12px;
+    width: 220px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.exp-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s, box-shadow 0.3s;
+    font-size: 1rem;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.exp-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.info-section {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+    color: #444;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+}
+
+.list-unstyled {
+    list-style: none;
+    padding-left: 0;
+}
+
+.list {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.list.completed {
+    color: #707974;
+    position: relative;
+}
+
+.list.completed::before {
+    content: '✔️';
+}
+
+.list.pending {
+    font-weight: bold;
+    color: #e64201;
+    position: relative;
+}
+
+.list.pending::before {
+    content: '⏳';
+}
+
+.highlight,
+.time-remaining {
+    animation: bounce 1s ease-in-out infinite alternate;
+}
+
+.list.pending {
+    animation: shake 1s ease-in-out infinite alternate;
+}
+
+@keyframes shake {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(5px, 0);
+    }
+
+    100% {
+        transform: translate(0, 0);
     }
 }
 </style>
