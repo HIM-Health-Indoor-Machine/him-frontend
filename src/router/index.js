@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '@/views/LoginView.vue';
 import SignUpView from '@/views/SignUpView.vue';
@@ -64,7 +63,7 @@ const routes = [
     component: GamePlayView,
   },
   {
-    path: '/challenge-play-view',
+    path: '/challenge-play-view/:challengeId',
     name: 'ChallengePlayView',
     component: ChallengePlayView,
   },

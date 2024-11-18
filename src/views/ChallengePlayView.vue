@@ -34,15 +34,22 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-import { nextTick, ref, onMounted, onUnmounted } from 'vue';
-import { getCounter, init as tmInit } from '@/utils/teachableMachineForChallenge';
+import { useRouter, useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { nextTick, ref, computed, onMounted, onUnmounted } from 'vue';
+import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForChallenge';
+import { useTodayChallengeStore } from '@/stores/todayChallenge';
 
+const store = useTodayChallengeStore();
+const router = useRouter();
+const route = useRoute();
+
+const challengeId = route.params.challengeId;
+const { currentTodayChallenge } = storeToRefs(store);
 const counter = ref(0);
 const showCounter = ref(false);
 const countdown = ref(3);
 const isModalOpen = ref(false);
-const router = useRouter();
 let updateInterval = null;
 
 onMounted(() => {
@@ -53,6 +60,7 @@ onUnmounted(() => {
     if (updateInterval) {
         clearInterval(updateInterval);
     }
+    tmStop();
 });
 
 function openSaveModal() {
@@ -63,9 +71,12 @@ function closeModal() {
     isModalOpen.value = false;
 }
 
-function saveAndNavigate() {
+async function saveAndNavigate() {
     console.log(`저장된 운동 횟수: ${counter.value}`);
     isModalOpen.value = false;
+    await store.fetchTodayChallenge(challengeId, new Date().toISOString().split("T")[0]);
+    currentTodayChallenge.value.cnt += counter.value;
+    await store.updateTodayChallenge(currentTodayChallenge.value);
     router.push({ name: 'ChallengeSelectView' });
 }
 

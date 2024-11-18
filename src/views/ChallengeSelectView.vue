@@ -197,7 +197,7 @@ const startChallenge = (id) => {
     if (selectedChallenge.value) {
         router.push({
             name: 'ChallengePlayView',
-            params: { id: selectedChallenge.value.id }
+            params: { challengeId: id }
         });
     } else {
         alert("챌린지를 선택해주세요.");
