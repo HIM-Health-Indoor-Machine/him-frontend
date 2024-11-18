@@ -37,6 +37,7 @@
 import { useRouter } from 'vue-router';
 import { nextTick, ref, onMounted, onUnmounted } from 'vue';
 import { getCounter, init as tmInit } from '@/utils/teachableMachineForChallenge';
+import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForChallenge';
 
 const counter = ref(0);
 const showCounter = ref(false);
@@ -53,6 +54,7 @@ onUnmounted(() => {
     if (updateInterval) {
         clearInterval(updateInterval);
     }
+    tmStop();
 });
 
 function openSaveModal() {
