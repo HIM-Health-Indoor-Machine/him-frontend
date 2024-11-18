@@ -18,7 +18,6 @@ export const useChallengeStore = defineStore('challenge', () => {
         })
     }
 
-    return { challenges, currentChallenge, fetchCurrentChallenge }
     const fetchChallenges = (userId, status) => {
         axios.get(REST_API_URL, {
             params: { userId, status }
@@ -47,9 +46,6 @@ export const useChallengeStore = defineStore('challenge', () => {
         })
     }
 
-    return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges}
-    return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges, addChallenge }
-    return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges, addChallenge, updateChallenge }
     const updateChallenge = (challengeId, challenge) => {
         axios.put(`${REST_API_URL}/${challengeId}`, challenge)
         .then((response) => {
@@ -59,4 +55,16 @@ export const useChallengeStore = defineStore('challenge', () => {
             console.log(err);
         })
     }
+
+    const deleteChallenge = (challengeId) => {
+        axios.delete(`${REST_API_URL}/${challengeId}`)
+        .then((response) => {
+            console.log(response);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+
+    return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges, addChallenge, updateChallenge, deleteChallenge }
 })

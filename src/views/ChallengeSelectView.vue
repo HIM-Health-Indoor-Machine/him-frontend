@@ -167,10 +167,18 @@ const deleteChallenge = (index) => {
     isDeleteModalOpen.value = true;
 };
 
-function confirmDelete() {
+const confirmDelete = async () => {
     if (deleteIndex.value !== null) {
-        challenges.value.splice(deleteIndex.value, 1);
-        deleteIndex.value = null;
+        try {
+            await store.deleteChallenge(challenges.value[deleteIndex.value].id);
+
+            challenges.value.splice(deleteIndex.value, 1);
+            deleteIndex.value = null;
+        } catch (error) {
+            console.error(error);
+        } finally {
+            isDeleteModalOpen.value = false;
+        }
     }
     isDeleteModalOpen.value = false;
 }
