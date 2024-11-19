@@ -12,6 +12,8 @@ export const useGameStore = defineStore(`game`, () => {
     const gameUserId = ref(-1);
     const gameExpPoints = ref(0);
     const gameIsAchieved = ref(false);
+    const monthlyGame = ref([]);
+    const games = ref([]);
 
     // getters
     const typeString = computed(() => {
@@ -57,7 +59,34 @@ export const useGameStore = defineStore(`game`, () => {
         } catch (error) {
             console.error("game.js - 에러 발생: ", error);
         }
-        
+    }
+
+    const fetchMonthlyGame = async (userId, year, month) => {
+        await axios.get(`${REST_API_URL}/${userId}`, {
+            params: { year, month }
+        })
+        .then((response) => {
+            monthlyGame.value = response.data.map((game) => ({
+                ...game
+            }));
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+
+    const fetchGameList = async (userId, date) => {
+        await axios.get(`${REST_API_URL}/list`, {
+            params: { userId, date }
+        })
+        .then((response) => {
+            games.value = response.data.map((game) => ({
+                ...game
+            }));
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     }
 
     return {
@@ -67,8 +96,12 @@ export const useGameStore = defineStore(`game`, () => {
         gameUserId,
         gameExpPoints,
         gameIsAchieved,
+        monthlyGame,
+        games,
         typeString,
         createGame,
         achieveGame,
+        fetchMonthlyGame,
+        fetchGameList
      }
 })
