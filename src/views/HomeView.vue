@@ -236,9 +236,14 @@ import masterImage from '@/assets/images/tier/tier_MASTER.png';
 import legendImage from '@/assets/images/tier/tier_LEGEND.png';
 import goatImage from '@/assets/images/tier/tier_GOAT.png';
 
+import { storeToRefs } from 'pinia';
+import { useUserStore } from '@/stores/user';
+const userStore = useUserStore();
 const router = useRouter();
 
 const showInfo = ref(false);
+const { userId } = storeToRefs(userStore);
+const { user } = storeToRefs(userStore);
 
 const toggleInfo = () => {
     showInfo.value = !showInfo.value;
@@ -382,7 +387,8 @@ const addFloatingIcons = () => {
     }
 };
 
-onMounted(() => {
+onMounted(async () => {
+    await userStore.fetchUserInfo(userId.value);
     addFloatingIcons()
     generateCalendar();
     increaseExp();
