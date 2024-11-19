@@ -2,11 +2,11 @@
     <div class="mypage-container">
 
         <div class="box user-info">
-            <div class="user-details">
+            <div v-if="user" class="user-details">
                 <h2 class="nickname">{{ user.nickname }}</h2>
 
                 <div class="profile-pic-wrapper">
-                    <img class="profile-pic" :src="user.profilePic" alt="프로필 사진" />
+                    <img class="profile-pic" :src="user.profileImg" alt="프로필 사진" />
                     <button @click="openImageSelection" class="setting-button" aria-label="사진 선택">
                         <img src="@/assets/images/icon/setting-icon.png" alt="사진 선택 아이콘" class="setting-icon" />
                     </button>
@@ -49,7 +49,7 @@
                     <h5 class="info-section">
                         승급 필요 경험치
                     </h5>
-                    <div class="highlight">700 exp</div>
+                    <div class="highlight">{{ user.maxExp - user.exp }} exp</div>
                 </div>
 
                 <div class="exp-card">
@@ -259,7 +259,8 @@ const openImageSelection = () => { isImageSelectionOpen.value = true; };
 const closeImageSelection = () => { isImageSelectionOpen.value = false; };
 
 const selectProfileImage = (image) => {
-    user.value.profilePic = image;
+    user.value.profileImg = image;
+    userStore.updateUserInfo(userId.value, user.value);
     closeImageSelection();
 };
 
@@ -290,21 +291,9 @@ const toggleRankings = () => {
     showRankings.value = !showRankings.value;
 };
 
-
 const floatingIcons = ref([]);
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️",
     "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
-
-const user = ref({
-    profilePic: catImage,
-    nickname: '나는운동강아지',
-    email: 'gamemaster@example.com',
-    tier: 'IRON',
-    curTierIcon: ironImage,
-    nextTierIcon: bronzeImage,
-    exp: 2300,
-    maxExp: 3000,
-});
 
 const expValue = ref(0)
 const expFilledBarWidth = ref(0);

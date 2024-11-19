@@ -31,5 +31,14 @@ export const useUserStore = defineStore('user', () => {
         })
     }
 
-    return { user, userId, fetchUserInfo }
+    const updateUserInfo = (userId, user) => {
+        axios.put(`${REST_API_URL}/${userId}`, user)
+        .then((response) => {
+            console.log(response);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+    return { user, userId, fetchUserInfo, updateUserInfo }
 })
