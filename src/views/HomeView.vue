@@ -69,7 +69,7 @@
                         챌린지 경험치
                     </h5>
                     <ul class="list-unstyled">
-                        <li v-for="(challenge, index) in todayChallenges" :key="index" :class="['list', challenge.achieved ? 'completed' : 'pending']">
+                        <li v-for="(challenge, index) in processedChallenges" :key="index" :class="['list', challenge.achieved ? 'completed' : 'pending']">
                             {{ index + 1 }}: 5 exp
                         </li>
                     </ul>
@@ -228,13 +228,16 @@ import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAttendanceStore } from '@/stores/attendance';
 import { useTodayChallengeStore } from '@/stores/todayChallenge';
+import { useChallengeStore } from '@/stores/challenge';
 import { useGameStore } from '@/stores/game';
 import { useUserStore } from '@/stores/user';
 import { characterImages, tierImages } from '@/assets/imageAssets';
 import { useAchievedExp } from "@/composables/useAchievedExp";
+import { useProcessedChallenges } from "@/composables/useProcessedChallenges";
 
 const todayChallengeStore = useTodayChallengeStore();
 const attendanceStore = useAttendanceStore();
+const challengeStore = useChallengeStore();
 const userStore = useUserStore();
 const gameStore = useGameStore();
 const router = useRouter();
@@ -244,6 +247,7 @@ const { monthlyTodayChallenge } = storeToRefs(todayChallengeStore);
 const { monthlyAttendance } = storeToRefs(attendanceStore);
 const { monthlyGame } = storeToRefs(gameStore);
 const { todayChallenges } = storeToRefs(todayChallengeStore);
+const { challenges } = storeToRefs(challengeStore);
 const { games } = storeToRefs(gameStore);
 const { userId } = storeToRefs(userStore);
 const { user } = storeToRefs(userStore);
@@ -253,6 +257,7 @@ const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
 const { totalAchievedExp } = useAchievedExp(games, expByDifficulty, todayChallenges);
 const { achievedChallengeCount } = useAchievedExp(games,expByDifficulty, todayChallenges);
 const { groupedByExercise } = useAchievedExp(games,expByDifficulty, todayChallenges);
+const { processedChallenges } = useProcessedChallenges(todayChallenges, challenges);
 
 const toggleInfo = () => {
     showInfo.value = !showInfo.value;
@@ -392,8 +397,9 @@ const addFloatingIcons = () => {
 
 onMounted(async () => {
     await userStore.fetchUserInfo(userId.value);
-    addFloatingIcons()
+    addFloatingIcons();
     await generateCalendar();
+    await challengeStore.fetchChallenges(1, "ONGOING");
     await todayChallengeStore.fetchTodayChallengeList(userId.value, new Date().toISOString().split("T")[0]);
     await gameStore.fetchGameList(userId.value, new Date().toISOString().split("T")[0]);
     increaseExp();
