@@ -22,7 +22,7 @@
     <div class="right-menu">
       <div class="tier-info">
         <div class="tier-container">
-          <img class="tier-icon" src="@/assets/images/tier/tier_IRON.png" alt="Tier Icon" />
+          <img class="tier-icon" :src="user.curTierIcon" alt="Tier Icon" />
           <div class="tier-text">{{ user.tier }}</div>
         </div>
         <div class="exp-bar-container">
@@ -34,7 +34,7 @@
 
     <div>
       <div class="profile-button">
-        <img :src=user.profilePic alt="Profile" class="profile-image">
+        <img :src=user.profileImg alt="Profile" class="profile-image">
         <div class="nickname">{{ user.nickname }}</div>
         <RouterLink :to="{ name: 'StartView' }" class="logout-item">로그아웃</RouterLink>
       </div>
@@ -44,35 +44,40 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useUserStore } from '@/stores/user';
+import { useAchievedExp } from "@/composables/useAchievedExp";
+import { useTodayChallengeStore } from '@/stores/todayChallenge';
+import { useGameStore } from '@/stores/game';
 
-import profileImage from '@/assets/images/character/character_CAT.png';
+const todayChallengeStore = useTodayChallengeStore();
+const userStore = useUserStore();
+const gameStore = useGameStore();
 
-import ironImage from '@/assets/images/tier/tier_IRON.png';
-import bronzeImage from '@/assets/images/tier/tier_BRONZE.png';
+const { todayChallenges } = storeToRefs(todayChallengeStore);
+const { games } = storeToRefs(gameStore);
+const { userId } = storeToRefs(userStore);
+const { user } = storeToRefs(userStore);
+
+const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
+
+const { totalAchievedExp } = useAchievedExp(games, expByDifficulty, todayChallenges);
+const { achievedChallengeCount } = useAchievedExp(games, expByDifficulty, todayChallenges);
 
 const currentIndex = ref(0);
-const items = ["승급 필요 경험치 700exp",
-               "오늘 경험치 20exp",
-               "챌린지 1: 5 exp",
-               "Hard: 20 exp",
-               "패널티 경험치: -113 exp",
-               "보너스 경험치: D-day 4, 26",
-              ];
-
-const user = ref({
-  profilePic: profileImage,
-  nickname: '나는운동강아지',
-  email: 'gamemaster@example.com',
-  tier: 'IRON',
-  curTierIcon: ironImage,
-  nextTierIcon: bronzeImage,
-  exp: 2300,
-  maxExp: 3000,
-});
+const items = computed(() => [
+      "승급 필요 경험치 " + (user.value.maxExp - user.value.exp) + " exp",
+      "오늘 경험치 " + (totalAchievedExp.value + achievedChallengeCount.value * 5) + " exp",
+      "챌린지 성공 시, +5 exp",
+      "Easy 성공 시, +" + expByDifficulty.EASY + " exp",
+      "Medium 성공 시, +" + expByDifficulty.MEDIUM + " exp",
+      "Hard 성공 시, +" + expByDifficulty.HARD + " exp",
+      "운동 안할 시, -113 exp",
+    ]);
 
 const expValue = ref(0)
 const expFilledBarWidth = ref(0);
-const visibleItem = computed(() => items[currentIndex.value]);
+const visibleItem = computed(() => items.value[currentIndex.value]);
 
 const increaseExp = () => {
   let interval = setInterval(() => {
@@ -90,11 +95,14 @@ watch(expValue, (newVal) => {
 
 const startRolling = () => {
   setInterval(() => {
-    currentIndex.value = (currentIndex.value + 1) % items.length;
+    currentIndex.value = (currentIndex.value + 1) % items.value.length;
   }, 2000);
 };
 
-onMounted(() => {
+onMounted(async() => {
+  await userStore.fetchUserInfo(userId.value);
+  await todayChallengeStore.fetchTodayChallengeList(userId.value, new Date().toISOString().split("T")[0]);
+  await gameStore.fetchGameList(userId.value, new Date().toISOString().split("T")[0]);
   startRolling();
   increaseExp();
 });
