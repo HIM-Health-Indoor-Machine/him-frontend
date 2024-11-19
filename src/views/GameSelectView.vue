@@ -406,7 +406,7 @@ onMounted(async () => {
     color: #333;
     gap: 20px;
     width: 95%;
-    height: 40%;
+    height: 50%;
     padding: 10px;
     overflow: auto;
     z-index: 10;
