@@ -213,14 +213,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
+import { useAttendanceStore } from '@/stores/attendance';
+import { useTodayChallengeStore } from '@/stores/todayChallenge';
+import { useGameStore } from '@/stores/game';
 import { useUserStore } from '@/stores/user';
+import { characterImages, tierImages } from '@/assets/imageAssets';
+
+const todayChallengeStore = useTodayChallengeStore();
+const attendanceStore = useAttendanceStore();
 const userStore = useUserStore();
+const gameStore = useGameStore();
 const router = useRouter();
 
 const showInfo = ref(false);
+const { monthlyTodayChallenge } = storeToRefs(todayChallengeStore);
+const { monthlyAttendance } = storeToRefs(attendanceStore);
+const { monthlyGame } = storeToRefs(gameStore);
+const { todayChallenges } = storeToRefs(todayChallengeStore);
+const { games } = storeToRefs(gameStore);
 const { userId } = storeToRefs(userStore);
 const { user } = storeToRefs(userStore);
 
@@ -265,6 +278,48 @@ const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "
 const expValue = ref(0)
 const expFilledBarWidth = ref(0);
 
+const achievedChallengeCount = computed(() => {
+    if (Array.isArray(todayChallenges.value)) {
+        return todayChallenges.value.filter(challenge => challenge.achieved).length;
+    }
+    return 0;
+});
+
+const totalAchievedExp = computed(() => {
+  if (Array.isArray(games.value)) {
+    return games.value
+      .filter((game) => game.achieved)
+      .reduce((total, game) => {
+        const exp = expByDifficulty[game.difficultyLevel] || 0;
+        return total + exp;
+      }, 0);
+  }
+  return 0;
+});
+
+const difficultyLevels = ["EASY", "MEDIUM", "HARD"];
+const exercises = ["SQUAT", "PUSHUP"];
+const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
+
+const groupedByExercise = computed(() => {
+  const grouped = {};
+
+  exercises.forEach((exercise) => {
+    grouped[exercise] = {};
+    difficultyLevels.forEach((difficulty) => {
+      grouped[exercise][difficulty] = "pending";
+    });
+  });
+
+  games.value.forEach((game) => {
+    if (game.achieved) {
+      grouped[game.type][game.difficultyLevel] = "completed"; 
+    }
+  });
+
+  return grouped;
+});
+
 const increaseExp = () => {
     let interval = setInterval(() => {
         if (expValue.value < user.value.exp) {
@@ -292,9 +347,13 @@ const daysOfWeek = ref(['일', '월', '화', '수', '목', '금', '토']);
 
 const daysInMonth = ref([]);
 
-const generateCalendar = () => {
+const generateCalendar = async () => {
     const daysInCurrentMonth = new Date(currentYear.value, currentMonth.value, 0).getDate();
     const firstDayOfMonth = new Date(currentYear.value, currentMonth.value - 1, 1).getDay();
+
+    await attendanceStore.fetchMonthlyAttendance(userId.value, parseInt(currentYear.value, 10), parseInt(currentMonth.value, 10));
+    await gameStore.fetchMonthlyGame(userId.value, parseInt(currentYear.value, 10), parseInt(currentMonth.value, 10));
+    await todayChallengeStore.fetchMonthlyTodayChallenge(userId.value, parseInt(currentYear.value, 10), parseInt(currentMonth.value, 10));
 
     daysInMonth.value = [];
 
@@ -303,11 +362,17 @@ const generateCalendar = () => {
     }
 
     for (let i = 1; i <= daysInCurrentMonth; i++) {
+        const formattedDate = `${currentYear.value}-${String(currentMonth.value).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const isCheckedIn = monthlyAttendance.value.some((attendance) => attendance.attendDt === formattedDate && attendance.attended);
+        const isChallengeSuccess = monthlyTodayChallenge.value.some((todayChallenge) => todayChallenge.date === formattedDate && todayChallenge.achieved);
+        
+        const isGameSuccess = monthlyGame.value.some((game) => game.date === formattedDate && game.achieved);
+        
         daysInMonth.value.push({
             date: i,
-            isCheckedIn: Math.random() > 0.7,
-            isChallengeSuccess: Math.random() > 0.8,
-            isGameSuccess: Math.random() > 0.6,
+            isCheckedIn: isCheckedIn,
+            isChallengeSuccess: isChallengeSuccess,
+            isGameSuccess: isGameSuccess,
         });
     }
 };
@@ -346,7 +411,9 @@ const addFloatingIcons = () => {
 onMounted(async () => {
     await userStore.fetchUserInfo(userId.value);
     addFloatingIcons()
-    generateCalendar();
+    await generateCalendar();
+    await todayChallengeStore.fetchTodayChallengeList(userId.value, new Date().toISOString().split("T")[0]);
+    await gameStore.fetchGameList(userId.value, new Date().toISOString().split("T")[0]);
     increaseExp();
 });
 </script>
