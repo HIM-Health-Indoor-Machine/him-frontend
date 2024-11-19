@@ -93,14 +93,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useGameStore } from '@/stores/game';
 
 const router = useRouter();
+const route = useRoute();
 const gameStore = useGameStore();
 
-const showInfo = ref(false);
+const userId = route.params.userId;
 
+const showInfo = ref(false);
 const selectedType = ref(null);
 const selectedLevel = ref(null);
 
@@ -108,7 +110,7 @@ const selectType = (type) => { selectedType.value = type; };
 const selectLevel = (level) => { selectedLevel.value = level; };
 
 const startGame = async () => {
-    await gameStore.createGame(selectedType.value, selectedLevel.value, 1);
+    await gameStore.createGame(selectedType.value, selectedLevel.value, userId);
     router.push({
         name: 'GamePlayView',
         state: {

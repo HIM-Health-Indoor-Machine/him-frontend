@@ -140,20 +140,23 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
 
 const store = useChallengeStore();
 const router = useRouter();
+const route = useRoute();
+
+const userId = route.params.userId;
 
 const { challenges } = storeToRefs(store);
 const isCreating = ref(false);
 const isEditing = ref(false);
 const editIndex = ref(null);
-const newChallenge = reactive({ title: "", status: "ONGOING", type: "PUSHUP", startDt: new Date().toISOString().split("T")[0], endDt: "", goalCnt: null, userId: 1});
+const newChallenge = reactive({ title: "", status: "ONGOING", type: "PUSHUP", startDt: new Date().toISOString().split("T")[0], endDt: "", goalCnt: null, userId: userId});
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️", "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
 const floatingIcons = ref([]);
-const editChallenge = reactive({ title: "", status: "ONGOING", type: "", startDt: "", endDt: "", goalCnt: null, userId: 1});
+const editChallenge = reactive({ title: "", status: "ONGOING", type: "", startDt: "", endDt: "", goalCnt: null, userId: userId});
 const selectedChallenge = ref(null);
 const isDeleteModalOpen = ref(false);
 const deleteIndex = ref(null);

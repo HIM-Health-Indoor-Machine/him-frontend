@@ -2,11 +2,11 @@
     <div class="mypage-container">
 
         <div class="box user-info">
-            <div class="user-details">
+            <div v-if="user" class="user-details">
                 <h2 class="nickname">{{ user.nickname }}</h2>
 
                 <div class="profile-pic-wrapper">
-                    <img class="profile-pic" :src="user.profilePic" alt="프로필 사진" />
+                    <img class="profile-pic" :src="user.profileImg" alt="프로필 사진" />
                     <button @click="openImageSelection" class="setting-button" aria-label="사진 선택">
                         <img src="@/assets/images/icon/setting-icon.png" alt="사진 선택 아이콘" class="setting-icon" />
                     </button>
@@ -40,7 +40,12 @@
                             <p class="info-title">[패널티 경험치]</p>
                             <p>- 챌린지를 진행하지 않으면 패널티를 받을 수 있습니다.</p>
                             <p class="info-title">[보너스 경험치]</p>
-                            <p>- 진행 중인 챌린지를 매일 연속하여 진행하면 보너스 경험치가 주어집니다.</p>
+                            <p>- 하나의 챌린지를 연속으로 달성 시, 보너스 점수를 제공합니다.</p>
+                            <ul>
+                                <li>7일 연속 달성: <strong>10 exp</strong></li>
+                                <li>30일 연속 달성: <strong>100 exp</strong></li>
+                            </ul>
+                            <p>운동의 핵심은 꾸준함입니다. 오늘도 여러분의 몸을 위해 지속적으로 노력해보세요!</p>
                         </div>
                     </div>
                 </div>
@@ -49,14 +54,14 @@
                     <h5 class="info-section">
                         승급 필요 경험치
                     </h5>
-                    <div class="highlight">700 exp</div>
+                    <div class="highlight">{{ user.maxExp - user.exp }} exp</div>
                 </div>
 
                 <div class="exp-card">
                     <h5 class="info-section">
                         오늘 경험치
                     </h5>
-                    <div class="highlight positive">26 exp</div> <span class="text-muted">/ 51 exp</span>
+                    <div class="highlight positive"> {{ totalAchievedExp + achievedChallengeCount * 5 }} exp</div> <span class="text-muted">/ {{ todayChallenges.length * 5 + 70 }} exp</span>
                 </div>
 
                 <div class="exp-card">
@@ -64,9 +69,9 @@
                         챌린지 경험치
                     </h5>
                     <ul class="list-unstyled">
-                        <li class="list pending">챌린지 1: 5 exp</li>
-                        <li class="list completed">챌린지 2: 5 exp</li>
-                        <li class="list completed">챌린지 3: 5 exp</li>
+                        <li v-for="(challenge, index) in todayChallenges" :key="index" :class="['list', challenge.achieved ? 'completed' : 'pending']">
+                            {{ index + 1 }}: 5 exp
+                        </li>
                     </ul>
                 </div>
 
@@ -75,9 +80,14 @@
                         게임 경험치
                     </h5>
                     <ul class="list-unstyled">
-                        <li class="list completed">Easy: 5 exp</li>
-                        <li class="list completed">Medium: 10 exp</li>
-                        <li class="list pending">Hard: 20 exp</li>
+                        <div v-for="(difficulties, exercise) in groupedByExercise" :key="exercise">
+                            <h3>{{ exercise }}</h3>
+                            <ul class="list-unstyled">
+                                <li v-for="(status, difficulty) in difficulties" :key="difficulty" :class="['list', status === 'completed' ? 'completed' : 'pending']">
+                                {{ difficulty }}: {{ expByDifficulty[difficulty] }} exp
+                                </li>
+                            </ul>
+                        </div>
                     </ul>
                 </div>
 
@@ -92,8 +102,8 @@
                     <h5 class="info-section">
                         보너스 경험치
                     </h5>
-                    <div class="highlight time-remaining">10 exp (D-day 4)</div>
-                    <div class="highlight time-remaining">100 exp (D-day 26)</div>
+                    <div class="highlight time-remaining">10 exp (D-day 7)</div>
+                    <div class="highlight time-remaining">100 exp (D-day 30)</div>
                 </div>
             </div>
         </div>
@@ -213,32 +223,37 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useAttendanceStore } from '@/stores/attendance';
+import { useTodayChallengeStore } from '@/stores/todayChallenge';
+import { useGameStore } from '@/stores/game';
+import { useUserStore } from '@/stores/user';
+import { characterImages, tierImages } from '@/assets/imageAssets';
+import { useAchievedExp } from "@/composables/useAchievedExp";
 
-import bearImage from '@/assets/images/character/character_BEAR.png';
-import catImage from '@/assets/images/character/character_CAT.png';
-import chickImage from '@/assets/images/character/character_CHICK.png';
-import dogImage from '@/assets/images/character/character_DOG.png';
-import koalaImage from '@/assets/images/character/character_KOALA.png';
-import monkeyImage from '@/assets/images/character/character_MONKEY.png';
-import pandaImage from '@/assets/images/character/character_PANDA.png';
-import tigerImage from '@/assets/images/character/character_TIGER.png';
-
-import ironImage from '@/assets/images/tier/tier_IRON.png';
-import bronzeImage from '@/assets/images/tier/tier_BRONZE.png';
-import silverImage from '@/assets/images/tier/tier_SILVER.png';
-import goldImage from '@/assets/images/tier/tier_GOLD.png';
-import platinumImage from '@/assets/images/tier/tier_PLATINUM.png';
-import emeraldImage from '@/assets/images/tier/tier_EMERALD.png';
-import diamondImage from '@/assets/images/tier/tier_DIAMOND.png';
-import masterImage from '@/assets/images/tier/tier_MASTER.png';
-import legendImage from '@/assets/images/tier/tier_LEGEND.png';
-import goatImage from '@/assets/images/tier/tier_GOAT.png';
-
+const todayChallengeStore = useTodayChallengeStore();
+const attendanceStore = useAttendanceStore();
+const userStore = useUserStore();
+const gameStore = useGameStore();
 const router = useRouter();
 
 const showInfo = ref(false);
+const { monthlyTodayChallenge } = storeToRefs(todayChallengeStore);
+const { monthlyAttendance } = storeToRefs(attendanceStore);
+const { monthlyGame } = storeToRefs(gameStore);
+const { todayChallenges } = storeToRefs(todayChallengeStore);
+const { games } = storeToRefs(gameStore);
+const { userId } = storeToRefs(userStore);
+const { user } = storeToRefs(userStore);
+
+const difficultyLevels = ["EASY", "MEDIUM", "HARD"];
+const exercises = ["SQUAT", "PUSHUP"];
+const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
+
+const { totalAchievedExp } = useAchievedExp(games, expByDifficulty, todayChallenges);
+const { achievedChallengeCount } = useAchievedExp(games,expByDifficulty, todayChallenges);
 
 const toggleInfo = () => {
     showInfo.value = !showInfo.value;
@@ -247,30 +262,19 @@ const toggleInfo = () => {
 const isImageSelectionOpen = ref(false);
 
 const availableImages = ref([
-    bearImage, catImage, chickImage, dogImage, koalaImage, monkeyImage, pandaImage, tigerImage
+    characterImages['bear'], characterImages['cat'], characterImages['chick'], characterImages['dog'], characterImages['koala'], characterImages['monkey'], characterImages['panda'], characterImages['tiger']
 ]);
 
 const openImageSelection = () => { isImageSelectionOpen.value = true; };
 const closeImageSelection = () => { isImageSelectionOpen.value = false; };
 
 const selectProfileImage = (image) => {
-    user.value.profilePic = image;
+    user.value.profileImg = image;
+    userStore.updateUserInfo(userId.value, user.value);
     closeImageSelection();
 };
 
 const showRankings = ref(false);
-const tierImages = {
-    IRON: ironImage,
-    BRONZE: bronzeImage,
-    SILVER: silverImage,
-    GOLD: goldImage,
-    PLATINUM: platinumImage,
-    EMERALD: emeraldImage,
-    DIAMOND: diamondImage,
-    MASTER: masterImage,
-    LEGEND: legendImage,
-    GOAT: goatImage,
-};
 
 const tierRows = [
     ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'],
@@ -285,24 +289,33 @@ const toggleRankings = () => {
     showRankings.value = !showRankings.value;
 };
 
-
 const floatingIcons = ref([]);
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️",
     "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
 
-const user = ref({
-    profilePic: catImage,
-    nickname: '나는운동강아지',
-    email: 'gamemaster@example.com',
-    tier: 'IRON',
-    curTierIcon: ironImage,
-    nextTierIcon: bronzeImage,
-    exp: 2300,
-    maxExp: 3000,
-});
-
 const expValue = ref(0)
 const expFilledBarWidth = ref(0);
+
+
+
+const groupedByExercise = computed(() => {
+  const grouped = {};
+
+  exercises.forEach((exercise) => {
+    grouped[exercise] = {};
+    difficultyLevels.forEach((difficulty) => {
+      grouped[exercise][difficulty] = "pending";
+    });
+  });
+
+  games.value.forEach((game) => {
+    if (game.achieved) {
+      grouped[game.type][game.difficultyLevel] = "completed"; 
+    }
+  });
+
+  return grouped;
+});
 
 const increaseExp = () => {
     let interval = setInterval(() => {
@@ -319,10 +332,16 @@ watch(expValue, (newVal) => {
 });
 
 const startChallenge = () => {
-    router.push({ name: 'ChallengeSelectView' });
+    router.push({ 
+        name: 'ChallengeSelectView',
+        params: { userId: userId.value }
+     });
 };
 const startGame = () => {
-    router.push({ name: 'GameSelectView' })
+    router.push({ 
+        name: 'GameSelectView',
+        params: { userId: userId.value }
+     })
 };
 
 const currentMonth = ref(new Date().getMonth() + 1);
@@ -331,9 +350,13 @@ const daysOfWeek = ref(['일', '월', '화', '수', '목', '금', '토']);
 
 const daysInMonth = ref([]);
 
-const generateCalendar = () => {
+const generateCalendar = async () => {
     const daysInCurrentMonth = new Date(currentYear.value, currentMonth.value, 0).getDate();
     const firstDayOfMonth = new Date(currentYear.value, currentMonth.value - 1, 1).getDay();
+
+    await attendanceStore.fetchMonthlyAttendance(userId.value, parseInt(currentYear.value, 10), parseInt(currentMonth.value, 10));
+    await gameStore.fetchMonthlyGame(userId.value, parseInt(currentYear.value, 10), parseInt(currentMonth.value, 10));
+    await todayChallengeStore.fetchMonthlyTodayChallenge(userId.value, parseInt(currentYear.value, 10), parseInt(currentMonth.value, 10));
 
     daysInMonth.value = [];
 
@@ -342,11 +365,17 @@ const generateCalendar = () => {
     }
 
     for (let i = 1; i <= daysInCurrentMonth; i++) {
+        const formattedDate = `${currentYear.value}-${String(currentMonth.value).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const isCheckedIn = monthlyAttendance.value.some((attendance) => attendance.attendDt === formattedDate && attendance.attended);
+        const isChallengeSuccess = monthlyTodayChallenge.value.some((todayChallenge) => todayChallenge.date === formattedDate && todayChallenge.achieved);
+        
+        const isGameSuccess = monthlyGame.value.some((game) => game.date === formattedDate && game.achieved);
+        
         daysInMonth.value.push({
             date: i,
-            isCheckedIn: Math.random() > 0.7,
-            isChallengeSuccess: Math.random() > 0.8,
-            isGameSuccess: Math.random() > 0.6,
+            isCheckedIn: isCheckedIn,
+            isChallengeSuccess: isChallengeSuccess,
+            isGameSuccess: isGameSuccess,
         });
     }
 };
@@ -382,9 +411,12 @@ const addFloatingIcons = () => {
     }
 };
 
-onMounted(() => {
+onMounted(async () => {
+    await userStore.fetchUserInfo(userId.value);
     addFloatingIcons()
-    generateCalendar();
+    await generateCalendar();
+    await todayChallengeStore.fetchTodayChallengeList(userId.value, new Date().toISOString().split("T")[0]);
+    await gameStore.fetchGameList(userId.value, new Date().toISOString().split("T")[0]);
     increaseExp();
 });
 </script>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { defineStore } from "pinia";
-import {ref} from 'vue';
+import { ref } from 'vue';
 
 const REST_API_URL = `http://localhost:8080/api/challenge`;
 
@@ -35,7 +35,6 @@ export const useChallengeStore = defineStore('challenge', () => {
     }
 
     const addChallenge = (challenge) => {
-        console.log(challenge);
         axios.post(REST_API_URL, challenge)
         .then((response) => {
             console.log(response);

@@ -28,7 +28,7 @@ const routes = [
     component: LoadingScreen,
   },
   {
-    path: '/challenge-select-view',
+    path: '/challenge-select-view/:userId',
     name: 'ChallengeSelectView',
     component: ChallengeSelectView,
   },
@@ -43,7 +43,7 @@ const routes = [
     component: SuccessScreen,
   },
   {
-    path: '/game-select-view',
+    path: '/game-select-view/:userId',
     name: 'GameSelectView',
     component: GameSelectView,
   },
