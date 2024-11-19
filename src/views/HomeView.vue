@@ -332,10 +332,16 @@ watch(expValue, (newVal) => {
 });
 
 const startChallenge = () => {
-    router.push({ name: 'ChallengeSelectView' });
+    router.push({ 
+        name: 'ChallengeSelectView',
+        params: { userId: userId.value }
+     });
 };
 const startGame = () => {
-    router.push({ name: 'GameSelectView' })
+    router.push({ 
+        name: 'GameSelectView',
+        params: { userId: userId.value }
+     })
 };
 
 const currentMonth = ref(new Date().getMonth() + 1);
