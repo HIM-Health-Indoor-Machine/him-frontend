@@ -92,8 +92,8 @@
                     <h5 class="info-section">
                         보너스 경험치
                     </h5>
-                    <div class="highlight time-remaining">10 exp (D-day 4)</div>
-                    <div class="highlight time-remaining">100 exp (D-day 26)</div>
+                    <div class="highlight time-remaining">10 exp (D-day 7)</div>
+                    <div class="highlight time-remaining">100 exp (D-day 30)</div>
                 </div>
             </div>
         </div>
