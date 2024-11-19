@@ -215,27 +215,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-
-import bearImage from '@/assets/images/character/character_BEAR.png';
-import catImage from '@/assets/images/character/character_CAT.png';
-import chickImage from '@/assets/images/character/character_CHICK.png';
-import dogImage from '@/assets/images/character/character_DOG.png';
-import koalaImage from '@/assets/images/character/character_KOALA.png';
-import monkeyImage from '@/assets/images/character/character_MONKEY.png';
-import pandaImage from '@/assets/images/character/character_PANDA.png';
-import tigerImage from '@/assets/images/character/character_TIGER.png';
-
-import ironImage from '@/assets/images/tier/tier_IRON.png';
-import bronzeImage from '@/assets/images/tier/tier_BRONZE.png';
-import silverImage from '@/assets/images/tier/tier_SILVER.png';
-import goldImage from '@/assets/images/tier/tier_GOLD.png';
-import platinumImage from '@/assets/images/tier/tier_PLATINUM.png';
-import emeraldImage from '@/assets/images/tier/tier_EMERALD.png';
-import diamondImage from '@/assets/images/tier/tier_DIAMOND.png';
-import masterImage from '@/assets/images/tier/tier_MASTER.png';
-import legendImage from '@/assets/images/tier/tier_LEGEND.png';
-import goatImage from '@/assets/images/tier/tier_GOAT.png';
-
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '@/stores/user';
 const userStore = useUserStore();
@@ -252,7 +231,7 @@ const toggleInfo = () => {
 const isImageSelectionOpen = ref(false);
 
 const availableImages = ref([
-    bearImage, catImage, chickImage, dogImage, koalaImage, monkeyImage, pandaImage, tigerImage
+    characterImages['bear'], characterImages['cat'], characterImages['chick'], characterImages['dog'], characterImages['koala'], characterImages['monkey'], characterImages['panda'], characterImages['tiger']
 ]);
 
 const openImageSelection = () => { isImageSelectionOpen.value = true; };
@@ -265,18 +244,6 @@ const selectProfileImage = (image) => {
 };
 
 const showRankings = ref(false);
-const tierImages = {
-    IRON: ironImage,
-    BRONZE: bronzeImage,
-    SILVER: silverImage,
-    GOLD: goldImage,
-    PLATINUM: platinumImage,
-    EMERALD: emeraldImage,
-    DIAMOND: diamondImage,
-    MASTER: masterImage,
-    LEGEND: legendImage,
-    GOAT: goatImage,
-};
 
 const tierRows = [
     ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'],
