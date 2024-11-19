@@ -38,7 +38,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { nextTick, ref, computed, onMounted, onUnmounted } from 'vue';
 import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForChallenge';
-import { useTodayChallengeStore } from '@/stores/todayChallenge';
+import { useTodayChallengeStore } from '@/stores/todayChallenge';
 
 const store = useTodayChallengeStore();
 const router = useRouter();
