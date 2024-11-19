@@ -248,12 +248,11 @@ const { games } = storeToRefs(gameStore);
 const { userId } = storeToRefs(userStore);
 const { user } = storeToRefs(userStore);
 
-const difficultyLevels = ["EASY", "MEDIUM", "HARD"];
-const exercises = ["SQUAT", "PUSHUP"];
 const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
 
 const { totalAchievedExp } = useAchievedExp(games, expByDifficulty, todayChallenges);
 const { achievedChallengeCount } = useAchievedExp(games,expByDifficulty, todayChallenges);
+const { groupedByExercise } = useAchievedExp(games,expByDifficulty, todayChallenges);
 
 const toggleInfo = () => {
     showInfo.value = !showInfo.value;
@@ -296,26 +295,6 @@ const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "
 const expValue = ref(0)
 const expFilledBarWidth = ref(0);
 
-
-
-const groupedByExercise = computed(() => {
-  const grouped = {};
-
-  exercises.forEach((exercise) => {
-    grouped[exercise] = {};
-    difficultyLevels.forEach((difficulty) => {
-      grouped[exercise][difficulty] = "pending";
-    });
-  });
-
-  games.value.forEach((game) => {
-    if (game.achieved) {
-      grouped[game.type][game.difficultyLevel] = "completed"; 
-    }
-  });
-
-  return grouped;
-});
 
 const increaseExp = () => {
     let interval = setInterval(() => {

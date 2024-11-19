@@ -1,7 +1,9 @@
 import { computed } from "vue";
 
 export function useAchievedExp(games, expByDifficulty, todayChallenges) {
-
+    const exercises = ["SQUAT", "PUSHUP"];
+    const difficultyLevels = ["EASY", "MEDIUM", "HARD"];
+    
     const totalAchievedExp = computed(() => {
         if (Array.isArray(games.value)) {
         return games.value
@@ -20,8 +22,27 @@ export function useAchievedExp(games, expByDifficulty, todayChallenges) {
     }
     return 0;
     });
+
+    const groupedByExercise = computed(() => {
+        const grouped = {};
+      
+        exercises.forEach((exercise) => {
+          grouped[exercise] = {};
+          difficultyLevels.forEach((difficulty) => {
+            grouped[exercise][difficulty] = "pending";
+          });
+        });
+      
+        games.value.forEach((game) => {
+          if (game.achieved) {
+            grouped[game.type][game.difficultyLevel] = "completed"; 
+          }
+        });
+      
+        return grouped;
+      });
     
     return {
-        totalAchievedExp, achievedChallengeCount
+        exercises, totalAchievedExp, achievedChallengeCount, groupedByExercise
     };
 }
