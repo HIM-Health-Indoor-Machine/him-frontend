@@ -56,7 +56,7 @@
                     <h5 class="info-section">
                         오늘 경험치
                     </h5>
-                    <div class="highlight positive">26 exp</div> <span class="text-muted">/ 51 exp</span>
+                    <div class="highlight positive"> {{ totalAchievedExp + achievedChallengeCount * 5 }} exp</div> <span class="text-muted">/ {{ todayChallenges.length * 5 + 70 }} exp</span>
                 </div>
 
                 <div class="exp-card">
@@ -64,9 +64,9 @@
                         챌린지 경험치
                     </h5>
                     <ul class="list-unstyled">
-                        <li class="list pending">챌린지 1: 5 exp</li>
-                        <li class="list completed">챌린지 2: 5 exp</li>
-                        <li class="list completed">챌린지 3: 5 exp</li>
+                        <li v-for="(challenge, index) in todayChallenges" :key="index" :class="['list', challenge.achieved ? 'completed' : 'pending']">
+                            {{ index + 1 }}: 5 exp
+                        </li>
                     </ul>
                 </div>
 
@@ -75,9 +75,14 @@
                         게임 경험치
                     </h5>
                     <ul class="list-unstyled">
-                        <li class="list completed">Easy: 5 exp</li>
-                        <li class="list completed">Medium: 10 exp</li>
-                        <li class="list pending">Hard: 20 exp</li>
+                        <div v-for="(difficulties, exercise) in groupedByExercise" :key="exercise">
+                            <h3>{{ exercise }}</h3>
+                            <ul class="list-unstyled">
+                                <li v-for="(status, difficulty) in difficulties" :key="difficulty" :class="['list', status === 'completed' ? 'completed' : 'pending']">
+                                {{ difficulty }}: {{ expByDifficulty[difficulty] }} exp
+                                </li>
+                            </ul>
+                        </div>
                     </ul>
                 </div>
 
