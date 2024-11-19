@@ -231,6 +231,7 @@ import { useTodayChallengeStore } from '@/stores/todayChallenge';
 import { useGameStore } from '@/stores/game';
 import { useUserStore } from '@/stores/user';
 import { characterImages, tierImages } from '@/assets/imageAssets';
+import { useAchievedExp } from "@/composables/useAchievedExp";
 
 const todayChallengeStore = useTodayChallengeStore();
 const attendanceStore = useAttendanceStore();
@@ -246,6 +247,13 @@ const { todayChallenges } = storeToRefs(todayChallengeStore);
 const { games } = storeToRefs(gameStore);
 const { userId } = storeToRefs(userStore);
 const { user } = storeToRefs(userStore);
+
+const difficultyLevels = ["EASY", "MEDIUM", "HARD"];
+const exercises = ["SQUAT", "PUSHUP"];
+const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
+
+const { totalAchievedExp } = useAchievedExp(games, expByDifficulty, todayChallenges);
+const { achievedChallengeCount } = useAchievedExp(games,expByDifficulty, todayChallenges);
 
 const toggleInfo = () => {
     showInfo.value = !showInfo.value;
@@ -288,28 +296,7 @@ const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "
 const expValue = ref(0)
 const expFilledBarWidth = ref(0);
 
-const achievedChallengeCount = computed(() => {
-    if (Array.isArray(todayChallenges.value)) {
-        return todayChallenges.value.filter(challenge => challenge.achieved).length;
-    }
-    return 0;
-});
 
-const totalAchievedExp = computed(() => {
-  if (Array.isArray(games.value)) {
-    return games.value
-      .filter((game) => game.achieved)
-      .reduce((total, game) => {
-        const exp = expByDifficulty[game.difficultyLevel] || 0;
-        return total + exp;
-      }, 0);
-  }
-  return 0;
-});
-
-const difficultyLevels = ["EASY", "MEDIUM", "HARD"];
-const exercises = ["SQUAT", "PUSHUP"];
-const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
 
 const groupedByExercise = computed(() => {
   const grouped = {};
