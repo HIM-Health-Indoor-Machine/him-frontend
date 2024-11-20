@@ -1,6 +1,10 @@
 <template>
     <div class="container">
-        <div class="box box1"></div>
+        <div class="box box1 alarm-container">
+            게임 테마의 캐릭터는 <br>
+            <a href="https://youtube.com/@ah_no" target="_blank" rel="noopener noreferrer">아노님</a><br>
+            의 제작품임을 알립니다.
+        </div>
 
         <div class="box box2 main-container">
             <div class="header">게임을 선택해주세요!</div>
@@ -36,9 +40,27 @@
                 </div>
             </div>
 
+            <div class="option-container">
+                <div class="option-card cloud" @click="selectTheme('GamePlayViewDuck')"
+                    :class="{ selected: selectedTheme === 'GamePlayViewDuck' }">
+                    <div class="option-icon">🐦</div>
+                    <div class="choice-label">오리테마</div>
+                </div>
+                <div class="option-card cloud" @click="selectTheme('GamePlayViewBomb')"
+                    :class="{ selected: selectedTheme === 'GamePlayViewBomb' }">
+                    <div class="option-icon">💣</div>
+                    <div class="choice-label">폭탄테마</div>
+                </div>
+                <div class="option-card cloud" @click="selectTheme('GamePlayViewFlying')"
+                    :class="{ selected: selectedTheme === 'GamePlayViewFlying' }">
+                    <div class="option-icon">🪽</div>
+                    <div class="choice-label">비행테마</div>
+                </div>
+            </div>
+
             <button @click="startGame" class="custom-button"
-                :style="{ animation: (!selectedType || !selectedLevel) ? 'jittery 4s infinite' : '' }"
-                :disabled="!selectedType || !selectedLevel">
+                :style="{ animation: (!selectedType || !selectedLevel || !selectedTheme) ? 'jittery 4s infinite' : '' }"
+                :disabled="!selectedType || !selectedLevel || !selectedTheme">
                 <span>시작하기</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4"
                     stroke="currentColor">
@@ -61,7 +83,7 @@
 
                 <div v-for="(difficulties, exercise) in groupedByExercise" :key="exercise" class="exp-card">
                     <h5 class="info-section">
-                        {{ exercise }}
+                        {{ exercise === 'PUSHUP' ? 'Push Up' : 'Squat'}}
                     </h5>
                     <ul class="list-unstyled">
                         <li 
@@ -103,19 +125,23 @@ const { groupedByExercise } = useAchievedExp(games, expByDifficulty);
 const showInfo = ref(false);
 const selectedType = ref(null);
 const selectedLevel = ref(null);
+const selectedTheme = ref(null);
 
 const selectType = (type) => { selectedType.value = type; };
 const selectLevel = (level) => { selectedLevel.value = level; };
+const selectTheme = (theme) => { selectedTheme.value = theme; };
 
 const startGame = async () => {
     await gameStore.createGame(selectedType.value, selectedLevel.value, userId);
+
     router.push({
-        name: 'GamePlayView',
-        state: {
+        name: selectedTheme.value,
+        params: {
             id: gameStore.gameId,
             type: gameStore.gameType,
             difficultyLevel: gameStore.gameDifficultyLevel,
-            userId: gameStore.gameUserId
+            theme: selectedTheme.value,
+            userId: userId
         }
     });
 };
@@ -173,6 +199,16 @@ onMounted(async () => {
     flex: 2;
 }
 
+.alarm-container {
+    display: block;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #707974;
+    margin-top: 70%;
+    white-space: pre-line;
+    z-index: 10;
+}
+
 .main-container {
     display: flex;
     flex-direction: column;
@@ -190,7 +226,7 @@ onMounted(async () => {
     display: flex;
     gap: 80px;
     justify-content: center;
-    margin: 50px 0
+    margin: 20px 0
 }
 
 .option-card.square {

@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 import { Application, Sprite, Assets } from 'pixi.js';
 import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForGame';
@@ -42,12 +42,21 @@ import { gsap } from 'gsap';
 
 const gameStore = useGameStore();
 const router = useRouter();
+const route = useRoute();
 const isEndModalOpen = ref(false);
 const app = ref(null);
 const counter = ref(0);
 const isGameOver = ref(false);
 const isSuccess = ref(false);
 const countdown = ref(5);
+
+const gameId = route.params.id;
+const gameType = route.params.type;
+const gameDifficultyLevel = route.params.difficultyLevel;
+const gameTheme = route.params.theme;
+const userId = route.params.userId;
+
+
 let updateInterval = null;
 
 const openEndModal = () => {
@@ -118,7 +127,7 @@ const startPixiAndTM = async () => {
     duckSprite.x = app.value.screen.width - 300;
     const gameOverLimit = app.value.screen.width - 200;
     const successLimit = 150;
-    duckSprite.y = app.value.screen.height / 2 + 200;
+    duckSprite.y = app.value.screen.height / 2 + 300;
     duckSprite.anchor.set(0.5);
     app.value.stage.addChild(duckSprite);
 
@@ -126,7 +135,15 @@ const startPixiAndTM = async () => {
     let frameCounter = 0;
     let counterValue = 0;
 
-    const countMoveSpeed = 100; // 난이도 조절
+    let countMoveSpeed = 0;
+
+    if(gameStore.gameDifficultyLevel === 'EASY') {
+        countMoveSpeed = 200;
+    } else if(gameStore.gameDifficultyLevel === 'MEDIUM') {
+        countMoveSpeed = 100;
+    } else {
+        countMoveSpeed = 50;
+    }
     const penaltyMoveSpeed = 0.5;
     const frameInterval = 1;
 
@@ -169,21 +186,17 @@ const startPixiAndTM = async () => {
     function gameOver() {
         isGameOver.value = true;
 
-        console.log("FailScreen - gameId: ", gameStore.gameId);
-        console.log("FailScreen - gameType: ", gameStore.gameType);
-        console.log("FailScreen - gameDifficultyLevel: ", gameStore.gameDifficultyLevel);
-        console.log("FailScreen - gameUserId: ", gameStore.gameUserId);
-
         tmStop();
-        // router.push({
-        //     name: 'FailScreen',
-        //     state: {
-        //         id: gameStore.gameId,
-        //         type: gameStore.gameType,
-        //         difficultyLevel: gameStore.gameDifficultyLevel,
-        //         userId: gameStore.userId
-        //     }
-        // });
+        router.push({
+            name: 'FailScreen',
+            params: {
+                id: gameId,
+                type: gameType,
+                difficultyLevel: gameDifficultyLevel,
+                theme: gameTheme,
+                userId: userId
+            }
+        });
     }
 
     function checkRunnerRight() {
@@ -200,23 +213,14 @@ const startPixiAndTM = async () => {
 
         await gameStore.achieveGame(gameStore.gameId, isSuccess.value);
 
-        console.log("SuccessScreen - gameId: ", gameStore.gameId);
-        console.log("SuccessScreen - gameType: ", gameStore.gameType);
-        console.log("SuccessScreen - gameDifficultyLevel: ", gameStore.gameDifficultyLevel);
-        console.log("SuccessScreen - gameExpPoints: ", gameStore.gameExpPoints);
-        console.log("SuccessScreen - gameUserId: ", gameStore.gameUserId);
-
         tmStop();
-        // router.push({ 
-        //     name: 'SuccessScreen',
-        //     state: {
-        //         id: gameStore.gameId,
-        //         type: gameStore.gameType,
-        //         difficultyLevel: gameStore.gameDifficultyLevel,
-        //         expPoints: gameStore.gameExpPoints,
-        //         userId: gameStore.gameUserId
-        //     }
-        // });
+        router.push({ 
+            name: 'SuccessScreen',
+            params: {
+                userId: userId,
+                expPoints: gameStore.gameExpPoints
+            }
+        });
     }
 
     function stopRunnerOnSuccess() {
@@ -252,8 +256,6 @@ const startCountdown = () => {
 };
 
 onMounted(async () => {
-    startCountdown();
-
     tmInit().then(() => {
         console.log("Teachable Machine 초기화 완료");
     }).catch((error) => {
@@ -261,6 +263,8 @@ onMounted(async () => {
     });
 
     startPixiAndTM();
+
+    startCountdown();
 });
 </script>
 
