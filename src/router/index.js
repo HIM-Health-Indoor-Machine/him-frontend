@@ -4,12 +4,13 @@ import SignUpView from '@/views/SignUpView.vue';
 import HomeView from '@/views/HomeView.vue';
 import ChallengeSelectView from '@/views/ChallengeSelectView.vue';
 import GameSelectView from '@/views/GameSelectView.vue';
-import GamePlayView from '@/views/GamePlayView.vue';
-import LoadingScreen from '@/components/LoadingScreen.vue';
 import FailScreen from '@/components/FailScreen.vue';
 import SuccessScreen from '@/components/SuccessScreen.vue';
 import ChallengePlayView from '@/views/ChallengePlayView.vue';
 import StartView from '@/views/StartView.vue';
+import GamePlayViewDuck from '@/views/GamePlayViewDuck.vue';
+import GamePlayViewBomb from '@/views/GamePlayViewBomb.vue';
+import GamePlayViewFlying from '@/views/GamePlayViewFlying.vue';
 
 const routes = [
   {
@@ -23,31 +24,6 @@ const routes = [
     component: HomeView,
   },
   {
-    path: '/loading-screen',
-    name: 'LoadingScreen',
-    component: LoadingScreen,
-  },
-  {
-    path: '/challenge-select-view/:userId',
-    name: 'ChallengeSelectView',
-    component: ChallengeSelectView,
-  },
-  {
-    path: '/fail-screen',
-    name: 'FailScreen',
-    component: FailScreen,
-  },
-  {
-    path: '/success-screen',
-    name: 'SuccessScreen',
-    component: SuccessScreen,
-  },
-  {
-    path: '/game-select-view/:userId',
-    name: 'GameSelectView',
-    component: GameSelectView,
-  },
-  {
     path: '/login-view',
     name: 'LoginView',
     component: LoginView,
@@ -58,14 +34,44 @@ const routes = [
     component: SignUpView,
   },
   {
-    path: '/game-play-view',
-    name: 'GamePlayView',
-    component: GamePlayView,
+    path: '/game-select-view/:userId',
+    name: 'GameSelectView',
+    component: GameSelectView,
+  },
+  {
+    path: '/game-play-view-flying',
+    name: 'GamePlayViewFlying',
+    component: GamePlayViewFlying,
+  },
+  {
+    path: '/game-play-view-bomb',
+    name: 'GamePlayViewBomb',
+    component: GamePlayViewBomb,
+  },
+  {
+    path: '/game-play-view-duck',
+    name: 'GamePlayViewDuck',
+    component: GamePlayViewDuck,
+  },
+  {
+    path: '/challenge-select-view/:userId',
+    name: 'ChallengeSelectView',
+    component: ChallengeSelectView,
   },
   {
     path: '/challenge-play-view/:challengeId',
     name: 'ChallengePlayView',
     component: ChallengePlayView,
+  },
+  {
+    path: '/fail-screen',
+    name: 'FailScreen',
+    component: FailScreen,
+  },
+  {
+    path: '/success-screen',
+    name: 'SuccessScreen',
+    component: SuccessScreen,
   },
 ];
 
