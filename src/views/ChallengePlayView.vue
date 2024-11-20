@@ -10,6 +10,13 @@
         </div>
         <div v-else>
             <div id="ui-container">
+                <div class="challenge-info">
+                    <p>챌린지: {{ challengeStore.currentChallenge.title }}</p>
+                    <p>운동 종류: {{ challengeStore.currentChallenge.type === 'PUSHUP' ? 'Push Up' : 'Squat' }}</p>
+                    <p>종료 날짜: {{ challengeStore.currentChallenge.endDt }}</p>
+                    <p>성취 개수: {{ challengeStore.currentChallenge.achievedCnt }}</p>
+                    <p>목표 개수: {{ challengeStore.currentChallenge.goalCnt }}</p>
+                </div>
                 <div v-if="showCounter" :key="counter" id="counter-container" class="animate-counter">
                     <span id="counter">{{ counter }}</span>
                 </div>
@@ -37,20 +44,27 @@ import { storeToRefs } from 'pinia';
 import { nextTick, ref, onMounted, onUnmounted } from 'vue';
 import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForChallenge';
 import { useTodayChallengeStore } from '@/stores/todayChallenge';
+import { useChallengeStore } from '@/stores/challenge';
 
-const store = useTodayChallengeStore();
+const todayChallengeStore = useTodayChallengeStore();
+const challengeStore = useChallengeStore();
+
 const router = useRouter();
 const route = useRoute();
 
 const challengeId = route.params.challengeId;
-const { currentTodayChallenge } = storeToRefs(store);
+const { currentTodayChallenge } = storeToRefs(todayChallengeStore);
 const counter = ref(0);
 const showCounter = ref(false);
 const countdown = ref(5);
 const isModalOpen = ref(false);
 let updateInterval = null;
+const challengeTitle = ref("");
+const userId = route.params.userId;
+
 
 onMounted(() => {
+    challengeStore.fetchCurrentChallenge(challengeId);
     startCountdown();
 
     tmInit().then(() => {
@@ -67,6 +81,16 @@ onUnmounted(() => {
     tmStop();
 });
 
+// const fetchChallengeData = () => {
+//     try {
+        
+//         challengeTitle.value =  || "제목 없음";
+//     } catch (error) {
+//         console.error("챌린지 데이터를 가져오는 중 오류 발생:", error);
+//     }
+// };
+
+
 function openSaveModal() {
     isModalOpen.value = true;
 }
@@ -78,17 +102,31 @@ function closeModal() {
 async function saveAndNavigate() {
     console.log(`저장된 운동 횟수: ${counter.value}`);
     isModalOpen.value = false;
-    await store.fetchTodayChallenge(challengeId, new Date().toISOString().split("T")[0]);
-    currentTodayChallenge.value.cnt += counter.value;
-    await store.updateTodayChallenge(currentTodayChallenge.value);
-    router.push({ name: 'ChallengeSelectView' });
+
+    await todayChallengeStore.fetchTodayChallenge(challengeId, new Date().toISOString().split("T")[0]);
+
+    if (typeof currentTodayChallenge.value !== 'object' || currentTodayChallenge.value === null) {
+        currentTodayChallenge.value = {
+            id: null,
+            cnt: 0,
+            challengeId,
+            date: new Date().toISOString().split("T")[0],
+        };
+    }
+
+    currentTodayChallenge.value.cnt += counter.value; // cnt 업데이트
+    await todayChallengeStore.updateTodayChallenge(currentTodayChallenge.value);
+
+    router.push({ 
+        name: 'ChallengeSelectView',
+        params: { userId: userId }
+    });
 }
 
 function startCountdown() {
     const countdownStep = () => {
         if (countdown.value > 0) {
             countdown.value -= 1;
-            console.log(countdown.value);
             nextTick(() => setTimeout(countdownStep, 1000));
         } else {
             countdown.value = 0;
@@ -324,5 +362,15 @@ function startGame() {
 .cancel-button {
     background-color: #f44336;
     color: white;
+}
+
+.challenge-info {
+    font-size: 1.5rem;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 </style>

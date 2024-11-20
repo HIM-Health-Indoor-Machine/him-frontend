@@ -51,9 +51,9 @@
                 </div>
 
                 <div class="exp-card">
-                    <h5 class="info-section">
+                    <div class="info-section">
                         승급 필요 경험치
-                    </h5>
+                    </div>
                     <div class="highlight">{{ user.maxExp - user.exp }} exp</div>
                 </div>
 
@@ -61,7 +61,8 @@
                     <h5 class="info-section">
                         오늘 경험치
                     </h5>
-                    <div class="highlight positive"> {{ totalAchievedExp + achievedChallengeCount * 5 }} exp</div> <span class="text-muted">/ {{ todayChallenges.length * 5 + 70 }} exp</span>
+                    <div class="highlight positive"> {{ totalAchievedExp + achievedChallengeCount * 5 }} exp</div> <span
+                        class="text-muted">/ {{ todayChallenges.length * 5 + 70 }} exp</span>
                 </div>
 
                 <div class="exp-card">
@@ -69,22 +70,24 @@
                         챌린지 경험치
                     </h5>
                     <ul class="list-unstyled">
-                        <li v-for="(challenge, index) in processedChallenges" :key="index" :class="['list', challenge.achieved ? 'completed' : 'pending']">
-                            {{ index + 1 }}: 5 exp
+                        <li v-for="(challenge, index) in challenges" :key="index"
+                            :class="['list', isProcessed(challenge.id) ? 'completed' : 'pending']">
+                            {{ challenge.title }}: 5 exp
                         </li>
                     </ul>
                 </div>
 
                 <div class="exp-card">
-                    <h5 class="info-section">
+                    <div class="info-section">
                         게임 경험치
-                    </h5>
+                    </div>
                     <ul class="list-unstyled">
                         <div v-for="(difficulties, exercise) in groupedByExercise" :key="exercise">
-                            <h3>{{ exercise }}</h3>
+                            <div class="game-title">{{ exercise === "PUSHUP" ? "Push Up" : "Squat" }}</div>
                             <ul class="list-unstyled">
-                                <li v-for="(status, difficulty) in difficulties" :key="difficulty" :class="['list', status === 'completed' ? 'completed' : 'pending']">
-                                {{ difficulty }}: {{ expByDifficulty[difficulty] }} exp
+                                <li v-for="(status, difficulty) in difficulties" :key="difficulty"
+                                    :class="['list', status === 'completed' ? 'completed' : 'pending']">
+                                    {{ difficulty }}: {{ expByDifficulty[difficulty] }} exp
                                 </li>
                             </ul>
                         </div>
@@ -223,7 +226,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAttendanceStore } from '@/stores/attendance';
@@ -255,8 +258,8 @@ const { user } = storeToRefs(userStore);
 const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
 
 const { totalAchievedExp } = useAchievedExp(games, expByDifficulty, todayChallenges);
-const { achievedChallengeCount } = useAchievedExp(games,expByDifficulty, todayChallenges);
-const { groupedByExercise } = useAchievedExp(games,expByDifficulty, todayChallenges);
+const { achievedChallengeCount } = useAchievedExp(games, expByDifficulty, todayChallenges);
+const { groupedByExercise } = useAchievedExp(games, expByDifficulty, todayChallenges);
 const { processedChallenges } = useProcessedChallenges(todayChallenges, challenges);
 
 const toggleInfo = () => {
@@ -300,6 +303,11 @@ const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "
 const expValue = ref(0)
 const expFilledBarWidth = ref(0);
 
+const isProcessed = (challengeId) => {
+    return processedChallenges.value.some(
+        (processed) => processed.challengeId === challengeId
+    );
+};
 
 const increaseExp = () => {
     let interval = setInterval(() => {
@@ -316,16 +324,16 @@ watch(expValue, (newVal) => {
 });
 
 const startChallenge = () => {
-    router.push({ 
+    router.push({
         name: 'ChallengeSelectView',
         params: { userId: userId.value }
-     });
+    });
 };
 const startGame = () => {
-    router.push({ 
+    router.push({
         name: 'GameSelectView',
         params: { userId: userId.value }
-     })
+    })
 };
 
 const currentMonth = ref(new Date().getMonth() + 1);
@@ -352,9 +360,9 @@ const generateCalendar = async () => {
         const formattedDate = `${currentYear.value}-${String(currentMonth.value).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
         const isCheckedIn = monthlyAttendance.value.some((attendance) => attendance.attendDt === formattedDate && attendance.attended);
         const isChallengeSuccess = monthlyTodayChallenge.value.some((todayChallenge) => todayChallenge.date === formattedDate && todayChallenge.achieved);
-        
+
         const isGameSuccess = monthlyGame.value.some((game) => game.date === formattedDate && game.achieved);
-        
+
         daysInMonth.value.push({
             date: i,
             isCheckedIn: isCheckedIn,
@@ -675,6 +683,7 @@ onMounted(async () => {
 }
 
 .list-unstyled {
+
     list-style: none;
     padding-left: 0;
 }
@@ -1129,5 +1138,16 @@ onMounted(async () => {
     to {
         transform: translateY(-30px);
     }
+}
+
+.game-title {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+.exp-card .list-unstyled {
+    margin-top: 5px;
+    margin-bottom: 0;
+    padding-left: 0;
 }
 </style>
