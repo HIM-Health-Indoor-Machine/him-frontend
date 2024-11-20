@@ -22,13 +22,22 @@ export const useAttendanceStore = defineStore('attendance', () => {
             params: { year, month }
         })
         .then((response) => {
-            monthlyAttendance.value = response.data.map((attendance) => ({
-                ...attendance
-            }));
+            const data = response.data;
+            
+            if (Array.isArray(data)) {
+                monthlyAttendance.value = data.map((attendance) => ({
+                    ...attendance
+                }));
+            } else {
+                console.error("Response data is not an array:", data);
+                monthlyAttendance.value = [];
+            }
         })
         .catch((err) => {
-            console.log(err);
-        })
-    }
+            console.log("Error fetching attendance:", err);
+            monthlyAttendance.value = [];
+        });
+    };
+    
     return { monthlyAttendance, setAttendanceStatus, fetchMonthlyAttendance }
 })
