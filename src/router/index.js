@@ -34,7 +34,7 @@ const routes = [
     component: SignUpView,
   },
   {
-    path: '/game-select-view',
+    path: '/game-select-view/:userId',
     name: 'GameSelectView',
     component: GameSelectView,
   },
@@ -54,7 +54,7 @@ const routes = [
     component: GamePlayViewDuck,
   },
   {
-    path: '/challenge-select-view',
+    path: '/challenge-select-view/:userId',
     name: 'ChallengeSelectView',
     component: ChallengeSelectView,
   },

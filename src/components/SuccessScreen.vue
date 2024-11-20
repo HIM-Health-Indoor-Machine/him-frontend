@@ -1,7 +1,11 @@
 <template>
     <div>
-        <div id="success-overlay" v-if="isGameSuccess">
+        <div id="success-overlay">
             <div id="success-text">SUCCESS!</div>
+            <div class="game-info">
+                <p>운동 종류: {{ gameStore.typeString }}</p>
+                <div>난이도: {{ gameStore.gameDifficultyLevel }}</div>
+            </div>
             <div id="celebration-message">축하합니다! 목표를 달성했습니다!</div>
 
             <div class="exp-tier-container">
@@ -12,9 +16,13 @@
                 <img class="exp-tier-pic" :src="nextTierIcon" alt="다음 티어 사진" />
             </div>
 
-            <div class="exp-value" :style="{ '--total-exp': `'${addedExpString}'` }">현재 경험치: {{ expValue }} EXP</div>
+            <div class="exp-value" :style="addedExp !== 0 ? { '--total-exp': `'${addedExpString}'` } : {}">현재 경험치: {{
+                expValue }} EXP</div>
+            <div v-if="addedExp === 0" class="no-exp-message">
+                이미 성공한 게임이므로 경험치가 추가되지 않습니다.
+            </div>
 
-            <button class="new-challenge-button" @click="newGame">새로운 챌린지하기</button>
+            <button class="new-challenge-button" @click="newGame">새로운 게임하기</button>
 
             <div v-for="firework in fireworks" :key="firework.id" class="firework"
                 :style="{ left: firework.left + '%', top: firework.top + '%', backgroundColor: firework.color }">
@@ -28,16 +36,18 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import curTierImage from '@/assets/images/tier/tier_IRON.png';
 import nextTierImage from '@/assets/images/tier/tier_BRONZE.png';
+import { useGameStore } from '@/stores/game';
+
+const gameStore = useGameStore();
 
 const router = useRouter();
 
 const curTierIcon = ref(curTierImage)
 const nextTierIcon = ref(nextTierImage)
 
-const isGameSuccess = ref(true);
 const fireworks = ref([]);
 const currentExp = ref(300);
-const addedExp = ref(200);
+const addedExp = ref(gameStore.gameExpPoints);
 const targetExp = ref(1000);
 const expValue = ref(currentExp.value);
 const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100);
@@ -78,7 +88,6 @@ onMounted(() => {
 });
 
 const newGame = () => {
-    isGameSuccess.value = false;
     router.push({ name: 'GameSelectView' });
 };
 
@@ -165,6 +174,12 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
     filter: blur(8px);
     transform: translateX(-100%);
     animation: shine 2s infinite linear;
+}
+
+.game-info {
+    font-size: 1.5rem;
+    color: #7a7878;
+    text-align: center;
 }
 
 @keyframes expIncrease {
@@ -271,7 +286,7 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
 
 .new-challenge-button {
     font-family: 'HakgyoansimDunggeunmisoTTF-B';
-    margin-top: 80px;
+    margin-top: 30px;
     padding: 20px 40px;
     background-color: #4CAF50;
     border: none;
@@ -291,38 +306,39 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
 }
 
 @keyframes jittery {
-  5%,
-  50% {
-    transform: scale(1);
-  }
 
-  10% {
-    transform: scale(0.9);
-  }
+    5%,
+    50% {
+        transform: scale(1);
+    }
 
-  15% {
-    transform: scale(1.15);
-  }
+    10% {
+        transform: scale(0.9);
+    }
 
-  20% {
-    transform: scale(1.15) rotate(-5deg);
-  }
+    15% {
+        transform: scale(1.15);
+    }
 
-  25% {
-    transform: scale(1.15) rotate(5deg);
-  }
+    20% {
+        transform: scale(1.15) rotate(-5deg);
+    }
 
-  30% {
-    transform: scale(1.15) rotate(-3deg);
-  }
+    25% {
+        transform: scale(1.15) rotate(5deg);
+    }
 
-  35% {
-    transform: scale(1.15) rotate(2deg);
-  }
+    30% {
+        transform: scale(1.15) rotate(-3deg);
+    }
 
-  40% {
-    transform: scale(1.15) rotate(0);
-  }
+    35% {
+        transform: scale(1.15) rotate(2deg);
+    }
+
+    40% {
+        transform: scale(1.15) rotate(0);
+    }
 }
 
 .exp-value {
@@ -390,5 +406,11 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
         opacity: 0;
         transform: translate(-50%, -30px);
     }
+}
+
+.no-exp-message {
+    font-size: 1.5rem;
+    color: #7a7878;
+    text-align: center;
 }
 </style>

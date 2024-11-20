@@ -18,8 +18,7 @@
 
             <div class="challenge-container">
                 <div v-for="(challenge, index) in challenges" :key="index"
-                    :class="['challenge-box', isEditing && editIndex === index ? 'edit-box' : '', selectedChallenge === challenge ? 'selected' : '']"
-                    @click="selectChallenge(index)">
+                    :class="['challenge-box', isEditing && editIndex === index ? 'edit-box' : '', selectedChallenge === challenge ? 'selected' : '']" @click="selectChallenge(index)">
 
                     <div v-if="!(isEditing && editIndex === index)" class="icon-container">
                         <span @click="toggleEdit(index)" class="icon-button">✏️</span>
@@ -31,29 +30,28 @@
                         <form @submit.prevent="saveChallenge">
                             <div class="challenge-info">
                                 <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
-                                <input type="text" v-model="editChallenge.name" class="input-field"
-                                    placeholder="예: '30일 푸쉬업 챌린지'">
+                                    <div  placeholder="예: '30일 푸쉬업 챌린지'" disabled>{{ editChallenge.title }}</div>
                             </div>
                             <div class="challenge-info">
                                 <label style="text-align: center; font-size: 1.2rem;">🔥 운동 타입</label>
                                 <div style="display: flex; justify-content: space-around; align-items: center;">
                                     <label>
-                                        <input type="radio" v-model="editChallenge.type" value="Push Up">
+                                        <input type="radio" v-model="editChallenge.type" value="PUSHUP">
                                         💪 Push Up
                                     </label>
                                     <label>
-                                        <input type="radio" v-model="editChallenge.type" value="Squat">
+                                        <input type="radio" v-model="editChallenge.type" value="SQUAT">
                                         🏋️‍♂️ Squat
                                     </label>
                                 </div>
                             </div>
                             <div class="challenge-info">
                                 <label style="font-size: 1.2rem;">⏰ 종료 날짜</label>
-                                <input type="date" v-model="editChallenge.date" class="input-field">
+                                <input type="date" v-model="editChallenge.endDt" class="input-field">
                             </div>
                             <div class="challenge-info">
                                 <label style="font-size: 1.2rem;">🎯 하루 목표 갯수</label>
-                                <input type="number" v-model="editChallenge.goal" class="input-field"
+                                <input type="number" v-model="editChallenge.goalCnt" class="input-field"
                                     placeholder="예: 30">
                             </div>
                             <div class="button-container">
@@ -64,12 +62,12 @@
 
                     <div v-else>
                         <div class="challenge-info-container">
-                            <div class="banner">{{ challenge.name }}</div>
+                            <div class="banner">{{ challenge.title }}</div>
                             <div class="challenge-info">{{ challenge.icon }} {{ challenge.type }}</div>
-                            <div class="challenge-info">⏰ {{ challenge.date }}</div>
-                            <div class="challenge-info">🎯 목표: {{ challenge.goal }}</div>
+                            <div class="challenge-info">⏰ {{ challenge.endDt }}</div>
+                            <div class="challenge-info">🎯 목표: {{ challenge.goalCnt }}</div>
                             <div class="progress-bar">
-                                <div class="progress-fill" :style="{ width: challenge.progress + '%' }"></div>
+                                <div class="progress-fill" :style="{ width: calculateProgress(challenge.achievedCnt, challenge.startDt, challenge.endDt) + '%' }"></div>
                             </div>
                         </div>
                     </div>
@@ -86,19 +84,19 @@
 
                         <div class="challenge-info">
                             <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
-                            <input type="text" v-model="newChallenge.name" class="input-field"
-                                placeholder="예: '30일 푸쉬업 챌린지'">
+                            <input type="text" v-model="newChallenge.title" class="input-field"
+                                placeholder="예: '30일 푸쉬업 챌린지'" >
                         </div>
 
                         <div class="challenge-info">
                             <label style="text-align: center; font-size: 1.2rem;">🔥 운동 타입</label>
                             <div style="display: flex; justify-content: space-around; align-items: center;">
                                 <label>
-                                    <input type="radio" v-model="newChallenge.type" value="Push Up">
+                                    <input type="radio" v-model="newChallenge.type" value="PUSHUP">
                                     💪 Push Up
                                 </label>
                                 <label>
-                                    <input type="radio" v-model="newChallenge.type" value="Squat">
+                                    <input type="radio" v-model="newChallenge.type" value="SQUAT">
                                     🏋️‍♂️ Squat
                                 </label>
                             </div>
@@ -106,12 +104,12 @@
 
                         <div class="challenge-info">
                             <label style="font-size: 1.2rem;">⏰ 종료 날짜</label>
-                            <input type="date" v-model="newChallenge.date" class="input-field">
+                            <input type="date" v-model="newChallenge.endDt" class="input-field">
                         </div>
 
                         <div class="challenge-info">
                             <label style="font-size: 1.2rem;">🎯 하루 목표 갯수</label>
-                            <input type="number" v-model="newChallenge.goal" class="input-field" placeholder="예: 30">
+                            <input type="number" v-model="newChallenge.goalCnt" class="input-field" placeholder="예: 30">
                         </div>
 
                         <div class="button-container">
@@ -129,6 +127,31 @@
                     <path stroke-linecap="round" stroke-linejoin="round" width="80" height="80" d="M9 5l7 7-7 7" />
                 </svg>
             </button>
+
+            <div class="box box3">
+            <div class="exp-info-container">
+                <div class="exp-detail-info-container">
+                    <div class="info-container">
+                        <img src="@/assets/images/icon/info-icon.png" @click="toggleInfo" class="info-icon">
+                        <div v-if="showInfo" class="info-popup">
+                            <p class="info-title">[오늘의 챌린지]</p>
+                            <p>오늘 성취한 챌린지(✔️)와 <br> 도전하지 않은 챌린지(⏳) <br> 목록입니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exp-card">
+                    <h5 class="info-section">
+                        챌린지
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li v-for="(challenge, index) in processedChallenges" :key="index" :class="['list', challenge.achieved ? 'completed' : 'pending']">
+                            {{ challenge.title }}: 5 exp
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
         </div>
         
         <div v-for="(icon, index) in floatingIcons" :key="index" class="floating-icon"
@@ -139,26 +162,41 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, reactive, onMounted, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useRouter, useRoute } from 'vue-router';
+import { useChallengeStore } from '@/stores/challenge';
+import { useTodayChallengeStore } from '@/stores/todayChallenge';
+import { useProcessedChallenges } from "@/composables/useProcessedChallenges";
 
+const todayChallengeStore = useTodayChallengeStore();
+const challengeStore = useChallengeStore();
 const router = useRouter();
+const route = useRoute();
 
-const challenges = ref([
-    { id: 1, name: "파워푸쉬업7일", type: "Push Up", icon: "💪", date: "2023-12-31", goal: 30, progress: 60 },
-    { id: 2, name: "꾸준스쿼트30일", type: "Squat", icon: "🏋️‍♂️", date: "2024-01-15", goal: 20, progress: 40 }
-]);
+const userId = route.params.userId;
+
+const { todayChallenges } = storeToRefs(todayChallengeStore);
+const { challenges } = storeToRefs(challengeStore);
 const isCreating = ref(false);
 const isEditing = ref(false);
 const editIndex = ref(null);
-const newChallenge = reactive({ name: "", type: "Push Up", date: "", goal: null });
+const newChallenge = reactive({ title: "", status: "ONGOING", type: "PUSHUP", startDt: new Date().toISOString().split("T")[0], endDt: "", goalCnt: null, userId: userId});
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️", "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
 const floatingIcons = ref([]);
-const editChallenge = reactive({ name: "", type: "", date: "", goal: null });
+const editChallenge = reactive({ title: "", status: "ONGOING", type: "", startDt: "", endDt: "", goalCnt: null, userId: userId});
 const selectedChallenge = ref(null);
 const isDeleteModalOpen = ref(false);
 const deleteIndex = ref(null);
+const showInfo = ref(false);
 
+const { processedChallenges } = useProcessedChallenges(todayChallenges, challenges);
+
+const calculateProgress = (achievedCnt, startDt, endDt) => {
+    const totalDays = Math.ceil((new Date(endDt) - new Date(startDt)) / (1000 * 60 * 60 * 24)) + 1;
+    return ((achievedCnt / totalDays) * 100).toFixed(2);
+}
+ 
 const selectChallenge = (index) => {
     selectedChallenge.value = challenges.value[index];
 };
@@ -168,10 +206,18 @@ const deleteChallenge = (index) => {
     isDeleteModalOpen.value = true;
 };
 
-function confirmDelete() {
+const confirmDelete = async () => {
     if (deleteIndex.value !== null) {
-        challenges.value.splice(deleteIndex.value, 1);
-        deleteIndex.value = null;
+        try {
+            await challengeStore.deleteChallenge(challenges.value[deleteIndex.value].id);
+
+            challenges.value.splice(deleteIndex.value, 1);
+            deleteIndex.value = null;
+        } catch (error) {
+            console.error(error);
+        } finally {
+            isDeleteModalOpen.value = false;
+        }
     }
     isDeleteModalOpen.value = false;
 }
@@ -184,24 +230,27 @@ const startChallenge = (id) => {
     if (selectedChallenge.value) {
         router.push({
             name: 'ChallengePlayView',
-            params: { id: selectedChallenge.value.id }
+            params: { challengeId: id }
         });
     } else {
         alert("챌린지를 선택해주세요.");
     }
-};
+}
 
 const toggleEdit = (index) => {
+    const challenge = challenges.value[index];
     if (editIndex.value === index && isEditing.value) {
         isEditing.value = false;
     } else {
         isEditing.value = true;
         editIndex.value = index;
-        const challenge = challenges.value[index];
-        editChallenge.name = challenge.name;
+        editChallenge.id = challenge.id;
+        editChallenge.title = challenge.title;
         editChallenge.type = challenge.type;
-        editChallenge.date = challenge.date;
-        editChallenge.goal = challenge.goal;
+        editChallenge.startDt = challenge.startDt;
+        editChallenge.endDt = challenge.endDt;
+        editChallenge.goalCnt = challenge.goalCnt;
+        editChallenge.userId = challenge.userId;
     }
 };
 
@@ -210,37 +259,48 @@ const toggleForm = () => {
 };
 
 const resetForm = () => {
-    newChallenge.name = "";
-    newChallenge.type = "Push Up";
-    newChallenge.date = "";
-    newChallenge.goal = null;
+    newChallenge.title = "";
+    newChallenge.type = "PUSHUP";
+    newChallenge.endDt = "";
+    newChallenge.goalCnt
+ = null;
     isCreating.value = false;
 };
 
 const saveChallenge = () => {
-    if (newChallenge.date && newChallenge.goal) {
+    if (newChallenge.endDt && newChallenge.goalCnt) {
         challenges.value.push({
-            name: newChallenge.name,
+            title: newChallenge.title,
             type: newChallenge.type,
-            icon: newChallenge.type === "Push Up" ? "💪" : "🏋️‍♂️",
-            date: newChallenge.date,
-            goal: newChallenge.goal,
+            icon: newChallenge.type === "PUSHUP" ? "💪" : "🏋️‍♂️",
+            endDt: newChallenge.endDt,
+            goalCnt: newChallenge.goalCnt,
             progress: 0
         });
+
+        challengeStore.addChallenge(newChallenge);
         resetForm();
-    } else if (editChallenge.date && editChallenge.goal) {
+    } else if (editChallenge.endDt && editChallenge.goalCnt) {
         challenges.value[editIndex.value] = {
-            name: editChallenge.name,
+            id: editChallenge.id,
+            title: editChallenge.title,
             type: editChallenge.type,
-            icon: editChallenge.type === "Push Up" ? "💪" : "🏋️‍♂️",
-            date: editChallenge.date,
-            goal: editChallenge.goal,
+            icon: editChallenge.type === "PUSHUP" ? "💪" : "🏋️‍♂️",
+            startDt: editChallenge.startDt,
+            endDt: editChallenge.endDt,
+            goalCnt: editChallenge.goalCnt,
+            userId: editChallenge.userId,
             progress: challenges.value[editIndex.value].progress
         };
+        challengeStore.updateChallenge(editChallenge.id, editChallenge);
         isEditing.value = false;
     } else {
         alert("날짜와 목표를 입력해주세요.");
     }
+};
+
+const toggleInfo = () => {
+    showInfo.value = !showInfo.value;
 };
 
 const addFloatingIcons = () => {
@@ -254,13 +314,163 @@ const addFloatingIcons = () => {
     }
 };
 
-onMounted(addFloatingIcons);
+onMounted(async () => {
+    try {
+        await challengeStore.fetchChallenges(1, "ONGOING");
+    } catch (error) {
+        console.error(error);
+    }
+    await todayChallengeStore.fetchTodayChallengeList(userId, new Date().toISOString().split("T")[0]);
+    addFloatingIcons();
+});
 </script>
 
 <style scoped>
+.box {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    height: 40%;
+}
+.box1 {
+    flex: 1;
+}
+.box2 {
+    flex: 2;
+}
+
+.box3 {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.exp-info-container {
+    grid-template-columns: repeat(2, 1fr);
+    border-radius: 20px;
+    color: #333;
+    gap: 20px;
+    width: 15%;
+    height: 300px;
+    padding: 10px;
+    overflow: auto;
+    z-index: 10;
+    position: fixed; 
+    top: 110px;
+    right: 10px;
+}
+.exp-detail-info-container {
+    position: relative;
+    grid-column: span 2;
+    width: auto;
+    height: 0px;
+    border-radius: 15px;
+    gap: 0px;
+}
+
+.info-container {
+    position: relative;
+    display: inline-block;
+    z-index: 100;
+}
+
+.info-icon {
+    cursor: pointer;
+    font-size: 20%;
+    height: 20px;
+    width: 20px;
+}
+
+.info-title {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.info-popup {
+    position: absolute;
+    top: 70%;
+    left: 10%;
+    margin-top: 8px;
+    padding: 12px;
+    width: 13vw;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.exp-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s, box-shadow 0.3s;
+    font-size: 1rem;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-right: -5px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.exp-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.info-section {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+    color: #444;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+}
+
+.list-unstyled {
+    list-style: none;
+    padding-left: 0;
+}
+
+.list {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.list.completed {
+    color: #707974;
+    position: relative;
+}
+
+.list.completed::before {
+    content: '✔️';
+}
+
+.list.pending {
+    font-weight: bold;
+    color: #e64201;
+    position: relative;
+}
+
+.list.pending::before {
+    content: '⏳';
+}
+
 .main-container {
     position: relative;
-    top: 40px;
+    top: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -441,9 +651,8 @@ onMounted(addFloatingIcons);
 
 .progress-fill {
     height: 100%;
-    width: 60%;
+    width: 0% ;
     background-color: #ff7043;
-    animation: fillProgress 1s forwards;
 }
 
 
@@ -769,12 +978,6 @@ onMounted(addFloatingIcons);
 
     50% {
         transform: scale(1.05);
-    }
-}
-
-@keyframes fillProgress {
-    to {
-        width: 75%;
     }
 }
 
