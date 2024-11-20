@@ -1,26 +1,26 @@
 <template>
     <div>
-        <transition name="fade" mode="out-in">
-            <template v-if="countdown > 0">
-                <div class="countdown-container">
-                    <div :key="countdown" id="countdown-container">{{ countdown }}</div>
-                </div>
-            </template>
-            <template v-else>
-                <div>
-                    <div id="pixi-container"></div>
+        <div id="webcam-container"></div>
+        <div id="label-container">Prediction Label</div>
+        <div id="pixi-container"></div>
 
-                    <div id="ui-container">
-                        <div id="label-container">Prediction Label</div>
-                        <div id="counter-container">Count: <span id="counter">{{ counter }}</span></div>
+        <template v-if="countdown > 0">
+            <div class="countdown-container">
+                <div :key="countdown" id="countdown-container">{{ countdown == 4 ? "" : countdown }}</div>
+            </div>
+        </template>
+        <template v-else>
+            <div>
+                <div id="ui-container">
+                    <div class="game-info">
+                        <p>운동 종류: {{ gameStore.typeString }}</p>
+                        <p>난이도: {{ gameStore.gameDifficultyLevel }}</p>
                     </div>
-                    <div id="webcam-container"></div>
-
-                    <button v-if="countdown === 0" @click="openEndModal" class="end-button">끝내기</button>
+                    <div id="counter-container">Count: <span id="counter">{{ counter }}</span></div>
                 </div>
-
-            </template>
-        </transition>
+                <button v-if="countdown === 0" @click="openEndModal" class="end-button">끝내기</button>
+            </div>
+        </template>
 
         <div v-if="isEndModalOpen" class="modal-overlay">
             <div class="modal">
@@ -37,109 +37,132 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted, nextTick, onUnmounted } from 'vue';
-import { Application, Sprite, Assets, Text } from 'pixi.js';
+import { Application, Sprite, Assets } from 'pixi.js';
 import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForGame';
+import { useGameStore } from '@/stores/game';
+import { gsap } from 'gsap';
 
+const gameStore = useGameStore();
 const router = useRouter();
 const isEndModalOpen = ref(false);
-
 const app = ref(null);
 const counter = ref(0);
 const isGameOver = ref(false);
 const isSuccess = ref(false);
-
-const countdown = ref(4);
+const countdown = ref(5);
 let updateInterval = null;
 
-function openEndModal() {
+const openEndModal = () => {
     isEndModalOpen.value = true;
-}
+};
 
-function closeEndModal() {
+const closeEndModal = () => {
     isEndModalOpen.value = false;
-}
+};
 
-function navigateToGameSelect() {
+const navigateToGameSelect = () => {
     isGameOver.value = true;
     if (app.value) {
         app.value.ticker.stop();
     }
     tmStop();
     router.push({ name: 'GameSelectView' });
-}
+};
 
 onUnmounted(() => {
     if (updateInterval) {
         clearInterval(updateInterval);
     }
-
     tmStop();
 });
 
-async function startPixiAndTM() {
+const loadAssets = async () => {
+    const backgroundTexture = await Assets.load('/images/background/bomb_background.jpg');
+    const frames = [];
+    for (let i = 1; i <= 23; i++) {
+        const frameNumber = i.toString().padStart(4, '0');
+        const texture = await Assets.load(`/images/bomb_frames/frame_${frameNumber}.png`);
+        frames.push(texture);
+    }
+    return { backgroundTexture, frames };
+};
+
+const startPixiAndTM = async () => {
     app.value = new Application();
     await app.value.init({
         width: window.innerWidth,
         height: window.innerHeight,
-        backgroundColor: 0x1099bb
+        backgroundColor: 0x1099bb,
     });
-    document.getElementById("pixi-container").appendChild(app.value.canvas);
 
-    const backgroundTexture = await Assets.load('/images/background/background3.png');
-    const runnerTextures = [
-        await Assets.load('/images/rabbit/rabbit1.png'),
-        await Assets.load('/images/rabbit/rabbit2.png'),
-        await Assets.load('/images/rabbit/rabbit3.png'),
-        await Assets.load('/images/rabbit/rabbit4.png'),
-        await Assets.load('/images/rabbit/rabbit5.png'),
-        await Assets.load('/images/rabbit/rabbit6.png'),
-        await Assets.load('/images/rabbit/rabbit7.png'),
-        await Assets.load('/images/rabbit/rabbit8.png'),
-        await Assets.load('/images/rabbit/rabbit9.png')
-    ];
+    const pixiContainer = document.getElementById("pixi-container");
+    if (pixiContainer) {
+        pixiContainer.appendChild(app.value.canvas);
+    } else {
+        console.error("'pixi-container' 요소가 존재하지 않습니다.");
+        return;
+    }
+
+    const webcamContainer = document.getElementById("webcam-container");
+    if (!webcamContainer) {
+        console.error("'webcam-container' 요소가 존재하지 않습니다.");
+        return;
+    }
+
+    const { backgroundTexture, frames } = await loadAssets();
 
     const background = new Sprite(backgroundTexture);
     background.width = app.value.screen.width;
     background.height = app.value.screen.height;
     app.value.stage.addChild(background);
 
-    const runner = new Sprite(runnerTextures[0]);
-    runner.x = 200;
-    const gameOverLimit = 40;
-    runner.y = app.value.screen.height - app.value.screen.height / 2;
-    runner.scale.set(0.5);
-    app.value.stage.addChild(runner);
+    const bombSprite = new Sprite(frames[0]);
+    bombSprite.x = app.value.screen.width - 250;
+    const gameOverLimit = app.value.screen.width - 100;
+    const successLimit = 100;
+    bombSprite.y = app.value.screen.height / 2 + 200;
+    bombSprite.anchor.set(0.5);
+    app.value.stage.addChild(bombSprite);
 
     let frame = 0;
     let frameCounter = 0;
-    const frameInterval = 10;
     let counterValue = 0;
-    let isFalling = false;
+
+    const countMoveSpeed = 100; // 난이도 조절
+    const penaltyMoveSpeed = 0.5;
+    const frameInterval = 3;
+
 
     function updateRunnerAnimation() {
-        frameCounter++;
-        if (frameCounter >= frameInterval) {
-            frame = (frame + 1) % runnerTextures.length;
-            runner.texture = runnerTextures[frame];
-            frameCounter = 0;
+        if (!isGameOver.value) {
+            frameCounter++;
+            if (frameCounter >= frameInterval) {
+                frame = (frame + 1) % frames.length;
+                bombSprite.texture = frames[frame];
+                frameCounter = 0;
+            }
         }
     }
-
-    await tmInit();
 
     async function updateCounter() {
         const newCounterValue = await getCounter();
         if (newCounterValue > counterValue && !isGameOver.value) {
-            runner.x = 100 + newCounterValue * 30;
+            const deltaX = (newCounterValue - counterValue) * countMoveSpeed;
+
+            gsap.to(bombSprite, {
+                x: bombSprite.x - deltaX,
+                duration: 0.5,
+                ease: 'power2.out'
+            });
         }
         counterValue = newCounterValue;
     }
 
-    function moveRunnerLeft() {
+    function moveRunnerRight() {
         if (!isGameOver.value) {
-            runner.x -= 1;
-            if (runner.x <= gameOverLimit) {
-                runner.x = gameOverLimit;
+            bombSprite.x += penaltyMoveSpeed;
+            if (bombSprite.x >= gameOverLimit) {
+                bombSprite.x = gameOverLimit;
                 gameOver();
             }
         }
@@ -147,34 +170,55 @@ async function startPixiAndTM() {
 
     function gameOver() {
         isGameOver.value = true;
-        isFalling = true;
-        runner.texture = runnerTextures[0];
-        router.push({ name: 'FailScreen' });
-    }
 
-    function makeRunnerFall() {
-        if (isFalling) {
-            runner.y += 5;
-            if (runner.y >= app.value.screen.height - runner.height) {
-                runner.y = app.value.screen.height - runner.height;
-            }
-        }
+        console.log("FailScreen - gameId: ", gameStore.gameId);
+        console.log("FailScreen - gameType: ", gameStore.gameType);
+        console.log("FailScreen - gameDifficultyLevel: ", gameStore.gameDifficultyLevel);
+        console.log("FailScreen - gameUserId: ", gameStore.gameUserId);
+
+        tmStop();
+        // router.push({
+        //     name: 'FailScreen',
+        //     state: {
+        //         id: gameStore.gameId,
+        //         type: gameStore.gameType,
+        //         difficultyLevel: gameStore.gameDifficultyLevel,
+        //         userId: gameStore.userId
+        //     }
+        // });
     }
 
     function checkRunnerRight() {
-        const rightLimit = app.value.screen.width - runner.width;
-        if (runner.x >= rightLimit && !isGameOver.value) {
-            runner.x = rightLimit;
+        if (bombSprite.x <= successLimit && !isGameOver.value) {
+            bombSprite.x = successLimit;
             success();
         }
     }
 
-    function success() {
+    async function success() {
         isSuccess.value = true;
-        isFalling = false;
-        runner.texture = runnerTextures[0];
+        bombSprite.texture = frames[0];
         stopRunnerOnSuccess();
-        router.push({ name: 'SuccessScreen' });
+
+        await gameStore.achieveGame(gameStore.gameId, isSuccess.value);
+
+        console.log("SuccessScreen - gameId: ", gameStore.gameId);
+        console.log("SuccessScreen - gameType: ", gameStore.gameType);
+        console.log("SuccessScreen - gameDifficultyLevel: ", gameStore.gameDifficultyLevel);
+        console.log("SuccessScreen - gameExpPoints: ", gameStore.gameExpPoints);
+        console.log("SuccessScreen - gameUserId: ", gameStore.gameUserId);
+
+        tmStop();
+        // router.push({ 
+        //     name: 'SuccessScreen',
+        //     state: {
+        //         id: gameStore.gameId,
+        //         type: gameStore.gameType,
+        //         difficultyLevel: gameStore.gameDifficultyLevel,
+        //         expPoints: gameStore.gameExpPoints,
+        //         userId: gameStore.gameUserId
+        //     }
+        // });
     }
 
     function stopRunnerOnSuccess() {
@@ -184,38 +228,43 @@ async function startPixiAndTM() {
     }
 
     app.value.ticker.add(() => {
-        if (!isGameOver.value && !isSuccess.value) {
-            updateCounter();
-            updateRunnerAnimation();
-            moveRunnerLeft();
+        if (countdown.value == 0) {
+            if (!isGameOver.value && !isSuccess.value) {
+                updateCounter();
+                updateRunnerAnimation();
+                moveRunnerRight();
+            }
+            checkRunnerRight();
         }
-        makeRunnerFall();
-        checkRunnerRight();
     });
-}
+};
 
-function startCountdown() {
-    function countdownStep() {
+const startCountdown = () => {
+    const countdownStep = () => {
         if (countdown.value > 0) {
             countdown.value -= 1;
-
-            console.log(countdown.value)
-
-            nextTick(() => {
-                setTimeout(countdownStep, 1100);
-            });
+            console.log(countdown.value);
+            nextTick(() => setTimeout(countdownStep, 1000));
         } else {
             countdown.value = 0;
             startPixiAndTM();
         }
-    }
-
+    };
     countdownStep();
-}
+};
 
-onMounted(() => {
+onMounted(async () => {
     startCountdown();
-})
+
+    tmInit().then(() => {
+        console.log("Teachable Machine 초기화 완료");
+    }).catch((error) => {
+        console.error("Teachable Machine 초기화 중 오류 발생:", error);
+    });
+
+    startPixiAndTM();
+
+});
 </script>
 
 <style scoped>
@@ -249,8 +298,8 @@ onMounted(() => {
 
 #webcam-container {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    top: 20px;
+    left: 20px;
     width: 400px;
     height: 250px;
     border: 2px solid #ff7043;
@@ -401,5 +450,15 @@ onMounted(() => {
     100% {
         background-color: rgba(0, 0, 0, 0.8);
     }
+}
+
+.game-info {
+    font-size: 1.5rem;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 </style>
