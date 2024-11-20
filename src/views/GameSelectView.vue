@@ -59,28 +59,20 @@
                     </div>
                 </div>
 
-                <div class="exp-card">
+                <div v-for="(difficulties, exercise) in groupedByExercise" :key="exercise" class="exp-card">
                     <h5 class="info-section">
-                        Push Up
+                        {{ exercise }}
                     </h5>
                     <ul class="list-unstyled">
-                        <li class="list pending">Easy: 5 exp</li>
-                        <li class="list completed">Medium: 10 exp</li>
-                        <li class="list completed">Hard: 20 exp</li>
+                        <li 
+                        v-for="(status, difficulty) in difficulties" 
+                        :key="difficulty" 
+                        :class="['list', status === 'completed' ? 'completed' : 'pending']"
+                        >
+                        {{ difficulty }}: {{ expByDifficulty[difficulty] }} exp
+                        </li>
                     </ul>
                 </div>
-
-                <div class="exp-card">
-                    <h5 class="info-section">
-                        Squat
-                    </h5>
-                    <ul class="list-unstyled">
-                        <li class="list completed">Easy: 5 exp</li>
-                        <li class="list completed">Medium: 10 exp</li>
-                        <li class="list pending">Hard: 20 exp</li>
-                    </ul>
-                </div>
-
             </div>
         </div>
 
@@ -93,8 +85,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useRouter, useRoute } from 'vue-router';
 import { useGameStore } from '@/stores/game';
+import { useAchievedExp } from "@/composables/useAchievedExp";
 
 const router = useRouter();
 const route = useRoute();
@@ -102,6 +96,10 @@ const gameStore = useGameStore();
 
 const userId = route.params.userId;
 
+const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
+
+const { games } = storeToRefs(gameStore);
+const { groupedByExercise } = useAchievedExp(games, expByDifficulty);
 const showInfo = ref(false);
 const selectedType = ref(null);
 const selectedLevel = ref(null);
@@ -141,7 +139,10 @@ const addFloatingIcons = () => {
     }
 };
 
-onMounted(addFloatingIcons);
+onMounted(async () => {
+    await gameStore.fetchGameList(userId, new Date().toISOString().split("T")[0]);
+    addFloatingIcons();
+});
 </script>
 
 <style scoped>
@@ -405,7 +406,7 @@ onMounted(addFloatingIcons);
     color: #333;
     gap: 20px;
     width: 95%;
-    height: 40%;
+    height: 50%;
     padding: 10px;
     overflow: auto;
     z-index: 10;

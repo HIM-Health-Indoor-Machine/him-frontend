@@ -18,8 +18,7 @@
 
             <div class="challenge-container">
                 <div v-for="(challenge, index) in challenges" :key="index"
-                    :class="['challenge-box', isEditing && editIndex === index ? 'edit-box' : '', selectedChallenge === challenge ? 'selected' : '']"
-                    @click="selectChallenge(index)">
+                    :class="['challenge-box', isEditing && editIndex === index ? 'edit-box' : '', selectedChallenge === challenge ? 'selected' : '']" @click="selectChallenge(index)">
 
                     <div v-if="!(isEditing && editIndex === index)" class="icon-container">
                         <span @click="toggleEdit(index)" class="icon-button">✏️</span>
@@ -128,6 +127,31 @@
                     <path stroke-linecap="round" stroke-linejoin="round" width="80" height="80" d="M9 5l7 7-7 7" />
                 </svg>
             </button>
+
+            <div class="box box3">
+            <div class="exp-info-container">
+                <div class="exp-detail-info-container">
+                    <div class="info-container">
+                        <img src="@/assets/images/icon/info-icon.png" @click="toggleInfo" class="info-icon">
+                        <div v-if="showInfo" class="info-popup">
+                            <p class="info-title">[오늘의 챌린지]</p>
+                            <p>오늘 성취한 챌린지(✔️)와 <br> 도전하지 않은 챌린지(⏳) <br> 목록입니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exp-card">
+                    <h5 class="info-section">
+                        챌린지
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li v-for="(challenge, index) in processedChallenges" :key="index" :class="['list', challenge.achieved ? 'completed' : 'pending']">
+                            {{ challenge.title }}: 5 exp
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
         </div>
         
         <div v-for="(icon, index) in floatingIcons" :key="index" class="floating-icon"
@@ -142,14 +166,18 @@ import { ref, reactive, onMounted, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter, useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
+import { useTodayChallengeStore } from '@/stores/todayChallenge';
+import { useProcessedChallenges } from "@/composables/useProcessedChallenges";
 
-const store = useChallengeStore();
+const todayChallengeStore = useTodayChallengeStore();
+const challengeStore = useChallengeStore();
 const router = useRouter();
 const route = useRoute();
 
 const userId = route.params.userId;
 
-const { challenges } = storeToRefs(store);
+const { todayChallenges } = storeToRefs(todayChallengeStore);
+const { challenges } = storeToRefs(challengeStore);
 const isCreating = ref(false);
 const isEditing = ref(false);
 const editIndex = ref(null);
@@ -160,12 +188,14 @@ const editChallenge = reactive({ title: "", status: "ONGOING", type: "", startDt
 const selectedChallenge = ref(null);
 const isDeleteModalOpen = ref(false);
 const deleteIndex = ref(null);
+const showInfo = ref(false);
+
+const { processedChallenges } = useProcessedChallenges(todayChallenges, challenges);
 
 const calculateProgress = (achievedCnt, startDt, endDt) => {
     const totalDays = Math.ceil((new Date(endDt) - new Date(startDt)) / (1000 * 60 * 60 * 24)) + 1;
     return ((achievedCnt / totalDays) * 100).toFixed(2);
 }
-    
  
 const selectChallenge = (index) => {
     selectedChallenge.value = challenges.value[index];
@@ -179,7 +209,7 @@ const deleteChallenge = (index) => {
 const confirmDelete = async () => {
     if (deleteIndex.value !== null) {
         try {
-            await store.deleteChallenge(challenges.value[deleteIndex.value].id);
+            await challengeStore.deleteChallenge(challenges.value[deleteIndex.value].id);
 
             challenges.value.splice(deleteIndex.value, 1);
             deleteIndex.value = null;
@@ -248,7 +278,7 @@ const saveChallenge = () => {
             progress: 0
         });
 
-        store.addChallenge(newChallenge);
+        challengeStore.addChallenge(newChallenge);
         resetForm();
     } else if (editChallenge.endDt && editChallenge.goalCnt) {
         challenges.value[editIndex.value] = {
@@ -262,11 +292,15 @@ const saveChallenge = () => {
             userId: editChallenge.userId,
             progress: challenges.value[editIndex.value].progress
         };
-        store.updateChallenge(editChallenge.id, editChallenge);
+        challengeStore.updateChallenge(editChallenge.id, editChallenge);
         isEditing.value = false;
     } else {
         alert("날짜와 목표를 입력해주세요.");
     }
+};
+
+const toggleInfo = () => {
+    showInfo.value = !showInfo.value;
 };
 
 const addFloatingIcons = () => {
@@ -282,18 +316,161 @@ const addFloatingIcons = () => {
 
 onMounted(async () => {
     try {
-        await store.fetchChallenges(1, "ONGOING");
+        await challengeStore.fetchChallenges(1, "ONGOING");
     } catch (error) {
         console.error(error);
     }
+    await todayChallengeStore.fetchTodayChallengeList(userId, new Date().toISOString().split("T")[0]);
     addFloatingIcons();
 });
 </script>
 
 <style scoped>
+.box {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    height: 40%;
+}
+.box1 {
+    flex: 1;
+}
+.box2 {
+    flex: 2;
+}
+
+.box3 {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.exp-info-container {
+    grid-template-columns: repeat(2, 1fr);
+    border-radius: 20px;
+    color: #333;
+    gap: 20px;
+    width: 15%;
+    height: 300px;
+    padding: 10px;
+    overflow: auto;
+    z-index: 10;
+    position: fixed; 
+    top: 110px;
+    right: 10px;
+}
+.exp-detail-info-container {
+    position: relative;
+    grid-column: span 2;
+    width: auto;
+    height: 0px;
+    border-radius: 15px;
+    gap: 0px;
+}
+
+.info-container {
+    position: relative;
+    display: inline-block;
+    z-index: 100;
+}
+
+.info-icon {
+    cursor: pointer;
+    font-size: 20%;
+    height: 20px;
+    width: 20px;
+}
+
+.info-title {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.info-popup {
+    position: absolute;
+    top: 70%;
+    left: 10%;
+    margin-top: 8px;
+    padding: 12px;
+    width: 13vw;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.exp-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s, box-shadow 0.3s;
+    font-size: 1rem;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-right: -5px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.exp-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.info-section {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+    color: #444;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+}
+
+.list-unstyled {
+    list-style: none;
+    padding-left: 0;
+}
+
+.list {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.list.completed {
+    color: #707974;
+    position: relative;
+}
+
+.list.completed::before {
+    content: '✔️';
+}
+
+.list.pending {
+    font-weight: bold;
+    color: #e64201;
+    position: relative;
+}
+
+.list.pending::before {
+    content: '⏳';
+}
+
 .main-container {
     position: relative;
-    top: 40px;
+    top: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
