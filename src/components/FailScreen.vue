@@ -15,11 +15,18 @@
 
 <script setup>
 import { useGameStore } from '@/stores/game';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const gameStore = useGameStore();
 
 const router = useRouter();
+const route = useRoute();
+
+const gameId = route.params.id;
+const gameType = route.params.type;
+const gameDifficultyLevel = route.params.difficultyLevel;
+const gameTheme = route.params.theme;
+const userId = route.params.userId;
 
 const newGame = () => {
   router.push({ name: 'GameSelectView' });
@@ -27,12 +34,13 @@ const newGame = () => {
 
 const retryGame = () => {
   router.push({
-    name: 'GamePlayView',
-    state: {
-      id: gameStore.gameId,
-      type: gameStore.gameType,
-      difficultyLevel: gameStore.gameDifficultyLevel,
-      userId: gameStore.gameUserId
+    name: gameTheme,
+    params: {
+      id: gameId,
+      type: gameType,
+      difficultyLevel: gameDifficultyLevel,
+      theme: gameTheme,
+      userId: userId
     }
   });
 };

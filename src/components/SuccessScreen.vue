@@ -9,11 +9,11 @@
             <div id="celebration-message">축하합니다! 목표를 달성했습니다!</div>
 
             <div class="exp-tier-container">
-                <img class="exp-tier-pic" :src="curTierIcon" alt="현재 티어 사진" />
+                <img class="exp-tier-pic" :src="user.curTierIcon" alt="현재 티어 사진" />
                 <div class="exp-bar-container">
                     <div class="exp-bar-fill" :style="{ width: expFilledBarWidth + '%' }"></div>
                 </div>
-                <img class="exp-tier-pic" :src="nextTierIcon" alt="다음 티어 사진" />
+                <img class="exp-tier-pic" :src="user.nextTierIcon" alt="다음 티어 사진" />
             </div>
 
             <div class="exp-value" :style="addedExp !== 0 ? { '--total-exp': `'${addedExpString}'` } : {}">현재 경험치: {{
@@ -33,22 +33,24 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import curTierImage from '@/assets/images/tier/tier_IRON.png';
-import nextTierImage from '@/assets/images/tier/tier_BRONZE.png';
+import { useRouter, useRoute } from 'vue-router';
 import { useGameStore } from '@/stores/game';
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-
+const userStore = useUserStore();
 const router = useRouter();
+const route = useRoute();
+const { user } = storeToRefs(userStore);
 
-const curTierIcon = ref(curTierImage)
-const nextTierIcon = ref(nextTierImage)
+const gameExp = route.params.expPoints
+const userId = route.params.userId;
 
 const fireworks = ref([]);
-const currentExp = ref(300);
-const addedExp = ref(gameStore.gameExpPoints);
-const targetExp = ref(1000);
+const currentExp = ref(user.exp);
+const addedExp = ref(gameExp);
+const targetExp = ref(user.maxExp);
 const expValue = ref(currentExp.value);
 const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100);
 
@@ -82,9 +84,11 @@ const createFireworks = () => {
     }
 };
 
-onMounted(() => {
+onMounted(async () => {
+    await userStore.fetchUserInfo(userId);
     createFireworks();
     increaseExp();
+    
 });
 
 const newGame = () => {
