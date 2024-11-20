@@ -4,23 +4,21 @@
         <div id="label-container">Prediction Label</div>
         <div id="pixi-container"></div>
 
-        <template v-if="countdown > 0">
+        <div v-if="countdown > 0">
             <div class="countdown-container">
-                <div :key="countdown" id="countdown-container">{{ countdown == 4 ? "" : countdown }}</div>
+                <div :key="countdown" id="countdown-container">{{ countdown === 4 ? "" : countdown }}</div>
             </div>
-        </template>
-        <template v-else>
-            <div>
-                <div id="ui-container">
-                    <div class="game-info">
-                        <p>운동 종류: {{ gameStore.typeString }}</p>
-                        <p>난이도: {{ gameStore.gameDifficultyLevel }}</p>
-                    </div>
-                    <div id="counter-container">Count: <span id="counter">{{ counter }}</span></div>
+        </div>
+        <div v-else>
+            <div id="ui-container">
+                <div class="game-info">
+                    <p>운동 종류: {{ gameStore.typeString }}</p>
+                    <p>난이도: {{ gameStore.gameDifficultyLevel }}</p>
                 </div>
-                <button v-if="countdown === 0" @click="openEndModal" class="end-button">끝내기</button>
+                <div id="counter-container">Count: <span id="counter">{{ counter }}</span></div>
             </div>
-        </template>
+            <button v-if="countdown === 0" @click="openEndModal" class="end-button">끝내기</button>
+        </div>
 
         <div v-if="isEndModalOpen" class="modal-overlay">
             <div class="modal">
@@ -247,7 +245,7 @@ const startCountdown = () => {
             nextTick(() => setTimeout(countdownStep, 1000));
         } else {
             countdown.value = 0;
-            startPixiAndTM();
+            console.log("카운트다운 종료");
         }
     };
     countdownStep();
@@ -263,7 +261,6 @@ onMounted(async () => {
     });
 
     startPixiAndTM();
-
 });
 </script>
 
