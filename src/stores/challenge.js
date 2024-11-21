@@ -8,10 +8,13 @@ export const useChallengeStore = defineStore('challenge', () => {
     const challenges = ref([]);
     const currentChallenge = ref(null);
 
-    const fetchCurrentChallenge = (challengeId) => {
-        axios.get(`${REST_API_URL}/${challengeId}`)
+    const challengeTitle = ref('');
+
+    const fetchCurrentChallenge = async (challengeId) => {
+        await axios.get(`${REST_API_URL}/${challengeId}`)
         .then((response) => {
             currentChallenge.value = response.data;
+            challengeTitle.value = currentChallenge.value.title;
         })
         .catch((err) => {
             console.log(err);
@@ -65,5 +68,5 @@ export const useChallengeStore = defineStore('challenge', () => {
         })
     }
 
-    return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges, addChallenge, updateChallenge, deleteChallenge }
+    return { challenges, currentChallenge, challengeTitle, fetchCurrentChallenge, fetchChallenges, addChallenge, updateChallenge, deleteChallenge }
 })
