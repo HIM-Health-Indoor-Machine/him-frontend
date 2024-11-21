@@ -9,7 +9,7 @@ const showHeader = ref(false);
 watch(
   () => route.name,
   (newRouteName) => {
-    showHeader.value = ['ChallengeSelectView', 'GameSelectView', 'FailScreen', 'SuccessScreen'].includes(newRouteName);
+    showHeader.value = ['ChallengeSelectView', 'GameSelectView', 'FailScreen', 'SuccessScreen', 'ChallengeSuccessScreen'].includes(newRouteName);
   },
   { immediate: true }
 );
