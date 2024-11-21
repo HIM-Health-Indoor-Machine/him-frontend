@@ -81,16 +81,6 @@ onUnmounted(() => {
     tmStop();
 });
 
-// const fetchChallengeData = () => {
-//     try {
-        
-//         challengeTitle.value =  || "제목 없음";
-//     } catch (error) {
-//         console.error("챌린지 데이터를 가져오는 중 오류 발생:", error);
-//     }
-// };
-
-
 function openSaveModal() {
     isModalOpen.value = true;
 }
@@ -174,7 +164,7 @@ function startGame() {
     align-items: center;
     justify-content: flex-start;
     position: relative;
-    height: 95vh;
+    height: 100vh;
     gap: 10px;
 }
 
@@ -371,6 +361,5 @@ function startGame() {
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 20px;
-    text-align: center;
 }
 </style>
