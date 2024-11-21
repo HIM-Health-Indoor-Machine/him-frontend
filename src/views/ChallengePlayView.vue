@@ -45,15 +45,18 @@ import { nextTick, ref, onMounted, onUnmounted } from 'vue';
 import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForChallenge';
 import { useTodayChallengeStore } from '@/stores/todayChallenge';
 import { useChallengeStore } from '@/stores/challenge';
+import { useUserStore } from '@/stores/user';
 
 const todayChallengeStore = useTodayChallengeStore();
 const challengeStore = useChallengeStore();
+const userStore = useUserStore();
 
 const router = useRouter();
 const route = useRoute();
 
 const challengeId = route.params.challengeId;
 const { currentTodayChallenge } = storeToRefs(todayChallengeStore);
+const { currentChallenge } = storeToRefs(challengeStore);
 const counter = ref(0);
 const showCounter = ref(false);
 const countdown = ref(5);
@@ -89,6 +92,9 @@ function closeModal() {
     isModalOpen.value = false;
 }
 
+const prevTier = ref('');
+const prevExp = ref(0);
+
 async function saveAndNavigate() {
     console.log(`저장된 운동 횟수: ${counter.value}`);
     isModalOpen.value = false;
@@ -104,13 +110,29 @@ async function saveAndNavigate() {
         };
     }
 
+    await userStore.fetchUserInfo(userId);
+    prevTier.value = userStore.userTier; 
+    prevExp.value = userStore.userExp;
+
     currentTodayChallenge.value.cnt += counter.value; // cnt 업데이트
     await todayChallengeStore.updateTodayChallenge(currentTodayChallenge.value);
 
-    router.push({ 
-        name: 'ChallengeSelectView',
-        params: { userId: userId }
-    });
+    if (currentChallenge.value.goalCnt <= currentTodayChallenge.value.cnt) {
+        router.push({
+            name: 'ChallengeSuccessScreen',
+            params: { 
+                id: challengeId,
+                userId: userId,
+                prevTier: prevTier.value,
+                prevExp: prevExp.value,
+            }
+        });
+    } else {
+        router.push({ 
+            name: 'ChallengeSelectView',
+            params: { userId: userId }
+        });
+    }
 }
 
 function startCountdown() {
