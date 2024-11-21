@@ -149,8 +149,8 @@
                             챌린지 목록
                         </h5>
                         <ul class="list-unstyled">
-                            <li v-for="(challenge, index) in challenges" :key="index"
-                                :class="['list', isProcessed(challenge.id) ? 'completed' : 'pending']">
+                            <li v-for="(challenge, index) in processedChallenges" :key="index"
+                                :class="['list', challenge.status === 'completed' ? 'completed' : 'pending']">
                                 {{ challenge.title }}: 5 exp
                             </li>
                         </ul>
@@ -196,12 +196,6 @@ const deleteIndex = ref(null);
 const showInfo = ref(false);
 
 const { processedChallenges } = useProcessedChallenges(todayChallenges, challenges);
-
-const isProcessed = (challengeId) => {
-    return processedChallenges.value.some(
-        (processed) => processed.challengeId === challengeId
-    );
-};
 
 const calculateProgress = (achievedCnt, startDt, endDt) => {
     const totalDays = Math.ceil((new Date(endDt) - new Date(startDt)) / (1000 * 60 * 60 * 24)) + 1;
@@ -523,7 +517,7 @@ onMounted(async () => {
     padding: 2rem;
     position: relative;
     z-index: 1;
-    max-width: 80vw;
+    max-width: 60vw;
     overflow-x: auto;
     white-space: nowrap;
     scroll-behavior: smooth;

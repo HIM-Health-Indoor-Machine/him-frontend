@@ -70,8 +70,8 @@
                         챌린지 경험치
                     </h5>
                     <ul class="list-unstyled">
-                        <li v-for="(challenge, index) in challenges" :key="index"
-                            :class="['list', isProcessed(challenge.id) ? 'completed' : 'pending']">
+                        <li v-for="(challenge, index) in processedChallenges" :key="index"
+                            :class="['list', challenge.status === 'completed' ? 'completed' : 'pending']">
                             {{ challenge.title }}: 5 exp
                         </li>
                     </ul>
@@ -302,12 +302,6 @@ const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "
 
 const expValue = ref(0)
 const expFilledBarWidth = ref(0);
-
-const isProcessed = (challengeId) => {
-    return processedChallenges.value.some(
-        (processed) => processed.challengeId === challengeId
-    );
-};
 
 const increaseExp = () => {
     let interval = setInterval(() => {
