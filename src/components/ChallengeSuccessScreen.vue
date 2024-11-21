@@ -1,5 +1,13 @@
 <template>
     <div>
+        <div v-if="showPopup" class="popup-overlay">
+            <div class="popup-content">
+                <button class="close-btn" @click="closePopup">X</button>
+                <img class="exp-tier-pic" :src="newTierIcon" alt="업데이트된 티어 사진" />
+                <h2>🎉 티어 승급! 🎉</h2>
+                <p> {{ newTier }} 로 승급 하셨습니다! </p>
+            </div>
+        </div>
 
         <div id="success-overlay">
             <div id="success-text">SUCCESS!</div>
@@ -64,6 +72,22 @@ const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100);
 
 const totalExp = currentExp.value + addedExp.value;
 
+const showPopup = ref(false);
+
+const openPopup = async () => {
+    await userStore.fetchUserInfo(userId);
+    newTier.value = userStore.userTier; 
+    newExp.value = userStore.userExp;
+    newTierIcon.value = userStore.userTierIcon;
+
+    if (prevTier !== newTier.value) {
+        showPopup.value = true;
+    }
+}
+
+const closePopup = () => {
+  showPopup.value = false;
+};
 
 const increaseExp = () => {
     let interval = setInterval(() => {
