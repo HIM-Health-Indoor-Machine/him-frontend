@@ -8,7 +8,7 @@ export const useTodayChallengeStore = defineStore('todayChallenge', () => {
     const monthlyTodayChallenge = ref([]);
     const currentTodayChallenge = ref({
         id: null,
-        cnt: null,
+        cnt: 0,
         challengeId: null,
         date: null,
     });

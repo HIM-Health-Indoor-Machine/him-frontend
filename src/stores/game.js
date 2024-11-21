@@ -14,6 +14,7 @@ export const useGameStore = defineStore(`game`, () => {
     const gameIsAchieved = ref(false);
     const monthlyGame = ref([]);
     const games = ref([]);
+    const game = ref();
 
     // getters
     const typeString = computed(() => {
@@ -66,14 +67,23 @@ export const useGameStore = defineStore(`game`, () => {
             params: { year, month }
         })
         .then((response) => {
-            monthlyGame.value = response.data.map((game) => ({
-                ...game
-            }));
+            const data = response.data;
+    
+            if (Array.isArray(data)) {
+                monthlyGame.value = data.map((game) => ({
+                    ...game
+                }));
+            } else {
+                console.error("Response data is not an array:", data);
+                monthlyGame.value = [];
+            }
         })
         .catch((err) => {
-            console.log(err);
-        })
-    }
+            console.log("Error fetching games:", err);
+            monthlyGame.value = [];
+        });
+    };
+    
 
     const fetchGameList = async (userId, date) => {
         await axios.get(`${REST_API_URL}/list`, {

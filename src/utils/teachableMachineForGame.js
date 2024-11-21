@@ -20,6 +20,7 @@ async function init() {
         await webcam.play();
         const webcamContainer = document.getElementById("webcam-container");
         if (webcamContainer) {
+            webcamContainer.innerHTML = "";
             webcamContainer.appendChild(webcam.canvas);
         } else {
             console.error("'webcam-container' 요소가 존재하지 않습니다.");
@@ -96,8 +97,27 @@ async function predict() {
 }
 
 function stop() {
-    webcam.stop();
-    console.log("웹캠 스트림 중지");
+    if (webcam) {
+        if (webcam.stream) {
+            try {
+                webcam.stream.getTracks().forEach((track) => track.stop());
+                console.log("웹캠 스트림 트랙 중지 완료");
+            } catch (error) {
+                console.warn("스트림 트랙 중지 중 오류:", error);
+            }
+        } else {
+            console.warn("webcam.stream이 null 상태입니다.");
+        }
+
+        try {
+            webcam.stop();
+            console.log("webcam.stop() 호출 성공");
+        } catch (error) {
+            console.error("webcam.stop() 호출 중 오류:", error);
+        }
+    } else {
+        console.warn("webcam 객체가 초기화되지 않았습니다.");
+    }
 
     if (animationFrameId !== null) {
         window.cancelAnimationFrame(animationFrameId);
@@ -119,6 +139,7 @@ function stop() {
     lastLabel = "";
     console.log("Teachable Machine 세션이 종료되었습니다.");
 }
+
 
 
 export { getCounter, init, stop };
