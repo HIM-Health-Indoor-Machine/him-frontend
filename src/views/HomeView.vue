@@ -1156,7 +1156,6 @@ onMounted(async () => {
 }
 
 
-/* 배경 아이콘 */
 .floating-icon {
     position: absolute;
     font-size: 28px;
@@ -1187,29 +1186,30 @@ onMounted(async () => {
 }
 
 .logout-item {
-  display: block;
-  /* padding: 12px 16px; */
-  font-size: 1.1rem;
-  color: #374151;
-  text-decoration: none;
-  margin-left: 15px;
+    display: block;
+    font-size: 1.1rem;
+    color: #374151;
+    text-decoration: none;
+    margin-left: 15px;
 }
 
 .logout-item {
-  display: inline-block;
-  transition: transform 0.1s ease-in-out, background-color 0.2s;
-  cursor: pointer;
+    display: inline-block;
+    transition: transform 0.1s ease-in-out, background-color 0.2s;
+    cursor: pointer;
 }
 
 .logout-item:hover {
-  transform: scale(1.3);
-  border-radius: 5px;
+    transform: scale(1.3);
+    border-radius: 5px;
 }
 
 .user-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
 .no-challenge {
     color: gray;
     text-align: center;
