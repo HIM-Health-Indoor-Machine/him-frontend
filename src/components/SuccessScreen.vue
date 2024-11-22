@@ -1,5 +1,14 @@
 <template>
     <div>
+        <div v-if="showPopup" class="popup-overlay">
+            <div class="popup-content">
+                <button class="close-btn" @click="closePopup">X</button>
+                <img class="exp-tier-pic" :src="newTierIcon" alt="업데이트된 티어 사진" />
+                <h2>🎉 티어 승급! 🎉</h2>
+                <p> {{ newTier }} 로 승급 하셨습니다! </p>
+            </div>
+        </div>
+
         <div id="success-overlay">
             <div id="success-text">SUCCESS!</div>
             <div class="game-info">
@@ -55,6 +64,21 @@ const expValue = ref(currentExp.value);
 const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100);
 
 const totalExp = currentExp.value + addedExp.value;
+const showPopup = ref(false);
+
+const newTier = ref('');
+const newExp = ref(0);
+const newTierIcon =ref('');
+
+const openPopup = async () => {
+    if (prevTier !== newTier.value) {
+        showPopup.value = true;
+    }
+}
+
+const closePopup = () => {
+  showPopup.value = false;
+};
 
 const increaseExp = () => {
     let interval = setInterval(() => {
@@ -416,5 +440,38 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
     font-size: 1.5rem;
     color: #7a7878;
     text-align: center;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  width: 300px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
 }
 </style>
