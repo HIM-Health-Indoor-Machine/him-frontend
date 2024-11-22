@@ -58,13 +58,11 @@ const userId = route.params.userId;
 const prevTier = route.params.prevTier;
 
 const fireworks = ref([]);
-const currentExp = ref(user.exp);
 const addedExp = ref(gameExp);
-const targetExp = ref(user.maxExp);
-const expValue = ref(currentExp.value);
-const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100);
 
-const totalExp = currentExp.value + addedExp.value;
+const expValue = ref(0);
+const expFilledBarWidth = ref(0);
+
 const showPopup = ref(false);
 
 const newTier = ref('');
@@ -83,16 +81,17 @@ const closePopup = () => {
 
 const increaseExp = () => {
     let interval = setInterval(() => {
-        if (expValue.value < totalExp) {
-            expValue.value += 1;
+        if (expValue.value + 10 <= user.value.exp) { 
+            expValue.value += 10;
         } else {
+            expValue.value = user.value.exp; 
             clearInterval(interval);
         }
-    }, 30);
+    }, 10);
 };
 
 watch(expValue, (newVal) => {
-    expFilledBarWidth.value = (newVal / targetExp.value) * 100;
+    expFilledBarWidth.value = (newVal / user.value.maxExp) * 100;
 });
 
 const createFireworks = () => {
