@@ -70,6 +70,26 @@ export const useAuthStore = defineStore('auth', () => {
             verificationStatus.value.message = "인증에 실패했습니다. 다른 이메일을 사용해주세요.";
         }
     };
+
+    const login = async (email, password) => {
+        try {
+            const response = await axiosInstance.post(`/auth/login`, { email, password });
+            localStorage.setItem("accessToken", response.data.accessToken);
+            localStorage.setItem("userId", response.data.userId);
+
+            userInfo.value = {
+                email: response.data.email,
+                userId: response.data.userId,
+                message: response.data.message,
+            };
+
+            console.log("로그인 성공:", response.data.message);
+            return true;
+        } catch (err) {
+            console.error("로그인 실패:", err.response?.data?.message || "알 수 없는 오류");
+            return false;
+        }
+    };
     return {
         signupStatus,
         verificationStatus,
@@ -77,5 +97,6 @@ export const useAuthStore = defineStore('auth', () => {
         sendVerificationCode,
         verifyCode,
         userInfo,
+        login,
     };
 });
