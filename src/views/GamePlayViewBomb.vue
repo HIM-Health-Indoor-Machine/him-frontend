@@ -38,9 +38,11 @@ import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 import { Application, Sprite, Assets } from 'pixi.js';
 import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForGame';
 import { useGameStore } from '@/stores/game';
+import { useUserStore } from '@/stores/user';
 import { gsap } from 'gsap';
 
 const gameStore = useGameStore();
+const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 const isEndModalOpen = ref(false);
@@ -49,6 +51,7 @@ const counter = ref(0);
 const isGameOver = ref(false);
 const isSuccess = ref(false);
 const countdown = ref(5);
+const prevTier = ref('');
 let updateInterval = null;
 
 const gameId = route.params.id;
@@ -134,9 +137,6 @@ const startPixiAndTM = async () => {
     let frame = 0;
     let frameCounter = 0;
     let counterValue = 0;
-
-
-
     let countMoveSpeed = 0;
 
     if(gameStore.gameDifficultyLevel === 'EASY') {
@@ -221,7 +221,8 @@ const startPixiAndTM = async () => {
             name: 'SuccessScreen',
             params: {
                 userId: userId,
-                expPoints: gameStore.gameExpPoints
+                prevTier: prevTier.value,
+                expPoints: gameStore.gameExpPoints,
             }
         });
     }
@@ -266,7 +267,8 @@ onMounted(async () => {
     }).catch((error) => {
         console.error("Teachable Machine 초기화 중 오류 발생:", error);
     });
-
+    await userStore.fetchUserInfo(userId);
+    prevTier.value = userStore.userTier;
     startPixiAndTM();
 });
 </script>

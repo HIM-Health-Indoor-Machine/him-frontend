@@ -17,6 +17,9 @@ export const useUserStore = defineStore('user', () => {
         exp: 0,
     });
     const userId = ref(1);
+    const userTier = ref('');
+    const userExp = ref(0);
+    const userTierIcon = ref('');
 
     const fetchUserInfo = async (userId) => {
         await axios.get(`${REST_API_URL}/${userId}`)
@@ -25,6 +28,9 @@ export const useUserStore = defineStore('user', () => {
             user.value.curTierIcon = getTierIcon(user.value.tier);
             user.value.nextTierIcon = getNextTierIcon(user.value.tier);
             user.value.maxExp = getNextExp(user.value.tier);
+            userTier.value = user.value.tier;
+            userExp.value = user.value.exp;
+            userTierIcon.value = user.value.curTierIcon;
         })
         .catch((err) => {
             console.log(err);
@@ -40,5 +46,5 @@ export const useUserStore = defineStore('user', () => {
             console.log(err);
         })
     }
-    return { user, userId, fetchUserInfo, updateUserInfo }
+    return { user, userId, userTier, userExp, userTierIcon, fetchUserInfo, updateUserInfo }
 })
