@@ -1,11 +1,10 @@
-import axios from "axios";
+import { setupAxiosInterceptors } from "@/plugins/setupAxios.js";
 import { defineStore } from "pinia"
-import { computed, ref } from "vue";
-
-const REST_API_URL = 'http://localhost:8080/api/game'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 export const useGameStore = defineStore(`game`, () => {
-    // states
     const gameId = ref(-1);
     const gameType = ref('');
     const gameDifficultyLevel = ref('');
@@ -14,25 +13,19 @@ export const useGameStore = defineStore(`game`, () => {
     const gameIsAchieved = ref(false);
     const monthlyGame = ref([]);
     const games = ref([]);
-    const game = ref();
 
-    // getters
-    const typeString = computed(() => {
-        return gameType.value === 'PUSHUP' ? 'Push Up' : 'Squat';
-    });
+    const authStore = useAuthStore();
+    const router = useRouter();
+    const axiosInstance = setupAxiosInterceptors(authStore, router);
 
-    // actions
     const createGame = async (type, difficultyLevel, userId) => {
 
-        console.log("game.js - type: " + type);
-        console.log("game.js - difficultyLevel: " + difficultyLevel);
-        console.log("game.js - userId: " + userId);
         gameType.value = type;
         gameDifficultyLevel.value = difficultyLevel;
         gameUserId.value = userId;
 
         try {
-            const response = await axios.post(REST_API_URL, {
+            const response = await axiosInstance.post(`/game`, {
                 type: gameType.value,
                 difficultyLevel: gameDifficultyLevel.value,
                 userId: gameUserId.value
@@ -51,7 +44,7 @@ export const useGameStore = defineStore(`game`, () => {
         console.log(isAchieved);
 
         try {
-            const response = await axios.put(REST_API_URL, {
+            const response = await axiosInstance.put(`/game`, {
                 gameId: gameId.value,
                 isAchieved: gameIsAchieved.value
             });
@@ -63,7 +56,7 @@ export const useGameStore = defineStore(`game`, () => {
     }
 
     const fetchMonthlyGame = async (userId, year, month) => {
-        await axios.get(`${REST_API_URL}/${userId}`, {
+        await axiosInstance.get(`/game/${userId}`, {
             params: { year, month }
         })
         .then((response) => {
@@ -86,7 +79,7 @@ export const useGameStore = defineStore(`game`, () => {
     
 
     const fetchGameList = async (userId, date) => {
-        await axios.get(`${REST_API_URL}/list`, {
+        await axiosInstance.get(`/game/list`, {
             params: { userId, date }
         })
         .then((response) => {
@@ -108,7 +101,6 @@ export const useGameStore = defineStore(`game`, () => {
         gameIsAchieved,
         monthlyGame,
         games,
-        typeString,
         createGame,
         achieveGame,
         fetchMonthlyGame,

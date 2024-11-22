@@ -3,7 +3,11 @@
 
         <div class="box user-info">
             <div v-if="user" class="user-details">
-                <h2 class="nickname">{{ user.nickname }}</h2>
+
+                <div class="user-header">
+                    <h2 class="nickname">{{ user.nickname }}</h2>
+                    <div @click="handleLogout" class="logout-item">로그아웃</div>
+                </div>
 
                 <div class="profile-pic-wrapper">
                     <img class="profile-pic" :src="user.profileImg" alt="프로필 사진" />
@@ -165,6 +169,7 @@
                 </div>
 
                 <div class="box3-and-buttons">
+                    <!-- <div class="box box3"> -->
                     <div class="box box3 tier-container">
                         <h5 class="info-section">
                             예시
@@ -227,7 +232,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAttendanceStore } from '@/stores/attendance';
 import { useTodayChallengeStore } from '@/stores/todayChallenge';
@@ -237,13 +242,16 @@ import { useUserStore } from '@/stores/user';
 import { characterImages, tierImages } from '@/assets/imageAssets';
 import { useAchievedExp } from "@/composables/useAchievedExp";
 import { useProcessedChallenges } from "@/composables/useProcessedChallenges";
+import { useAuthStore } from "@/stores/auth";
 
 const todayChallengeStore = useTodayChallengeStore();
 const attendanceStore = useAttendanceStore();
 const challengeStore = useChallengeStore();
 const userStore = useUserStore();
 const gameStore = useGameStore();
+const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
 
 const showInfo = ref(false);
 const { monthlyTodayChallenge } = storeToRefs(todayChallengeStore);
@@ -254,6 +262,7 @@ const { challenges } = storeToRefs(challengeStore);
 const { games } = storeToRefs(gameStore);
 const { userId } = storeToRefs(userStore);
 const { user } = storeToRefs(userStore);
+const { userInfo } = storeToRefs(authStore);
 
 const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
 
@@ -316,6 +325,21 @@ const increaseExp = () => {
 watch(expValue, (newVal) => {
     expFilledBarWidth.value = (newVal / user.value.maxExp) * 100;
 });
+
+watch(route, async () => {
+    const routeUserId = route.params.userId;
+    if (routeUserId) {
+        userId.value = routeUserId;
+    }
+
+    await userStore.fetchUserInfo(userId.value);
+    addFloatingIcons();
+    await generateCalendar();
+    challengeStore.fetchChallenges(userId.value, "ONGOING");
+    await todayChallengeStore.fetchTodayChallengeList(userId.value, new Date().toISOString().split("T")[0]);
+    await gameStore.fetchGameList(userId.value, new Date().toISOString().split("T")[0]);
+    increaseExp();
+})
 
 const startChallenge = () => {
     router.push({
@@ -397,11 +421,25 @@ const addFloatingIcons = () => {
     }
 };
 
+const handleLogout = async () => {
+    try {
+        await authStore.logout(userInfo.value.email);
+        router.push({ name: "StartView" });
+    } catch (err) {
+        console.error("로그아웃 에러:", err);
+    }
+};
+
 onMounted(async () => {
+    const routeUserId = route.params.userId;
+    if (routeUserId) {
+        userId.value = routeUserId;
+    }
+
     await userStore.fetchUserInfo(userId.value);
     addFloatingIcons();
     await generateCalendar();
-    await challengeStore.fetchChallenges(1, "ONGOING");
+    challengeStore.fetchChallenges(userId.value, "ONGOING");
     await todayChallengeStore.fetchTodayChallengeList(userId.value, new Date().toISOString().split("T")[0]);
     await gameStore.fetchGameList(userId.value, new Date().toISOString().split("T")[0]);
     increaseExp();
@@ -1143,5 +1181,31 @@ onMounted(async () => {
     margin-top: 5px;
     margin-bottom: 0;
     padding-left: 0;
+}
+
+.logout-item {
+  display: block;
+  /* padding: 12px 16px; */
+  font-size: 1.1rem;
+  color: #374151;
+  text-decoration: none;
+  margin-left: 15px;
+}
+
+.logout-item {
+  display: inline-block;
+  transition: transform 0.1s ease-in-out, background-color 0.2s;
+  cursor: pointer;
+}
+
+.logout-item:hover {
+  transform: scale(1.3);
+  border-radius: 5px;
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 </style>

@@ -1,17 +1,19 @@
-import axios from "axios";
+import { setupAxiosInterceptors } from "@/plugins/setupAxios.js";
 import { defineStore } from "pinia";
 import { ref } from 'vue';
-
-const REST_API_URL = `http://localhost:8080/api/challenge`;
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 export const useChallengeStore = defineStore('challenge', () => {
     const challenges = ref([]);
     const currentChallenge = ref(null);
+    
+    const authStore = useAuthStore();
+    const router = useRouter();
+    const axiosInstance = setupAxiosInterceptors(authStore, router);
 
-    const challengeTitle = ref('');
-
-    const fetchCurrentChallenge = async (challengeId) => {
-        await axios.get(`${REST_API_URL}/${challengeId}`)
+    const fetchCurrentChallenge = (challengeId) => {
+        axiosInstance.get(`/challenge/${challengeId}`)
         .then((response) => {
             currentChallenge.value = response.data;
             challengeTitle.value = currentChallenge.value.title;
@@ -22,7 +24,7 @@ export const useChallengeStore = defineStore('challenge', () => {
     }
 
     const fetchChallenges = (userId, status) => {
-        axios.get(REST_API_URL, {
+        axiosInstance.get(`/challenge`, {
             params: { userId, status }
         })
         .then((response) => {
@@ -38,7 +40,7 @@ export const useChallengeStore = defineStore('challenge', () => {
     }
 
     const addChallenge = (challenge) => {
-        axios.post(REST_API_URL, challenge)
+        axiosInstance.post(`/challenge`, challenge)
         .then((response) => {
             console.log(response);
             challenges.value.push(response.data);
@@ -49,7 +51,7 @@ export const useChallengeStore = defineStore('challenge', () => {
     }
 
     const updateChallenge = (challengeId, challenge) => {
-        axios.put(`${REST_API_URL}/${challengeId}`, challenge)
+        axiosInstance.put(`/challenge/${challengeId}`, challenge)
         .then((response) => {
             console.log(response);
         })
@@ -59,7 +61,7 @@ export const useChallengeStore = defineStore('challenge', () => {
     }
 
     const deleteChallenge = (challengeId) => {
-        axios.delete(`${REST_API_URL}/${challengeId}`)
+        axiosInstance.delete(`/challenge/${challengeId}`)
         .then((response) => {
             console.log(response);
         })

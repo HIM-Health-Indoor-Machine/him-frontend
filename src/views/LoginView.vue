@@ -13,15 +13,6 @@
             <h2 class="welcome-message">환영합니다!</h2>
             <p class="intro-text">HIM으로 힘을 길러보세요!</p>
 
-            <div class="social-buttons">
-                <button @click="socialLogin('Google')" class="social-button">
-                    <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google" class="icon">
-                    Google
-                </button>
-            </div>
-
-            <div class="divider-text">또는 이메일로 로그인해보세요!</div>
-
             <form @submit.prevent="login">
                 <div class="form-group">
                     <label class="form-label">이메일</label>
@@ -31,6 +22,7 @@
                     <label class="form-label">비밀번호</label>
                     <input type="password" v-model="password" class="input-field" placeholder="Password">
                 </div>
+                <div v-if="loginError" class="error-message">{{ loginError }}</div>
                 <div class="form-options">
                     <label class="checkbox-container">
                         <input type="checkbox" v-model="rememberMe" class="form-checkbox">
@@ -56,23 +48,35 @@
 
 
 <script setup>
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 import { ref, onMounted } from 'vue'
-const email = ref('');
-const password = ref('');
-const rememberMe = ref(false);
 const floatingIcons = ref([]);
 const icons = ["💪", "❤️", "🏋️‍♂️", "🔥", "💚", "⏱️", "👟", "🏆", "💦", "🤸‍♀️",
     "🚴", "🏃", "🥇", "🏅", "🧘", "🩺", "🥗", "🍎", "🥤", "🚶"];
 
-const socialLogin = (platform) => {
-    alert(`${platform} 로그인 기능은 아직 구현되지 않았습니다.`);
-};
+const email = ref('');
+const password = ref('');
+const rememberMe = ref(false);
+const loginError = ref("");
 
-const login = () => {
-    if (email.value && password.value) {
-        alert(`환영합니다, ${email.value}! 로그인되었습니다.`);
+const authStore = useAuthStore();
+const router = useRouter();
+
+const login = async () => {
+    if (!email.value || !password.value) {
+        loginError.value = "이메일과 비밀번호를 입력하세요.";
+        return;
+    }
+
+    const success = await authStore.login(email.value, password.value);
+    if (success) {
+        router.push({
+            name: "HomeView",
+            params: { userId: authStore.userInfo.userId },
+        });
     } else {
-        alert("이메일과 비밀번호를 입력하세요.");
+        loginError.value = "로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.";
     }
 };
 
@@ -148,42 +152,10 @@ onMounted(() => {
     width: 30%;
 }
 
-.social-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.social-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-    color: #718096;
-    font-family: 'HakgyoansimDunggeunmisoTTF-B';
-    cursor: pointer;
-}
-
-.social-button:hover {
-    background-color: #d5d5df;
-}
-
 .icon {
     height: 1.25rem;
     width: 1.25rem;
     margin-right: 0.5rem;
-}
-
-.divider-text {
-    text-align: center;
-    color: #a0aec0;
-    margin-bottom: 1rem;
 }
 
 .form-group {
@@ -293,5 +265,12 @@ onMounted(() => {
     100% {
         transform: translateY(-30px);
     }
+}
+
+.error-message {
+    color: #d32f2f;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 </style>

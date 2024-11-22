@@ -1,14 +1,18 @@
-import axios from "axios";
+import { setupAxiosInterceptors } from "@/plugins/setupAxios.js";
 import { defineStore } from "pinia";
 import { ref } from 'vue';
-
-const REST_API_URL = `http://localhost:8080/api/attendance`;
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth"; 
 
 export const useAttendanceStore = defineStore('attendance', () => {
     const monthlyAttendance = ref([]);
 
+    const authStore = useAuthStore();
+    const router = useRouter();
+    const axiosInstance = setupAxiosInterceptors(authStore, router); 
+
     const setAttendanceStatus = (userId) => {
-        axios.get(`${REST_API_URL}/check/${userId}`)
+        axiosInstance.get(`/attendance/check/${userId}`)
         .then((response) => {
             console.log(response);
         })
@@ -18,7 +22,7 @@ export const useAttendanceStore = defineStore('attendance', () => {
     }
     
     const fetchMonthlyAttendance = async (userId, year, month) => {
-        await axios.get(`${REST_API_URL}/${userId}`, {
+        await axiosInstance.get(`/attendance/${userId}`, {
             params: { year, month }
         })
         .then((response) => {
