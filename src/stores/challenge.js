@@ -16,6 +16,7 @@ export const useChallengeStore = defineStore('challenge', () => {
         axiosInstance.get(`/challenge/${challengeId}`)
         .then((response) => {
             currentChallenge.value = response.data;
+            challengeTitle.value = currentChallenge.value.title;
         })
         .catch((err) => {
             console.log(err);
@@ -69,5 +70,5 @@ export const useChallengeStore = defineStore('challenge', () => {
         })
     }
 
-    return { challenges, currentChallenge, fetchCurrentChallenge, fetchChallenges, addChallenge, updateChallenge, deleteChallenge }
+    return { challenges, currentChallenge, challengeTitle, fetchCurrentChallenge, fetchChallenges, addChallenge, updateChallenge, deleteChallenge }
 })

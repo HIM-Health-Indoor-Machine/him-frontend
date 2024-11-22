@@ -9,6 +9,7 @@ import GamePlayViewBomb from '@/views/GamePlayViewBomb.vue';
 import GamePlayViewFlying from '@/views/GamePlayViewFlying.vue';
 import ChallengeSelectView from '@/views/ChallengeSelectView.vue';
 import ChallengePlayView from '@/views/ChallengePlayView.vue';
+import ChallengeSuccessScreen from '@/components/ChallengeSuccessScreen.vue';
 import SuccessScreen from '@/components/SuccessScreen.vue';
 import FailScreen from '@/components/FailScreen.vue';
 
@@ -69,10 +70,15 @@ const routes = [
     component: FailScreen,
   },
   {
-    path: '/success-screen/:userId/:expPoints',
+    path: '/success-screen/:userId/:prevTier/:expPoints',
     name: 'SuccessScreen',
     component: SuccessScreen,
   },
+  {
+    path: '/challenge-success-screen/:id/:userId/:prevTier/:prevExp',
+    name: 'ChallengeSuccessScreen',
+    component: ChallengeSuccessScreen, 
+  }
 ];
 
 const router = createRouter({

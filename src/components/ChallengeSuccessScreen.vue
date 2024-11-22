@@ -11,11 +11,10 @@
 
         <div id="success-overlay">
             <div id="success-text">SUCCESS!</div>
-            <div class="game-info">
-                <p>운동 종류: {{ gameStore.typeString }}</p>
-                <div>난이도: {{ gameStore.gameDifficultyLevel }}</div>
+            <div class="challenge-info">
+                <p>챌린지 제목 : {{ challengeStore.challengeTitle }}</p>
             </div>
-            <div id="celebration-message">축하합니다! 목표를 달성했습니다!</div>
+            <div id="celebration-message">축하합니다! 오늘의 챌린지를 달성했습니다!</div>
 
             <div class="exp-tier-container">
                 <img class="exp-tier-pic" :src="user.curTierIcon" alt="현재 티어 사진" />
@@ -26,12 +25,12 @@
             </div>
 
             <div class="exp-value" :style="addedExp !== 0 ? { '--total-exp': `'${addedExpString}'` } : {}">현재 경험치: {{
-                expValue }} EXP</div>
+                newExp }} EXP</div>
             <div v-if="addedExp === 0" class="no-exp-message">
-                이미 성공한 게임이므로 경험치가 추가되지 않습니다.
+                이미 성공한 챌린지이므로 경험치가 추가되지 않습니다.
             </div>
 
-            <button class="new-challenge-button" @click="newGame">새로운 게임하기</button>
+            <button class="new-challenge-button" @click="anotherChallenges">다른 챌린지 하러하기</button>
 
             <div v-for="firework in fireworks" :key="firework.id" class="firework"
                 :style="{ left: firework.left + '%', top: firework.top + '%', backgroundColor: firework.color }">
@@ -43,33 +42,44 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useGameStore } from '@/stores/game';
+import { useTodayChallengeStore } from '@/stores/todayChallenge';
+import { useChallengeStore } from '@/stores/challenge';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 
-const gameStore = useGameStore();
+const todayChallengeStore = useTodayChallengeStore();
+const challengeStore = useChallengeStore();
 const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 const { user } = storeToRefs(userStore);
 
-const gameExp = route.params.expPoints;
-const userId = route.params.userId;
+const challengeId = route.params.id;
 const prevTier = route.params.prevTier;
-
-const fireworks = ref([]);
-const addedExp = ref(gameExp);
-
-const expValue = ref(0);
-const expFilledBarWidth = ref(0);
-
-const showPopup = ref(false);
+const prevExp = route.params.prevExp;
+const userId = route.params.userId;
 
 const newTier = ref('');
 const newExp = ref(0);
 const newTierIcon =ref('');
 
+const fireworks = ref([]);
+const currentExp = ref(prevExp);
+const addedExp = ref(newExp);
+const targetExp = ref(user.value.maxExp);
+const expValue = ref(currentExp.value);
+const expFilledBarWidth = ref((expValue.value / targetExp.value) * 100);
+
+const totalExp = currentExp.value + addedExp.value;
+
+const showPopup = ref(false);
+
 const openPopup = async () => {
+    await userStore.fetchUserInfo(userId);
+    newTier.value = userStore.userTier; 
+    newExp.value = userStore.userExp;
+    newTierIcon.value = userStore.userTierIcon;
+
     if (prevTier !== newTier.value) {
         showPopup.value = true;
     }
@@ -81,18 +91,13 @@ const closePopup = () => {
 
 const increaseExp = () => {
     let interval = setInterval(() => {
-        if (expValue.value + 10 <= user.value.exp) { 
-            expValue.value += 10;
+        if (expValue.value < totalExp) {
+            expValue.value += 1;
         } else {
-            expValue.value = user.value.exp; 
             clearInterval(interval);
         }
-    }, 10);
+    }, 30);
 };
-
-watch(expValue, (newVal) => {
-    expFilledBarWidth.value = (newVal / user.value.maxExp) * 100;
-});
 
 const createFireworks = () => {
     const colors = ['#FFD700', '#FF4500', '#4CAF50', '#FF69B4', '#00FFFF'];
@@ -107,20 +112,19 @@ const createFireworks = () => {
         }, i * 100);
     }
 };
-onMounted(async () => {
-    await userStore.fetchUserInfo(userId);
-    newTier.value = userStore.userTier; 
-    newExp.value = userStore.userExp;
-    newTierIcon.value = userStore.userTierIcon;
 
+onMounted(async () => {
     openPopup();
+    await challengeStore.fetchCurrentChallenge(challengeId);
     createFireworks();
     increaseExp();
-    
 });
 
-const newGame = () => {
-    router.push({ name: 'GameSelectView' });
+const anotherChallenges = () => {
+    router.push({ 
+        name: 'ChallengeSelectView',
+        params: { userId: userId.value }
+    });
 };
 
 const addedExpString = computed(() => `+${addedExp.value} EXP!`);
@@ -170,7 +174,7 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
 
 .exp-tier-pic {
     width: 70px;
-    height: 74px;
+    height: 100px;
     margin-bottom: 5px;
     margin-top: 5px;
 }
@@ -186,7 +190,6 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
 }
 
 .exp-bar-fill {
-    width: 0;
     height: 100%;
     background: linear-gradient(90deg, #a8e063, #56ab2f);
     border-radius: 15px 0 0 15px;
@@ -208,7 +211,7 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
     animation: shine 2s infinite linear;
 }
 
-.game-info {
+.challenge-info {
     font-size: 1.5rem;
     color: #7a7878;
     text-align: center;
@@ -445,7 +448,6 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
     color: #7a7878;
     text-align: center;
 }
-
 .popup-overlay {
   position: fixed;
   top: 0;

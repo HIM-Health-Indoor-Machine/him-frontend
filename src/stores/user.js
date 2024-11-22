@@ -22,6 +22,9 @@ export const useUserStore = defineStore('user', () => {
     const axiosInstance = setupAxiosInterceptors(authStore, router);
 
     const userId = ref(0);
+    const userTier = ref('');
+    const userExp = ref(0);
+    const userTierIcon = ref('');
 
     const fetchUserInfo = async (userIdParam) => {
 
@@ -31,6 +34,9 @@ export const useUserStore = defineStore('user', () => {
             user.value.curTierIcon = getTierIcon(user.value.tier);
             user.value.nextTierIcon = getNextTierIcon(user.value.tier);
             user.value.maxExp = getNextExp(user.value.tier);
+            userTier.value = user.value.tier;
+            userExp.value = user.value.exp;
+            userTierIcon.value = user.value.curTierIcon;
         })
         .catch((err) => {
             console.error("Error fetching user info:", err);
@@ -59,10 +65,14 @@ export const useUserStore = defineStore('user', () => {
             }
         })
     }
+
     return {
-        user,
-        userId,
-        fetchUserInfo,
-        updateUserInfo
-    }
+      user,
+      userId,
+      userTier,
+      userExp,
+      userTierIcon,
+      fetchUserInfo,
+      updateUserInfo
+    };
 })
