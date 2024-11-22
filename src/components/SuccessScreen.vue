@@ -53,8 +53,9 @@ const router = useRouter();
 const route = useRoute();
 const { user } = storeToRefs(userStore);
 
-const gameExp = route.params.expPoints
+const gameExp = route.params.expPoints;
 const userId = route.params.userId;
+const prevTier = route.params.prevTier;
 
 const fireworks = ref([]);
 const currentExp = ref(user.exp);
@@ -107,9 +108,13 @@ const createFireworks = () => {
         }, i * 100);
     }
 };
-
 onMounted(async () => {
     await userStore.fetchUserInfo(userId);
+    newTier.value = userStore.userTier; 
+    newExp.value = userStore.userExp;
+    newTierIcon.value = userStore.userTierIcon;
+
+    openPopup();
     createFireworks();
     increaseExp();
     
