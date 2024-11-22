@@ -36,7 +36,7 @@
       <div class="profile-button">
         <img :src=user.profileImg alt="Profile" class="profile-image">
         <div class="nickname">{{ user.nickname }}</div>
-        <RouterLink :to="{ name: 'StartView' }" class="logout-item">로그아웃</RouterLink>
+        <div @click="handleLogout" class="logout-item">로그아웃</div>
       </div>
     </div>
   </div>
@@ -49,15 +49,20 @@ import { useUserStore } from '@/stores/user';
 import { useAchievedExp } from "@/composables/useAchievedExp";
 import { useTodayChallengeStore } from '@/stores/todayChallenge';
 import { useGameStore } from '@/stores/game';
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
 const todayChallengeStore = useTodayChallengeStore();
 const userStore = useUserStore();
 const gameStore = useGameStore();
+const authStore = useAuthStore();
+const router = useRouter();
 
 const { todayChallenges } = storeToRefs(todayChallengeStore);
 const { games } = storeToRefs(gameStore);
 const { userId } = storeToRefs(userStore);
 const { user } = storeToRefs(userStore);
+const { userInfo } = storeToRefs(authStore);
 
 const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
 
@@ -97,6 +102,15 @@ const startRolling = () => {
   setInterval(() => {
     currentIndex.value = (currentIndex.value + 1) % items.value.length;
   }, 2000);
+};
+
+const handleLogout = async () => {
+    try {
+        await authStore.logout(userInfo.value.email);
+        router.push({ name: "StartView" });
+    } catch (err) {
+        console.error("로그아웃 에러:", err);
+    }
 };
 
 onMounted(async() => {

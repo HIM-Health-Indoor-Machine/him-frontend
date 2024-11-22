@@ -90,6 +90,24 @@ export const useAuthStore = defineStore('auth', () => {
             return false;
         }
     };
+
+    const logout = async (email) => {
+        try {
+            await axiosInstance.post(`/auth/logout`, { email });
+            console.log("로그아웃 성공");
+        } catch (err) {
+            console.error("로그아웃 실패:", err);
+        } finally {
+            localStorage.removeItem("accessToken");
+            userInfo.value = {
+                email: "",
+                userId: null,
+                message: "",
+            };
+            console.log("상태 초기화 완료");
+        }
+    };
+
     return {
         signupStatus,
         verificationStatus,
@@ -98,5 +116,6 @@ export const useAuthStore = defineStore('auth', () => {
         verifyCode,
         userInfo,
         login,
+        logout,
     };
 });
