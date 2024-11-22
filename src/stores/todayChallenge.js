@@ -1,8 +1,8 @@
-import axios from "axios";
+import { setupAxiosInterceptors } from "@/plugins/setupAxios.js";
 import { defineStore } from "pinia";
 import { ref } from 'vue';
-
-const REST_API_URL = `http://localhost:8080/api/today-challenge`;
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 export const useTodayChallengeStore = defineStore('todayChallenge', () => {
     const monthlyTodayChallenge = ref([]);
@@ -14,8 +14,12 @@ export const useTodayChallengeStore = defineStore('todayChallenge', () => {
     });
     const todayChallenges = ref([]);
 
+    const router = useRouter();
+    const authStore = useAuthStore();
+    const axiosInstance = setupAxiosInterceptors(authStore, router);
+
     const fetchTodayChallenge = async (challengeId, date) => {
-        await axios.get(REST_API_URL, {
+        await axiosInstance.get(`/today-challenge`, {
             params: { challengeId, date }
         })
         .then((response) => {
@@ -26,7 +30,7 @@ export const useTodayChallengeStore = defineStore('todayChallenge', () => {
         })
     }
     const fetchTodayChallengeList = async (userId, date) => {
-        await axios.get(`${REST_API_URL}/list`, {
+        await axiosInstance.get(`/today-challenge/list`, {
             params: { userId, date }
         })
         .then((response) => {
@@ -39,7 +43,7 @@ export const useTodayChallengeStore = defineStore('todayChallenge', () => {
         })
     }
     const updateTodayChallenge = async (todayChallenge) => {
-        await axios.put(REST_API_URL, todayChallenge)
+        await axiosInstance.put(`/today-challenge`, todayChallenge)
         .then((response) => {
             console.log(response);
         })
@@ -48,7 +52,7 @@ export const useTodayChallengeStore = defineStore('todayChallenge', () => {
         })
     }
     const fetchMonthlyTodayChallenge = async (userId, year, month) => {
-        await axios.get(`${REST_API_URL}/${userId}`, {
+        await axiosInstance.get(`/today-challenge/${userId}`, {
             params: { year, month }
         })
         .then((response) => {
