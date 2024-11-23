@@ -149,6 +149,9 @@
                             챌린지 목록
                         </h5>
                         <ul class="list-unstyled">
+                            <li v-if="processedChallenges.length === 0" class="no-challenge">
+                                현재 생성된 챌린지가 없습니다.
+                            </li>
                             <li v-for="(challenge, index) in processedChallenges" :key="index"
                                 :class="['list', challenge.status === 'completed' ? 'completed' : 'pending']">
                                 {{ challenge.title }}: 5 exp
@@ -1053,5 +1056,12 @@ onMounted(async () => {
     animation: openCard 0.5s ease-out forwards;
     transform-origin: left;
     opacity: 0;
+}
+
+.no-challenge {
+    color: gray;
+    text-align: center;
+    font-size: 1rem;
+    margin: 10px 0;
 }
 </style>
