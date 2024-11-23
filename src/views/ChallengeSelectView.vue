@@ -28,7 +28,7 @@
 
                     <div v-if="isEditing && editIndex === index" class="edit-form open">
                         <span @click="isEditing = false" class="icon-button close-button">❌</span>
-                        <form @submit.prevent="saveChallenge">
+                        <form @submit.prevent="updateChallenge">
                             <div class="challenge-info">
                                 <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
                                 <div placeholder="예: '30일 푸쉬업 챌린지'" disabled>{{ editChallenge.title }}</div>
@@ -83,7 +83,7 @@
                 </div>
 
                 <div v-if="isCreating" class="challenge-box new-challenge-form open">
-                    <form @submit.prevent="saveChallenge">
+                    <form @submit.prevent="createChallenge">
                         <span @click="isCreating = false" class="icon-button close-button2">❌</span>
 
                         <div class="challenge-info">
@@ -149,6 +149,9 @@
                             챌린지 목록
                         </h5>
                         <ul class="list-unstyled">
+                            <li v-if="processedChallenges.length === 0" class="no-challenge">
+                                현재 생성된 챌린지가 없습니다.
+                            </li>
                             <li v-for="(challenge, index) in processedChallenges" :key="index"
                                 :class="['list', challenge.status === 'completed' ? 'completed' : 'pending']">
                                 {{ challenge.title }}: 5 exp
@@ -167,7 +170,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter, useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
@@ -272,9 +275,10 @@ const resetForm = () => {
     newChallenge.endDt = "";
     newChallenge.goalCnt = null;
     isCreating.value = false;
+    editIndex.value = null;
 };
 
-const saveChallenge = () => {
+const createChallenge = () => {
     if (newChallenge.endDt && newChallenge.goalCnt) {
         challenges.value.push({
             title: newChallenge.title,
@@ -282,12 +286,19 @@ const saveChallenge = () => {
             icon: newChallenge.type === "PUSHUP" ? "💪" : "🏋️‍♂️",
             endDt: newChallenge.endDt,
             goalCnt: newChallenge.goalCnt,
-            progress: 0
+            progress: 0,
         });
 
         challengeStore.addChallenge(newChallenge);
         resetForm();
-    } else if (editChallenge.endDt && editChallenge.goalCnt) {
+    } else {
+        alert("날짜와 목표를 입력해주세요.");
+    }
+};
+
+
+const updateChallenge = () => {
+    if (editChallenge.endDt && editChallenge.goalCnt) {
         challenges.value[editIndex.value] = {
             id: editChallenge.id,
             title: editChallenge.title,
@@ -297,10 +308,12 @@ const saveChallenge = () => {
             endDt: editChallenge.endDt,
             goalCnt: editChallenge.goalCnt,
             userId: editChallenge.userId,
-            progress: challenges.value[editIndex.value].progress
+            progress: challenges.value[editIndex.value].progress,
         };
+
         challengeStore.updateChallenge(editChallenge.id, editChallenge);
         isEditing.value = false;
+        editIndex.value = null;
     } else {
         alert("날짜와 목표를 입력해주세요.");
     }
@@ -323,7 +336,7 @@ const addFloatingIcons = () => {
 
 onMounted(async () => {
     try {
-        await challengeStore.fetchChallenges(userId, "ONGOING");
+        challengeStore.fetchChallenges(userId, "ONGOING");
     } catch (error) {
         console.error(error);
     }
@@ -1043,5 +1056,12 @@ onMounted(async () => {
     animation: openCard 0.5s ease-out forwards;
     transform-origin: left;
     opacity: 0;
+}
+
+.no-challenge {
+    color: gray;
+    text-align: center;
+    font-size: 1rem;
+    margin: 10px 0;
 }
 </style>
