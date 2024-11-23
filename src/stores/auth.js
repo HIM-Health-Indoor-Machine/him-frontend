@@ -82,7 +82,6 @@ export const useAuthStore = defineStore('auth', () => {
                 userId: response.data.userId,
                 message: response.data.message,
             };
-
             console.log("로그인 성공:", response.data.message);
             return true;
         } catch (err) {
@@ -111,6 +110,7 @@ export const useAuthStore = defineStore('auth', () => {
     return {
         signupStatus,
         verificationStatus,
+        axiosInstance,
         signUp,
         sendVerificationCode,
         verifyCode,
