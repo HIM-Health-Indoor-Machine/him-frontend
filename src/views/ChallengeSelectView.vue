@@ -336,7 +336,7 @@ const addFloatingIcons = () => {
 
 onMounted(async () => {
     try {
-        challengeStore.fetchChallenges(1, "ONGOING");
+        challengeStore.fetchChallenges(userId, "ONGOING");
     } catch (error) {
         console.error(error);
     }
