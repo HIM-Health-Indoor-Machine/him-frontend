@@ -3,8 +3,8 @@
     <div id="game-over-overlay">
       <div id="game-over-text">GAME OVER</div>
       <div class="game-info">
-        <p>운동 종류: {{ gameStore.typeString }}</p>
-        <div>난이도: {{ gameStore.gameDifficultyLevel }}</div>
+        <p>운동 종류: {{ gameType === 'PUSHUP' ? 'Push Up' : 'Squat' }}</p>
+        <div>난이도: {{ gameDifficultyLevel }}</div>
       </div>
       <div id="retry-message">다시 도전하려면 아래 버튼을 눌러주세요.</div>
       <button class="retry-button" @click="retryGame">다시하기</button>
@@ -14,17 +14,17 @@
 </template>
 
 <script setup>
-import { useGameStore } from '@/stores/game';
+import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-
-const gameStore = useGameStore();
 
 const router = useRouter();
 const route = useRoute();
 
 const gameId = route.params.id;
-const gameType = route.params.type;
-const gameDifficultyLevel = route.params.difficultyLevel;
+const gameType = ref('');
+gameType.value = route.params.type;
+const gameDifficultyLevel = ref('')
+gameDifficultyLevel.value = route.params.difficultyLevel;
 const gameTheme = route.params.theme;
 const userId = route.params.userId;
 
@@ -37,8 +37,8 @@ const retryGame = () => {
     name: gameTheme,
     params: {
       id: gameId,
-      type: gameType,
-      difficultyLevel: gameDifficultyLevel,
+      type: gameType.value,
+      difficultyLevel: gameDifficultyLevel.value,
       theme: gameTheme,
       userId: userId
     }
