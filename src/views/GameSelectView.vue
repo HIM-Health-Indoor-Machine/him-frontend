@@ -135,7 +135,7 @@ const startGame = async () => {
     await gameStore.createGame(selectedType.value, selectedLevel.value, userId);
 
     router.push({
-        name: selectedTheme.value,
+        name: "GamePlayView",
         params: {
             id: gameStore.gameId,
             type: gameStore.gameType,
