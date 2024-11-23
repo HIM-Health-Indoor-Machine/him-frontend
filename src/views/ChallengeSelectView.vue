@@ -28,7 +28,7 @@
 
                     <div v-if="isEditing && editIndex === index" class="edit-form open">
                         <span @click="isEditing = false" class="icon-button close-button">❌</span>
-                        <form @submit.prevent="saveChallenge">
+                        <form @submit.prevent="updateChallenge">
                             <div class="challenge-info">
                                 <label style="font-size: 1.2rem;">🏆 챌린지 이름</label>
                                 <div placeholder="예: '30일 푸쉬업 챌린지'" disabled>{{ editChallenge.title }}</div>
@@ -83,7 +83,7 @@
                 </div>
 
                 <div v-if="isCreating" class="challenge-box new-challenge-form open">
-                    <form @submit.prevent="saveChallenge">
+                    <form @submit.prevent="createChallenge">
                         <span @click="isCreating = false" class="icon-button close-button2">❌</span>
 
                         <div class="challenge-info">
@@ -167,7 +167,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter, useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
@@ -272,9 +272,10 @@ const resetForm = () => {
     newChallenge.endDt = "";
     newChallenge.goalCnt = null;
     isCreating.value = false;
+    editIndex.value = null;
 };
 
-const saveChallenge = () => {
+const createChallenge = () => {
     if (newChallenge.endDt && newChallenge.goalCnt) {
         challenges.value.push({
             title: newChallenge.title,
@@ -282,12 +283,19 @@ const saveChallenge = () => {
             icon: newChallenge.type === "PUSHUP" ? "💪" : "🏋️‍♂️",
             endDt: newChallenge.endDt,
             goalCnt: newChallenge.goalCnt,
-            progress: 0
+            progress: 0,
         });
 
         challengeStore.addChallenge(newChallenge);
         resetForm();
-    } else if (editChallenge.endDt && editChallenge.goalCnt) {
+    } else {
+        alert("날짜와 목표를 입력해주세요.");
+    }
+};
+
+
+const updateChallenge = () => {
+    if (editChallenge.endDt && editChallenge.goalCnt) {
         challenges.value[editIndex.value] = {
             id: editChallenge.id,
             title: editChallenge.title,
@@ -297,10 +305,12 @@ const saveChallenge = () => {
             endDt: editChallenge.endDt,
             goalCnt: editChallenge.goalCnt,
             userId: editChallenge.userId,
-            progress: challenges.value[editIndex.value].progress
+            progress: challenges.value[editIndex.value].progress,
         };
+
         challengeStore.updateChallenge(editChallenge.id, editChallenge);
         isEditing.value = false;
+        editIndex.value = null;
     } else {
         alert("날짜와 목표를 입력해주세요.");
     }
@@ -323,7 +333,7 @@ const addFloatingIcons = () => {
 
 onMounted(async () => {
     try {
-        await challengeStore.fetchChallenges(1, "ONGOING");
+        challengeStore.fetchChallenges(1, "ONGOING");
     } catch (error) {
         console.error(error);
     }

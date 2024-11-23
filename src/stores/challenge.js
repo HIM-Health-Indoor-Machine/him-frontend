@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/auth";
 export const useChallengeStore = defineStore('challenge', () => {
     const challenges = ref([]);
     const currentChallenge = ref(null);
+    const challengeTitle = ref("");
     
     const authStore = useAuthStore();
     const router = useRouter();
@@ -43,7 +44,6 @@ export const useChallengeStore = defineStore('challenge', () => {
         axiosInstance.post(`/challenge`, challenge)
         .then((response) => {
             console.log(response);
-            challenges.value.push(response.data);
         })
         .catch((err) => {
             console.log(err);
