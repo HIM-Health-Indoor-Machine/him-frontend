@@ -47,7 +47,6 @@ import { useChallengeStore } from '@/stores/challenge';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 
-const todayChallengeStore = useTodayChallengeStore();
 const challengeStore = useChallengeStore();
 const userStore = useUserStore();
 const router = useRouter();
