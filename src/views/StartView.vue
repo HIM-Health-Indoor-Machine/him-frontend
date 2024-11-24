@@ -7,7 +7,7 @@
 
             <div class="title2">
                 <div class="logo-container">
-                    <img src="@/assets/images/logo/logo.png" alt="로고 아이콘" class="logo-icon" />
+                    <img src="/images/logo/logo.png" alt="로고 아이콘" class="logo-icon" />
                     HIM
                 </div>
                 <div class="subtitle2">Health Indoor Machine</div> 

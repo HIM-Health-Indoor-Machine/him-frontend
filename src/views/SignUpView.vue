@@ -4,7 +4,7 @@
             <div class="login-header">
                 <div class="title">
                     <div class="logo-container">
-                        <img src="@/assets/images/logo/logo.png" alt="로고 아이콘" class="logo-icon" />
+                        <img src="/images/logo/logo.png" alt="로고 아이콘" class="logo-icon" />
                         HIM
                     </div>
                 </div>
