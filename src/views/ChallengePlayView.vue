@@ -23,15 +23,13 @@
                     <p>성취 개수: {{ challengeStore.currentChallenge.achievedCnt }}</p>
                     <p>목표 개수: {{ challengeStore.currentChallenge.goalCnt }}</p>
                 </div>
-                <div v-if="showCounter" :key="counter" id="counter-container" class="animate-counter">
+                <div :key="counter" id="counter-container" class="animate-counter">
                     <span id="counter">{{ counter }}</span>
                 </div>
             </div>
 
             <button @click="openSaveModal" class="save-button">저장하기</button>
         </div>
-
-        <!-- <button v-if="countdown === 0" @click="openSaveModal" class="save-button">저장하기</button> -->
 
         <div v-if="isModalOpen" class="modal-overlay">
             <div class="modal">
@@ -66,7 +64,6 @@ const challengeId = route.params.challengeId;
 const { currentTodayChallenge } = storeToRefs(todayChallengeStore);
 const { currentChallenge } = storeToRefs(challengeStore);
 const counter = ref(0);
-const showCounter = ref(false);
 const countdown = ref(4);
 const isModalOpen = ref(false);
 let updateInterval = null;
@@ -163,10 +160,6 @@ function startGame() {
             const newCounterValue = await getCounter();
             if (newCounterValue !== counter.value) {
                 counter.value = newCounterValue;
-                showCounter.value = true;
-                setTimeout(() => {
-                    showCounter.value = false;
-                }, 1500);
             }
         } catch (error) {
             console.error("카운터 업데이트 중 오류 발생:", error);
