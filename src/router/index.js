@@ -3,13 +3,14 @@ import StartView from '@/views/StartView.vue';
 import LoginView from '@/views/LoginView.vue';
 import SignUpView from '@/views/SignUpView.vue';
 import HomeView from '@/views/HomeView.vue';
+import WebcamView from '@/views/WebcamView.vue';
 import GameSelectView from '@/views/GameSelectView.vue';
+import GamePlayView from '@/views/GamePlayView.vue';
+import SuccessScreen from '@/components/SuccessScreen.vue';
+import FailScreen from '@/components/FailScreen.vue';
 import ChallengeSelectView from '@/views/ChallengeSelectView.vue';
 import ChallengePlayView from '@/views/ChallengePlayView.vue';
 import ChallengeSuccessScreen from '@/components/ChallengeSuccessScreen.vue';
-import SuccessScreen from '@/components/SuccessScreen.vue';
-import FailScreen from '@/components/FailScreen.vue';
-import GamePlayView from '@/views/GamePlayView.vue';
 
 const routes = [
   {
@@ -28,9 +29,14 @@ const routes = [
     component: SignUpView,
   },
   {
-    path: '/home-view/:userId',                              
+    path: '/home-view/:userId',
     name: 'HomeView',
     component: HomeView,
+  },
+  {
+    path: '/webcam-view/:userId/:type',
+    name: 'WebcamView',
+    component: WebcamView,
   },
   {
     path: '/game-select-view/:userId',
