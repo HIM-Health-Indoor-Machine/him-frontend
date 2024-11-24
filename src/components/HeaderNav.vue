@@ -4,7 +4,7 @@
     <div class="nav-button">
       <div class="left-menu">
         <RouterLink :to="{ name: 'HomeView' }">
-          <img class="logo-icon" src="@/assets/images/logo/logo.png" alt="Logo Icon" />
+          <img class="logo-icon" src="/images/logo/logo.png" alt="Logo Icon" />
         </RouterLink>
         <div class="logo">HIM</div>
       </div>

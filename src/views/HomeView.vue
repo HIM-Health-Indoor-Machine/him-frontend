@@ -3,11 +3,7 @@
 
         <div class="box user-info">
             <div v-if="user" class="user-details">
-
-                <div class="user-header">
-                    <h2 class="nickname">{{ user.nickname }}</h2>
-                    <div @click="handleLogout" class="logout-item">로그아웃</div>
-                </div>
+                <h2 class="nickname">{{ user.nickname }}</h2>
 
                 <div class="profile-pic-wrapper">
                     <img class="profile-pic" :src="user.profileImg" alt="프로필 사진" />
@@ -26,9 +22,11 @@
                             <button @click="closeImageSelection" class="close-button">닫기</button>
                         </div>
                     </div>
-
                 </div>
+
                 <p class="user-email">{{ user.email }}</p>
+
+                <div @click="handleLogout" class="logout-item">로그아웃</div>
             </div>
 
             <div class="exp-info-container">
@@ -36,19 +34,16 @@
                     <div class="info-container">
                         <img src="@/assets/images/icon/info-icon.png" @click="toggleInfo" class="info-icon">
                         <div v-if="showInfo" class="info-popup">
-                            <p class="info-title">[오늘의 경험치]</p>
-                            <p>- 오늘 받을 수 있는 최대 경험치와 내가 오늘 받은 경험치가 표시됩니다.</p>
-                            <p class="info-title">[챌린지 경험치]</p>
-                            <p>- 챌린지와 게임 성공 시, 아이콘이 ✔️로 변경되며 경험치가 주어집니다.</p>
-                            <p>- 아직 진행하지 않은 챌린지나 게임의 경우, 아이콘이 ⏳으로 표시됩니다.</p>
-                            <p class="info-title">[패널티 경험치]</p>
-                            <p>- 챌린지를 진행하지 않으면 패널티를 받을 수 있습니다.</p>
-                            <p class="info-title">[보너스 경험치]</p>
-                            <p>- 하나의 챌린지를 연속으로 달성 시, 보너스 점수를 제공합니다.</p>
-                            <ul>
-                                <li>7일 연속 달성: <strong>10 exp</strong></li>
-                                <li>30일 연속 달성: <strong>100 exp</strong></li>
-                            </ul>
+                            <div class="info-title">[오늘의 경험치]</div>
+                            <div style="margin-bottom: 20px;"> 오늘 얻은 경험치 / 최대 경험치 </div>
+                            <div class="info-title">[플레이 경험치]</div>
+                            <div style="margin-bottom: 20px;"> ✔️ : 성공, ⏳ : 진행 중</div>
+                            <div class="info-title">[패널티 경험치]</div>
+                            <div style="margin-bottom: 20px;"> 오늘 플레이 미진행 시, 최대 패널티 경험치</div>
+                            <div class="info-title">[보너스 경험치]</div>
+                            <div style="margin-bottom: 10px;">챌린지 연속 달성 시, 보너스 경험치 제공</div>
+                            <div>7일 연속 달성: 10 exp</div>
+                            <div>30일 연속 달성: 100 exp</div>
                         </div>
                     </div>
                 </div>
@@ -89,7 +84,7 @@
                     </div>
                     <ul class="list-unstyled">
                         <div v-for="(difficulties, exercise) in groupedByExercise" :key="exercise">
-                            <div class="game-title">{{ exercise === "PUSHUP" ? "Push Up" : "Squat" }}</div>
+                            <div class="game-title">{{ exercise === "PUSHUP" ? "💪 Push Up" : "🏋️‍♂️ Squat" }}</div>
                             <ul class="list-unstyled">
                                 <li v-for="(status, difficulty) in difficulties" :key="difficulty"
                                     :class="['list', status === 'completed' ? 'completed' : 'pending']">
@@ -173,12 +168,29 @@
                 <div class="box3-and-buttons">
                     <div class="box box3 tier-container">
                         <h5 class="info-section">
-                            예시
+                            자세연습하기
                         </h5>
-                        <ul class="list-unstyled">
-                            <li class="list completed">Easy: 5 exp</li>
-                            <li class="list completed">Medium: 10 exp</li>
-                            <li class="list pending">Hard: 20 exp</li>
+
+                        <div class="webcam-button-container">
+                            <button class="action-button" @click="goToWebcam('Push Up')">
+                                <span>💪 Push Up</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="5"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                            <button class="action-button" @click="goToWebcam('Squat')">
+                                <span>🏋️‍♂️ Squat</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 24" stroke-width="5"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <ul class="footer-notes">
+                            <li>1. 올바른 위치에 웹캠을 고정시켜주세요.</li>
+                            <li>2. 웹캠을 가리지 않도록 주의해주세요.</li>
                         </ul>
                     </div>
 
@@ -263,7 +275,6 @@ const { challenges } = storeToRefs(challengeStore);
 const { games } = storeToRefs(gameStore);
 const { userId } = storeToRefs(userStore);
 const { user } = storeToRefs(userStore);
-const { userInfo } = storeToRefs(authStore);
 
 const expByDifficulty = { "EASY": 5, "MEDIUM": 10, "HARD": 20 };
 
@@ -289,6 +300,16 @@ const selectProfileImage = (image) => {
     user.value.profileImg = image;
     userStore.updateUserInfo(userId.value, user.value);
     closeImageSelection();
+};
+
+const goToWebcam = (type) => {
+    router.push({
+        name: "WebcamView",
+        params: {
+            userId: userId.value,
+            type: type
+        }
+    });
 };
 
 const showRankings = ref(false);
@@ -482,7 +503,7 @@ onMounted(async () => {
     z-index: 10;
     position: relative;
     overflow: hidden;
-    gap: 20px;
+    /* gap: 20px; */
     transition: all 0.3s ease-in-out;
 }
 
@@ -615,38 +636,29 @@ onMounted(async () => {
     width: auto;
     height: 0px;
     border-radius: 15px;
-    padding: 10px;
 }
 
 .info-container {
-    position: relative;
-    left: 45%;
-    top: 75%;
+    position: absolute;
+    left: -10px;
+    bottom: -20px;
     display: inline-block;
-    z-index: 100;
-}
-
-.info-icon {
-    cursor: pointer;
-    font-size: 20%;
 }
 
 .info-popup {
     position: absolute;
-    top: 100%;
-    left: 10%;
-    transform: translateX(-80%);
+    left: 10px;
+    top: 20px;
     margin-top: 8px;
     padding: 12px;
-    width: 220px;
+    width: 350px;
     background-color: #ffffff;
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 9999;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
 }
-
 
 .highlight {
     color: #e74c3c;
@@ -791,7 +803,7 @@ onMounted(async () => {
 }
 
 .tier-container {
-    flex: 0.5;
+    flex: 0.55;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -850,12 +862,10 @@ onMounted(async () => {
 }
 
 .info-icon {
-    font-size: 1.2rem;
     margin-left: 5px;
     color: #555;
     cursor: pointer;
-    font-size: 20%;
-    width: 70%;
+    width: 60%;
     transition: transform 0.2s ease, filter 0.2s ease;
 }
 
@@ -867,6 +877,7 @@ onMounted(async () => {
 .info-title {
     color: #e74c3c;
     font-weight: bold;
+    margin-bottom: 5px;
 }
 
 .exp-tier-container {
@@ -1186,17 +1197,14 @@ onMounted(async () => {
 }
 
 .logout-item {
-    display: block;
     font-size: 1.1rem;
     color: #374151;
-    text-decoration: none;
-    margin-left: 15px;
-}
-
-.logout-item {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     transition: transform 0.1s ease-in-out, background-color 0.2s;
     cursor: pointer;
+    margin-top: 10px;
 }
 
 .logout-item:hover {
@@ -1204,16 +1212,55 @@ onMounted(async () => {
     border-radius: 5px;
 }
 
-.user-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
 .no-challenge {
     color: gray;
     text-align: center;
     font-size: 1rem;
     margin: 10px 0;
+}
+
+.webcam-button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.action-button {
+    font-family: 'HakgyoansimDunggeunmisoTTF-B', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 15px;
+    background-color: #ff7043;
+    border: 4px solid #d95c37;
+    border-radius: 9999px;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 41%;
+    gap: 10px;
+}
+
+.action-button svg {
+    width: 20%;
+    height: 60%;
+}
+
+.action-button:hover {
+    background: #f06292;
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.footer-notes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    margin-top: 20px;
 }
 </style>

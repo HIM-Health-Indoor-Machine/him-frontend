@@ -33,8 +33,8 @@ async function init(typeParam, modeParam) {
 
     const flip = true;
     const webcamDimensions = modeParam === "GAME"
-        ? { width: 400, height: 300 }
-        : { width: window.innerWidth, height: window.innerHeight };
+        ? { width: 400, height: 360 }
+        : { width: 1000, height: 900 };
 
     webcam = new tmPose.Webcam(webcamDimensions.width, webcamDimensions.height, flip);
 
@@ -48,8 +48,9 @@ async function init(typeParam, modeParam) {
             webcamContainer.appendChild(webcam.canvas);
 
             if (modeParam === "CHALLENGE") {
-                webcam.canvas.style.width = '100%';
-                webcam.canvas.style.height = '100%';
+                webcam.canvas.style.width = '100vw';
+                webcam.canvas.style.height = '100vh';
+                webcam.canvas.style.objectFit = 'contain';
             }
         } else {
             console.error("'webcam-container' 요소가 존재하지 않습니다.");
