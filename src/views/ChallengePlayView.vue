@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main-container">
         <div id="webcam-container"></div>
         <div id="label-container" style="display: none;"></div>
 
@@ -15,14 +15,14 @@
         </div>
 
         <div v-else>
+            <div class="challenge-info">
+                <p>챌린지: {{ challengeStore.currentChallenge.title }}</p>
+                <p>운동 종류: {{ challengeStore.currentChallenge.type === 'PUSHUP' ? 'Push Up' : 'Squat' }}</p>
+                <p>종료 날짜: {{ challengeStore.currentChallenge.endDt }}</p>
+                <p>성취 개수: {{ challengeStore.currentChallenge.achievedCnt }}</p>
+                <p>목표 개수: {{ challengeStore.currentChallenge.goalCnt }}</p>
+            </div>
             <div id="ui-container">
-                <div class="challenge-info">
-                    <p>챌린지: {{ challengeStore.currentChallenge.title }}</p>
-                    <p>운동 종류: {{ challengeStore.currentChallenge.type === 'PUSHUP' ? 'Push Up' : 'Squat' }}</p>
-                    <p>종료 날짜: {{ challengeStore.currentChallenge.endDt }}</p>
-                    <p>성취 개수: {{ challengeStore.currentChallenge.achievedCnt }}</p>
-                    <p>목표 개수: {{ challengeStore.currentChallenge.goalCnt }}</p>
-                </div>
                 <div :key="counter" id="counter-container" class="animate-counter">
                     <span id="counter">{{ counter }}</span>
                 </div>
@@ -117,7 +117,7 @@ async function saveAndNavigate() {
     }
 
     await userStore.fetchUserInfo(userId);
-    prevTier.value = userStore.userTier; 
+    prevTier.value = userStore.userTier;
     prevExp.value = userStore.userExp;
 
     currentTodayChallenge.value.cnt += counter.value;
@@ -126,7 +126,7 @@ async function saveAndNavigate() {
     if (currentChallenge.value.goalCnt <= currentTodayChallenge.value.cnt) {
         router.push({
             name: 'ChallengeSuccessScreen',
-            params: { 
+            params: {
                 id: challengeId,
                 userId: userId,
                 prevTier: prevTier.value,
@@ -134,7 +134,7 @@ async function saveAndNavigate() {
             }
         });
     } else {
-        router.push({ 
+        router.push({
             name: 'ChallengeSelectView',
             params: { userId: userId }
         });
@@ -170,16 +170,12 @@ function startGame() {
 
 
 <style scoped>
-#temp-container {
+.main-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    position: relative;
-    height: 95vh;
-    gap: 10px;
-    z-index: 10;
-    transition: all 0.3s ease-in-out;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
 }
 
 #ui-container {
@@ -313,8 +309,8 @@ function startGame() {
 
 .countdown-container {
     position: fixed;
-    top: 0;
-    left: 0;
+    bottom: 0;
+    right: 0;
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -350,8 +346,7 @@ function startGame() {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    object-fit: cover;
     border: none;
     border-radius: 0;
     overflow: hidden;
@@ -430,6 +425,9 @@ function startGame() {
 }
 
 .challenge-info {
+    position: fixed;
+    top: 10px;
+    left: 80px;
     font-size: 1.5rem;
     color: #ffffff;
     background-color: rgba(0, 0, 0, 0.7);

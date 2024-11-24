@@ -425,7 +425,7 @@ onMounted(async () => {
     top: 20px;
     left: 20px;
     width: 400px;
-    height: 250px;
+    height: 360px;
     border: 2px solid #ff7043;
     border-radius: 12px;
     overflow: hidden;
