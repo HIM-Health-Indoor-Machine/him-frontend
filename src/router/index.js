@@ -4,14 +4,12 @@ import LoginView from '@/views/LoginView.vue';
 import SignUpView from '@/views/SignUpView.vue';
 import HomeView from '@/views/HomeView.vue';
 import GameSelectView from '@/views/GameSelectView.vue';
-import GamePlayViewDuck from '@/views/GamePlayViewDuck.vue';
-import GamePlayViewBomb from '@/views/GamePlayViewBomb.vue';
-import GamePlayViewFlying from '@/views/GamePlayViewFlying.vue';
 import ChallengeSelectView from '@/views/ChallengeSelectView.vue';
 import ChallengePlayView from '@/views/ChallengePlayView.vue';
 import ChallengeSuccessScreen from '@/components/ChallengeSuccessScreen.vue';
 import SuccessScreen from '@/components/SuccessScreen.vue';
 import FailScreen from '@/components/FailScreen.vue';
+import GamePlayView from '@/views/GamePlayView.vue';
 
 const routes = [
   {
@@ -40,19 +38,9 @@ const routes = [
     component: GameSelectView,
   },
   {
-    path: '/game-play-view-flying/:id/:type/:difficultyLevel/:theme/:userId',
-    name: 'GamePlayViewFlying',
-    component: GamePlayViewFlying,
-  },
-  {
-    path: '/game-play-view-bomb/:id/:type/:difficultyLevel/:theme/:userId',
-    name: 'GamePlayViewBomb',
-    component: GamePlayViewBomb,
-  },
-  {
-    path: '/game-play-view-duck/:id/:type/:difficultyLevel/:theme/:userId',
-    name: 'GamePlayViewDuck',
-    component: GamePlayViewDuck,
+    path: '/game-play-view/:id/:type/:difficultyLevel/:theme/:userId',
+    name: 'GamePlayView',
+    component: GamePlayView,
   },
   {
     path: '/challenge-select-view/:userId',

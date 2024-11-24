@@ -1,21 +1,26 @@
 <template>
     <div>
         <div id="webcam-container"></div>
-        <div id="label-container">Prediction Label</div>
+        <div id="label-container" style="display: none;"></div>
         <div id="pixi-container"></div>
 
-        <div v-if="countdown > 0">
+        <div v-if="isLoading" class="loading-container">
+            <div class="loading-text">준비중입니다. 잠시만 기다려주세요!</div>
+            <div class="spinner"></div>
+        </div>
+
+        <div v-else-if="countdown > 0">
             <div class="countdown-container">
-                <div :key="countdown" id="countdown-container">{{ countdown === 4 ? "" : countdown }}</div>
+                <div :key="countdown" id="countdown-container">{{ countdown }}</div>
             </div>
         </div>
+
         <div v-else>
             <div id="ui-container">
                 <div class="game-info">
-                    <p>운동 종류: {{ gameStore.gameType === 'PUSHUP' ? 'Push Up' : 'Squat' }}</p>
-                    <p>난이도: {{ gameStore.gameDifficultyLevel }}</p>
+                    <p>운동 종류: {{ gameType === 'PUSHUP' ? 'Push Up' : 'Squat' }}</p>
+                    <p>난이도: {{ gameDifficultyLevel }}</p>
                 </div>
-                <div id="counter-container">Count: <span id="counter">{{ counter }}</span></div>
             </div>
             <button v-if="countdown === 0" @click="openEndModal" class="end-button">끝내기</button>
         </div>
@@ -36,7 +41,7 @@
 import { useRouter, useRoute } from 'vue-router';
 import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 import { Application, Sprite, Assets } from 'pixi.js';
-import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachineForGame';
+import { getCounter, init as tmInit, stop as tmStop } from '@/utils/teachableMachine';
 import { useGameStore } from '@/stores/game';
 import { useUserStore } from '@/stores/user';
 import { gsap } from 'gsap';
@@ -46,21 +51,20 @@ const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 const isEndModalOpen = ref(false);
+const isLoading = ref(true);
 const app = ref(null);
-const counter = ref(0);
 const isGameOver = ref(false);
 const isSuccess = ref(false);
-const countdown = ref(5);
+const countdown = ref(4);
 const prevTier = ref('');
+let updateInterval = null;
 
 const gameId = route.params.id;
-const gameType = route.params.type;
-const gameDifficultyLevel = route.params.difficultyLevel;
+const gameType = ref('');
+const gameDifficultyLevel = ref('');
+gameDifficultyLevel.value = route.params.difficultyLevel;
 const gameTheme = route.params.theme;
 const userId = route.params.userId;
-
-
-let updateInterval = null;
 
 const openEndModal = () => {
     isEndModalOpen.value = true;
@@ -87,14 +91,43 @@ onUnmounted(() => {
 });
 
 const loadAssets = async () => {
-    const backgroundTexture = await Assets.load('/images/background/duck_background.jpg');
+    const themes = {
+        GamePlayViewDuck: {
+            background: '/images/background/duck_background.jpg',
+            framePath: '/images/duck_frames/frame_',
+            frameCount: 144,
+        },
+        GamePlayViewBomb: {
+            background: '/images/background/bomb_background.jpg',
+            framePath: '/images/bomb_frames/frame_',
+            frameCount: 23,
+        },
+        GamePlayViewFlying: {
+            background: '/images/background/flying_background.jpg',
+            framePath: '/images/flying_frames/frame_',
+            frameCount: 90,
+        },
+    };
+
+    const theme = themes[gameTheme];
+    if (!theme) {
+        throw new Error(`Unknown game theme: ${gameTheme}`);
+    }
+
+    const backgroundTexture = await Assets.load(theme.background);
+    const frames = await loadFrames(theme.framePath, theme.frameCount);
+
+    return { backgroundTexture, frames };
+};
+
+const loadFrames = async (framePath, frameCount) => {
     const frames = [];
-    for (let i = 0; i <= 143; i++) {
+    for (let i = 1; i <= frameCount; i++) {
         const frameNumber = i.toString().padStart(4, '0');
-        const texture = await Assets.load(`/images/duck_frames/frame_${frameNumber}.png`);
+        const texture = await Assets.load(`${framePath}${frameNumber}.png`);
         frames.push(texture);
     }
-    return { backgroundTexture, frames };
+    return frames;
 };
 
 const startPixiAndTM = async () => {
@@ -119,69 +152,137 @@ const startPixiAndTM = async () => {
         return;
     }
 
-    const { backgroundTexture, frames } = await loadAssets();
+    const { backgroundTexture, frames } = await loadAssets(gameTheme);
 
     const background = new Sprite(backgroundTexture);
     background.width = app.value.screen.width;
     background.height = app.value.screen.height;
     app.value.stage.addChild(background);
 
-    const duckSprite = new Sprite(frames[0]);
-    duckSprite.x = app.value.screen.width - 300;
-    const gameOverLimit = app.value.screen.width - 200;
-    const successLimit = 150;
-    duckSprite.y = app.value.screen.height / 2 + 300;
-    duckSprite.anchor.set(0.5);
-    app.value.stage.addChild(duckSprite);
-
     let frame = 0;
     let frameCounter = 0;
     let counterValue = 0;
 
-    let countMoveSpeed = 0;
+    const themeSettings = {
+        GamePlayViewDuck: {
+            spritePosition: {
+                x: app.value.screen.width - 300,
+                y: app.value.screen.height / 2 + 300,
+            },
+            gameOverLimit: app.value.screen.width - 50,
+            successLimit: 150,
+            frameInterval: 1,
+            difficulties: {
+                EASY: { countMoveSpeed: 110, penaltyMoveSpeed: 2 },
+                MEDIUM: { countMoveSpeed: 90, penaltyMoveSpeed: 3 },
+                HARD: { countMoveSpeed: 70, penaltyMoveSpeed: 4 },
+            },
+        },
+        GamePlayViewBomb: {
+            spritePosition: {
+                x: app.value.screen.width - 250,
+                y: app.value.screen.height / 2 + 200,
+            },
+            gameOverLimit: app.value.screen.width,
+            successLimit: 100,
+            frameInterval: 3,
+            difficulties: {
+                EASY: { countMoveSpeed: 110, penaltyMoveSpeed: 2 },
+                MEDIUM: { countMoveSpeed: 90, penaltyMoveSpeed: 3 },
+                HARD: { countMoveSpeed: 70, penaltyMoveSpeed: 4 },
+            },
+        },
+        GamePlayViewFlying: {
+            spritePosition: {
+                x: app.value.screen.width / 2,
+                y: app.value.screen.height - 200,
+            },
+            gameOverLimit: app.value.screen.height + 100,
+            successLimit: 0,
+            frameInterval: 3,
+            difficulties: {
+                EASY: { countMoveSpeed: 90, penaltyMoveSpeed: 2 },
+                MEDIUM: { countMoveSpeed: 70, penaltyMoveSpeed: 3 },
+                HARD: { countMoveSpeed: 50, penaltyMoveSpeed: 4 },
+            },
+        },
+    };
 
-    if(gameStore.gameDifficultyLevel === 'EASY') {
-        countMoveSpeed = 200;
-    } else if(gameStore.gameDifficultyLevel === 'MEDIUM') {
-        countMoveSpeed = 100;
-    } else {
-        countMoveSpeed = 50;
+    const themeConfig = themeSettings[gameTheme];
+    if (!themeConfig) {
+        throw new Error(`Unknown game theme: ${gameTheme}`);
     }
-    const penaltyMoveSpeed = 0.5;
-    const frameInterval = 1;
 
+    const sprite = new Sprite(frames[0]);
+    sprite.x = themeConfig.spritePosition.x;
+    sprite.y = themeConfig.spritePosition.y;
+    sprite.anchor.set(0.5);
+    app.value.stage.addChild(sprite);
+
+    const { gameOverLimit, successLimit, frameInterval, difficulties } = themeConfig;
+
+    const difficultyConfig = difficulties[gameDifficultyLevel.value];
+    if (!difficultyConfig) {
+        throw new Error(`Unknown difficulty level: ${gameDifficultyLevel.value}`);
+    }
+
+    const { countMoveSpeed, penaltyMoveSpeed } = difficultyConfig;
 
     function updateRunnerAnimation() {
         if (!isGameOver.value) {
             frameCounter++;
             if (frameCounter >= frameInterval) {
                 frame = (frame + 1) % frames.length;
-                duckSprite.texture = frames[frame];
+                sprite.texture = frames[frame];
                 frameCounter = 0;
             }
         }
     }
 
-    async function updateCounter() {
+    async function updateCounterForTheme() {
         const newCounterValue = await getCounter();
         if (newCounterValue > counterValue && !isGameOver.value) {
-            const deltaX = (newCounterValue - counterValue) * countMoveSpeed;
+            const deltaValue = (newCounterValue - counterValue) * countMoveSpeed;
 
-            gsap.to(duckSprite, {
-                x: duckSprite.x - deltaX,
-                duration: 0.5,
-                ease: 'power2.out'
-            });
+            if (gameTheme === "GamePlayViewDuck" || gameTheme === "GamePlayViewBomb") {
+                gsap.to(sprite, {
+                    x: sprite.x - deltaValue,
+                    duration: 0.5,
+                    ease: 'power2.out',
+                });
+            } else if (gameTheme === "GamePlayViewFlying") {
+                const deltaX = 100 * Math.sin(Date.now() / 500);
+                const leftLimit = 420;
+                const rightLimit = app.value.screen.width - sprite.width;
+
+                let newX = sprite.x + deltaX;
+                newX = Math.max(leftLimit, Math.min(newX, rightLimit));
+
+                gsap.to(sprite, {
+                    y: sprite.y - deltaValue,
+                    x: newX,
+                    duration: 0.5,
+                    ease: 'power2.out',
+                });
+            }
         }
         counterValue = newCounterValue;
     }
 
-    function moveRunnerRight() {
+    function moveRunner() {
         if (!isGameOver.value) {
-            duckSprite.x += penaltyMoveSpeed;
-            if (duckSprite.x >= gameOverLimit) {
-                duckSprite.x = gameOverLimit;
-                gameOver();
+            if (gameTheme === "GamePlayViewDuck" || gameTheme === "GamePlayViewBomb") {
+                sprite.x += penaltyMoveSpeed;
+                if (sprite.x >= gameOverLimit) {
+                    sprite.x = gameOverLimit;
+                    gameOver();
+                }
+            } else if (gameTheme === "GamePlayViewFlying") {
+                sprite.y += penaltyMoveSpeed;
+                if (sprite.y >= gameOverLimit) {
+                    sprite.y = gameOverLimit;
+                    gameOver();
+                }
             }
         }
     }
@@ -194,35 +295,44 @@ const startPixiAndTM = async () => {
             name: 'FailScreen',
             params: {
                 id: gameId,
-                type: gameType,
-                difficultyLevel: gameDifficultyLevel,
+                type: gameType.value,
+                difficultyLevel: gameDifficultyLevel.value,
                 theme: gameTheme,
                 userId: userId
             }
         });
     }
 
-    function checkRunnerRight() {
-        if (duckSprite.x <= successLimit && !isGameOver.value) {
-            duckSprite.x = successLimit;
-            success();
+    function checkRunnerSuccess() {
+        if (!isGameOver.value) {
+            if (gameTheme === "GamePlayViewDuck" || gameTheme === "GamePlayViewBomb") {
+                if (sprite.x <= successLimit) {
+                    sprite.x = successLimit;
+                    success();
+                }
+            } else if (gameTheme === "GamePlayViewFlying") {
+                if (sprite.y <= successLimit) {
+                    sprite.y = successLimit;
+                    success();
+                }
+            }
         }
     }
 
     async function success() {
         isSuccess.value = true;
-        duckSprite.texture = frames[0];
+        sprite.texture = frames[0];
         stopRunnerOnSuccess();
 
-        await gameStore.achieveGame(gameStore.gameId, isSuccess.value);
+        await gameStore.achieveGame(gameId, isSuccess.value);
 
         tmStop();
-        router.push({ 
+        router.push({
             name: 'SuccessScreen',
             params: {
                 userId: userId,
                 prevTier: prevTier.value,
-                expPoints: gameStore.gameExpPoints
+                expPoints: gameStore.gameExpPoints,
             }
         });
     }
@@ -234,13 +344,13 @@ const startPixiAndTM = async () => {
     }
 
     app.value.ticker.add(() => {
-        if (countdown.value == 0) {
+        if (countdown.value === 0) {
             if (!isGameOver.value && !isSuccess.value) {
-                updateCounter();
+                updateCounterForTheme();
                 updateRunnerAnimation();
-                moveRunnerRight();
+                moveRunner();
             }
-            checkRunnerRight();
+            checkRunnerSuccess();
         }
     });
 };
@@ -260,16 +370,21 @@ const startCountdown = () => {
 };
 
 onMounted(async () => {
-    tmInit().then(() => {
+    gameType.value = route.params.type;
+    try {
+        await tmInit(gameType.value, "GAME");
         console.log("Teachable Machine 초기화 완료");
-    }).catch((error) => {
-        console.error("Teachable Machine 초기화 중 오류 발생:", error);
-    });
 
-    await userStore.fetchUserInfo(userId);
-    prevTier.value = userStore.userTier;
-    startPixiAndTM();
+        await userStore.fetchUserInfo(userId);
+        prevTier.value = userStore.userTier;
 
+        await startPixiAndTM();
+
+    } catch (error) {
+        console.error("초기화 중 오류 발생:", error);
+    }
+
+    isLoading.value = false;
     startCountdown();
 });
 </script>
@@ -295,7 +410,6 @@ onMounted(async () => {
     gap: 10px;
 }
 
-#label-container,
 #counter-container {
     font-size: 1.5rem;
     text-align: center;
@@ -323,6 +437,7 @@ onMounted(async () => {
     color: #ff3b3b;
     text-shadow: 0px 0px 15px rgba(255, 0, 0, 0.8);
     animation: countdown-zoom 1s ease-in-out, fadeIn 1s ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
 
 @keyframes countdown-zoom {
@@ -352,6 +467,58 @@ onMounted(async () => {
     }
 }
 
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #000000;
+    font-size: 3rem;
+    color: #ffffff;
+    z-index: 10;
+}
+
+.loading-text {
+    animation: pulse 1.5s infinite;
+}
+
+.spinner {
+    margin-top: 20px;
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .countdown-container {
     position: fixed;
     top: 0;
@@ -364,7 +531,6 @@ onMounted(async () => {
     gap: 10px;
     background: radial-gradient(circle, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.8));
     animation: background-pulse 1s infinite alternate ease-in-out;
-    z-index: 10;
 }
 
 #countdown-text {

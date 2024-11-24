@@ -41,8 +41,6 @@ export const useGameStore = defineStore(`game`, () => {
         gameId.value = id;
         gameIsAchieved.value = isAchieved;
 
-        console.log(isAchieved);
-
         try {
             const response = await axiosInstance.put(`/game`, {
                 gameId: gameId.value,
