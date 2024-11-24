@@ -403,8 +403,14 @@ onMounted(async () => {
 .info-icon {
     cursor: pointer;
     font-size: 20%;
-    height: 20px;
-    width: 20px;
+    height: 30px;
+    width: 30px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.info-icon:hover {
+    transform: scale(1.2);
+    filter: brightness(1.5);
 }
 
 .info-title {
@@ -424,7 +430,7 @@ onMounted(async () => {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 9999;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     text-align: center;
 }
 

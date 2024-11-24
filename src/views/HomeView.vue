@@ -49,7 +49,6 @@
                                 <li>7일 연속 달성: <strong>10 exp</strong></li>
                                 <li>30일 연속 달성: <strong>100 exp</strong></li>
                             </ul>
-                            <p>운동의 핵심은 꾸준함입니다. 오늘도 여러분의 몸을 위해 지속적으로 노력해보세요!</p>
                         </div>
                     </div>
                 </div>
@@ -172,7 +171,6 @@
                 </div>
 
                 <div class="box3-and-buttons">
-                    <!-- <div class="box box3"> -->
                     <div class="box box3 tier-container">
                         <h5 class="info-section">
                             예시
@@ -463,7 +461,6 @@ onMounted(async () => {
     transition: all 0.3s ease-in-out;
 }
 
-/* ===================================================== */
 .box {
     display: flex;
     justify-content: center;
@@ -472,10 +469,6 @@ onMounted(async () => {
     transition: all 0.3s ease-in-out;
 }
 
-/* ===================================================== */
-
-
-/* 유저 정보 */
 .user-info {
     flex: 0.4;
     display: flex;
@@ -521,13 +514,19 @@ onMounted(async () => {
     right: 20px;
     background: none;
     border: none;
-    cursor: pointer;
     box-shadow: none;
     padding: 4px;
 }
 
 .setting-icon {
     width: 80%;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    cursor: pointer;
+}
+
+.setting-icon:hover {
+    transform: scale(1.1) rotate(360deg);
+    filter: brightness(1.2);
 }
 
 .modal-content {
@@ -578,7 +577,6 @@ onMounted(async () => {
     margin-bottom: 10px;
 }
 
-/* 정보 컨테이너 */
 .exp-info-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -668,12 +666,6 @@ onMounted(async () => {
     text-align: center;
     display: inline-flex;
     align-items: center;
-}
-
-.info-icon {
-    font-size: 1.2rem;
-    margin-left: 5px;
-    color: #555;
 }
 
 .text-muted {
@@ -783,9 +775,6 @@ onMounted(async () => {
     }
 }
 
-
-/* ===================================================== */
-
 .right-section {
     display: flex;
     flex-direction: column;
@@ -801,9 +790,6 @@ onMounted(async () => {
     transition: all 0.3s ease-in-out;
 }
 
-/* ===================================================== */
-
-/* 티어 정보 */
 .tier-container {
     flex: 0.5;
     display: flex;
@@ -848,12 +834,34 @@ onMounted(async () => {
     background: none;
     border: none;
     box-shadow: none;
-    cursor: pointer;
     padding: 4px;
 }
 
+.heart-icon {
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+    font-size: 1.5rem;
+    color: #ff0000;
+}
+
+.heart-icon:hover {
+    transform: scale(1.3);
+    color: #ff6666;
+}
+
 .info-icon {
-    width: 60%;
+    font-size: 1.2rem;
+    margin-left: 5px;
+    color: #555;
+    cursor: pointer;
+    font-size: 20%;
+    width: 70%;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.info-icon:hover {
+    transform: scale(1.3);
+    filter: brightness(1.5);
 }
 
 .info-title {
@@ -994,8 +1002,6 @@ onMounted(async () => {
     width: 3.7vw;
 }
 
-/* ===================================================== */
-
 .box3-and-buttons {
     display: flex;
     flex: 1;
@@ -1009,9 +1015,6 @@ onMounted(async () => {
     transition: all 0.3s ease-in-out;
 }
 
-/* ===================================================== */
-
-/* 버튼 */
 .button-container {
     display: flex;
     flex: 1.5;
@@ -1051,9 +1054,6 @@ onMounted(async () => {
     transform: scale(1.05);
 }
 
-/* ===================================================== */
-
-/* 캘린더 */
 .calendar {
     flex: 3;
     display: flex;
