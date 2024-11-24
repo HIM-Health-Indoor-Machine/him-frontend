@@ -81,20 +81,18 @@
                     </div>
                 </div>
 
-                <div v-for="(difficulties, exercise) in groupedByExercise" :key="exercise" class="exp-card">
+                <div v-for="exercise in Object.keys(groupedByExercise).reverse()" :key="exercise" class="exp-card">
                     <h5 class="info-section">
-                        {{ exercise === 'PUSHUP' ? 'Push Up' : 'Squat'}}
+                        {{ exercise === 'PUSHUP' ? 'Push Up' : 'Squat' }}
                     </h5>
                     <ul class="list-unstyled">
-                        <li 
-                        v-for="(status, difficulty) in difficulties" 
-                        :key="difficulty" 
-                        :class="['list', status === 'completed' ? 'completed' : 'pending']"
-                        >
-                        {{ difficulty }}: {{ expByDifficulty[difficulty] }} exp
+                        <li v-for="(status, difficulty) in groupedByExercise[exercise]" :key="difficulty"
+                            :class="['list', status === 'completed' ? 'completed' : 'pending']">
+                            {{ difficulty }}: {{ expByDifficulty[difficulty] }} exp
                         </li>
                     </ul>
                 </div>
+
             </div>
         </div>
 

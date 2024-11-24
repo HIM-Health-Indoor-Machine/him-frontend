@@ -173,9 +173,9 @@ const startPixiAndTM = async () => {
             successLimit: 150,
             frameInterval: 1,
             difficulties: {
-                EASY: { countMoveSpeed: 110, penaltyMoveSpeed: 2 },
-                MEDIUM: { countMoveSpeed: 90, penaltyMoveSpeed: 3 },
-                HARD: { countMoveSpeed: 70, penaltyMoveSpeed: 4 },
+                EASY: { countMoveSpeed: 200, penaltyMoveSpeed: 2 },
+                MEDIUM: { countMoveSpeed: 200, penaltyMoveSpeed: 3 },
+                HARD: { countMoveSpeed: 200, penaltyMoveSpeed: 4 },
             },
         },
         GamePlayViewBomb: {
@@ -187,9 +187,9 @@ const startPixiAndTM = async () => {
             successLimit: 100,
             frameInterval: 3,
             difficulties: {
-                EASY: { countMoveSpeed: 110, penaltyMoveSpeed: 2 },
-                MEDIUM: { countMoveSpeed: 90, penaltyMoveSpeed: 3 },
-                HARD: { countMoveSpeed: 70, penaltyMoveSpeed: 4 },
+                EASY: { countMoveSpeed: 200, penaltyMoveSpeed: 2 },
+                MEDIUM: { countMoveSpeed: 200, penaltyMoveSpeed: 3 },
+                HARD: { countMoveSpeed: 200, penaltyMoveSpeed: 4 },
             },
         },
         GamePlayViewFlying: {
@@ -201,9 +201,9 @@ const startPixiAndTM = async () => {
             successLimit: 0,
             frameInterval: 3,
             difficulties: {
-                EASY: { countMoveSpeed: 90, penaltyMoveSpeed: 2 },
-                MEDIUM: { countMoveSpeed: 70, penaltyMoveSpeed: 3 },
-                HARD: { countMoveSpeed: 50, penaltyMoveSpeed: 4 },
+                EASY: { countMoveSpeed: 150, penaltyMoveSpeed: 2 },
+                MEDIUM: { countMoveSpeed: 150, penaltyMoveSpeed: 3 },
+                HARD: { countMoveSpeed: 150, penaltyMoveSpeed: 4 },
             },
         },
     };
@@ -330,6 +330,9 @@ const startPixiAndTM = async () => {
         router.push({
             name: 'SuccessScreen',
             params: {
+                id: gameId,
+                type: gameType.value,
+                difficultyLevel: gameDifficultyLevel.value,
                 userId: userId,
                 prevTier: prevTier.value,
                 expPoints: gameStore.gameExpPoints,

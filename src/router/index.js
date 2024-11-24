@@ -58,7 +58,7 @@ const routes = [
     component: FailScreen,
   },
   {
-    path: '/success-screen/:userId/:prevTier/:expPoints',
+    path: '/success-screen/:id/:type/:difficultyLevel/:userId/:prevTier/:expPoints',
     name: 'SuccessScreen',
     component: SuccessScreen,
   },

@@ -34,7 +34,7 @@ const newGame = () => {
 
 const retryGame = () => {
   router.push({
-    name: gameTheme,
+    name: "GamePlayView",
     params: {
       id: gameId,
       type: gameType.value,

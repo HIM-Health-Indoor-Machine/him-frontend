@@ -1,5 +1,5 @@
 const URL = '/model/';
-let model, webcam, maxPredictions, counter = 0;
+let model, webcam, labelContainer, maxPredictions, counter = 0, lastLabel = "";
 let animationFrameId = null;
 let mode;
 
@@ -59,8 +59,17 @@ async function init(typeParam, modeParam) {
         console.error("웹캠 설정 실패:", error);
     }
 
-
     animationFrameId = window.requestAnimationFrame(loop);
+
+    labelContainer = document.getElementById("label-container");
+    if (labelContainer) {
+        labelContainer.innerHTML = "";
+        for (let i = 0; i < maxPredictions; i++) {
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    } else {
+        console.error("'label-container' 요소가 존재하지 않습니다.");
+    }
 }
 
 async function loop() {
@@ -86,16 +95,21 @@ async function predict() {
     const prediction = await model.predict(posenetOutput);
 
     if (prediction[0].probability > 0.99) {
-        counter++;
+        if (lastLabel === 'pushdown') {
+            counter++;
 
-        if (mode === "CHALLENGE") {
-            const counterElement = document.getElementById("counter");
-            if (counterElement) {
-                counterElement.innerText = counter;
-            } else {
-                console.warn("'#counter' 요소가 DOM에 존재하지 않습니다.");
+            if (mode === "CHALLENGE") {
+                const counterElement = document.getElementById("counter");
+                if (counterElement) {
+                    counterElement.innerText = counter;
+                } else {
+                    console.warn("'#counter' 요소가 DOM에 존재하지 않습니다.");
+                }
             }
         }
+        lastLabel = 'pushup';
+    } else if (prediction[1].probability > 0.99) {
+        lastLabel = 'pushdown';
     }
 }
 
@@ -132,7 +146,13 @@ function stop() {
         console.log("모델 해제 완료");
     }
 
+    if (labelContainer) {
+        labelContainer.innerHTML = "";
+        console.log("라벨 컨테이너 초기화");
+    }
+
     counter = 0;
+    lastLabel = "";
     console.log("Teachable Machine 세션이 종료되었습니다.");
 }
 
