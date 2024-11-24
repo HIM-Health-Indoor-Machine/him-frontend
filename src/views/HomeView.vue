@@ -426,7 +426,7 @@ const addFloatingIcons = () => {
 
 const handleLogout = async () => {
     try {
-        await authStore.logout(userInfo.value.email);
+        await authStore.logout(user.value.email);
         router.push({ name: "StartView" });
     } catch (err) {
         console.error("로그아웃 에러:", err);
