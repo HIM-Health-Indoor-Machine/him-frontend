@@ -71,9 +71,8 @@ const userId = route.params.userId;
 const isLoading = ref(true);
 
 onMounted(async () => {
-    challengeStore.fetchCurrentChallenge(challengeId);
-
-    await tmInit(challengeStore.currentChallenge.type, "CHALLENGE").then(() => {
+    await challengeStore.fetchCurrentChallenge(challengeId);
+    await tmInit(currentChallenge.value.type, "CHALLENGE").then(() => {
         console.log("Teachable Machine 초기화 완료");
     }).catch((error) => {
         console.error("Teachable Machine 초기화 중 오류 발생:", error);
