@@ -13,8 +13,8 @@ export const useChallengeStore = defineStore('challenge', () => {
     const router = useRouter();
     const axiosInstance = setupAxiosInterceptors(authStore, router);
 
-    const fetchCurrentChallenge = (challengeId) => {
-        axiosInstance.get(`/challenge/${challengeId}`)
+    const fetchCurrentChallenge = async (challengeId) => {
+        await axiosInstance.get(`/challenge/${challengeId}`)
         .then((response) => {
             currentChallenge.value = response.data;
             challengeTitle.value = currentChallenge.value.title;

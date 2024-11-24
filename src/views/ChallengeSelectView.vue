@@ -123,7 +123,7 @@
                 </div>
             </div>
 
-            <button @click="startChallenge(selectedChallenge.id)" class="custom-button" :disabled="!selectedChallenge"
+            <button @click="startChallenge()" class="custom-button" :disabled="!selectedChallenge"
                 :style="{ animation: selectedChallenge ? '' : 'jittery 4s infinite' }">
                 <span>시작하기</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4" width="130"
@@ -153,7 +153,7 @@
                                 현재 생성된 챌린지가 없습니다.
                             </li>
                             <li v-for="(challenge, index) in processedChallenges" :key="index"
-                                :class="['list', challenge.status === 'completed' ? 'completed' : 'pending']">
+                                :class="['list', challenge.achieved === true ? 'completed' : 'pending']">
                                 {{ challenge.title }}: 5 exp
                             </li>
                         </ul>
@@ -197,6 +197,7 @@ const selectedChallenge = ref(null);
 const isDeleteModalOpen = ref(false);
 const deleteIndex = ref(null);
 const showInfo = ref(false);
+const selectedChallengeId = ref(0);
 
 const { processedChallenges } = useProcessedChallenges(todayChallenges, challenges);
 
@@ -207,6 +208,7 @@ const calculateProgress = (achievedCnt, startDt, endDt) => {
 
 const selectChallenge = (index) => {
     selectedChallenge.value = challenges.value[index];
+    selectedChallengeId.value = selectedChallenge.value.id;
 };
 
 const deleteChallenge = (index) => {
@@ -234,12 +236,12 @@ function closeDeleteModal() {
     isDeleteModalOpen.value = false;
 }
 
-const startChallenge = (id) => {
+const startChallenge = () => {
     if (selectedChallenge.value) {
         router.push({
             name: 'ChallengePlayView',
             params: {
-                challengeId: id,
+                challengeId: selectedChallengeId.value,
                 userId: userId
             }
         });
