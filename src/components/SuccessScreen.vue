@@ -12,8 +12,8 @@
         <div id="success-overlay">
             <div id="success-text">SUCCESS!</div>
             <div class="game-info">
-                <p>운동 종류: {{ gameStore.typeString }}</p>
-                <div>난이도: {{ gameStore.gameDifficultyLevel }}</div>
+                <p>운동 종류: {{ gameType === 'PUSHUP' ? 'Push Up' : 'Squat' }}</p>
+                <div>난이도: {{ gameDifficultyLevel }}</div>
             </div>
             <div id="celebration-message">축하합니다! 목표를 달성했습니다!</div>
 
@@ -43,16 +43,17 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useGameStore } from '@/stores/game';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
-
-const gameStore = useGameStore();
 const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 const { user } = storeToRefs(userStore);
 
+const gameType = ref('');
+gameType.value = route.params.type;
+const gameDifficultyLevel = ref('');
+gameDifficultyLevel.value = route.params.difficultyLevel;
 const gameExp = route.params.expPoints;
 const userId = route.params.userId;
 const prevTier = route.params.prevTier;
