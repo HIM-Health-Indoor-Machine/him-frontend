@@ -153,7 +153,7 @@
                                 현재 생성된 챌린지가 없습니다.
                             </li>
                             <li v-for="(challenge, index) in processedChallenges" :key="index"
-                                :class="['list', challenge.status === 'completed' ? 'completed' : 'pending']">
+                                :class="['list', challenge.achieved === true ? 'completed' : 'pending']">
                                 {{ challenge.title }}: 5 exp
                             </li>
                         </ul>
