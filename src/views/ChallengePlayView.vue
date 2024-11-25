@@ -19,7 +19,7 @@
                 <p>챌린지: {{ challengeStore.currentChallenge.title }}</p>
                 <p>운동 종류: {{ challengeStore.currentChallenge.type === 'PUSHUP' ? 'Push Up' : 'Squat' }}</p>
                 <p>종료 날짜: {{ challengeStore.currentChallenge.endDt }}</p>
-                <p>성취 개수: {{ challengeStore.currentChallenge.achievedCnt }}</p>
+                <p>성취 개수: {{ todayChallengeStore.currentTodayChallenge.cnt }}</p>
                 <p>목표 개수: {{ challengeStore.currentChallenge.goalCnt }}</p>
             </div>
             <div id="ui-container">
@@ -69,9 +69,12 @@ const isModalOpen = ref(false);
 let updateInterval = null;
 const userId = route.params.userId;
 const isLoading = ref(true);
+const prevTier = ref('');
+const prevExp = ref(0);
 
 onMounted(async () => {
     await challengeStore.fetchCurrentChallenge(challengeId);
+    await todayChallengeStore.fetchTodayChallenge(challengeId, new Date().toISOString().split("T")[0]);
     await tmInit(currentChallenge.value.type, "CHALLENGE").then(() => {
         console.log("Teachable Machine 초기화 완료");
     }).catch((error) => {
@@ -97,15 +100,11 @@ function closeModal() {
     isModalOpen.value = false;
 }
 
-const prevTier = ref('');
-const prevExp = ref(0);
-
 async function saveAndNavigate() {
     console.log(`저장된 운동 횟수: ${counter.value}`);
     isModalOpen.value = false;
 
-    await todayChallengeStore.fetchTodayChallenge(challengeId, new Date().toISOString().split("T")[0]);
-
+    
     if (typeof currentTodayChallenge.value !== 'object' || currentTodayChallenge.value === null) {
         currentTodayChallenge.value = {
             id: null,
@@ -114,11 +113,10 @@ async function saveAndNavigate() {
             date: new Date().toISOString().split("T")[0],
         };
     }
-
     await userStore.fetchUserInfo(userId);
     prevTier.value = userStore.userTier;
     prevExp.value = userStore.userExp;
-
+    
     currentTodayChallenge.value.cnt += counter.value;
     await todayChallengeStore.updateTodayChallenge(currentTodayChallenge.value);
 
