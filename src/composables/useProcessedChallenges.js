@@ -1,8 +1,10 @@
-import { computed } from "vue";
+import { ref, watch } from "vue";
 
 export function useProcessedChallenges(todayChallenges, challenges) {
-  const processedChallenges = computed(() => {
-    return todayChallenges.value
+  const processedChallenges = ref([]);
+
+  const updateProcessedChallenges = () => {
+    processedChallenges.value = todayChallenges.value
       .filter((todayChallenge) => {
         return challenges.value.some(
           (challenge) => challenge.id === todayChallenge.challengeId
@@ -17,8 +19,13 @@ export function useProcessedChallenges(todayChallenges, challenges) {
           title: matchedChallenge ? matchedChallenge.title : "Unknown",
         };
       });
+  };
+
+  watch([todayChallenges, challenges], updateProcessedChallenges, {
+    deep: true,
   });
 
+  updateProcessedChallenges();
   return {
     processedChallenges,
   };
