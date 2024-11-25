@@ -1,6 +1,60 @@
 <template>
-    <div class="mypage-container">
+    <div v-if="showModal" class="description-modal-overlay" @click.self="showModal = false">
+        <div class="description-modal-container">
+            <div class="tooltip" :style="{ top: '40%', left: '37%' }">
+                <div class="tooltip-text">
+                    {{ user.nickname }} 님의 티어입니다. <br>
+                    티어 우측 상단의 하트 아이콘을 클릭하여 티어 종류에 대하여 확인해보세요. <br>
+                    승급을 통해 {{ user.nickname }} 님의 건강도 함께 올려보세요!
+                </div>
+                <div class="tooltip-arrow tooltip-arrow-top"></div>
+            </div>
+            <div class="tooltip" :style="{ top: '80%', left: '33%' }">
+                <div class="tooltip-text">
+                    경험치 관련 정보입니다. <br>
+                    좌측 상단의 info 아이콘을 클릭하여 설명문을 확인해보세요. <br>
+                    매일매일 최대 경험치를 획득하면 승급 가능성이 높아집니다!
+                </div>
+                <div class="tooltip-arrow tooltip-arrow-left"></div>
+            </div>
+            <div class="tooltip" :style="{ top: '83%', left: '70%' }">
+                <div class="tooltip-text">
+                    챌린지 및 게임 기록에 대한 캘린더입니다. <br>
+                    꾸준함은 {{ user.nickname }} 님의 무기! <br>
+                    캘린더를 통해 {{ user.nickname }} 님의 꾸준함을 확인해보세요!
+                </div>
+                <div class="tooltip-arrow tooltip-arrow-right"></div>
+            </div>
 
+            <div class="tooltip" :style="{ top: '35%', left: '67%' }">
+                <div class="tooltip-text">
+                    챌린지 및 게임 시작 전, 연습을 통해 웹캠의 위치를 설정한다면
+                    HIM은 {{ user.nickname }} 님의 운동을 더욱 정확하게 측정할 수 있습니다!
+                </div>
+                <div class="tooltip-arrow tooltip-arrow-top"></div>
+            </div>
+
+            <div class="tooltip" :style="{ top: '38%', left: '94%' }">
+                <div class="tooltip-text">
+                    챌린지 및 게임을 진행할 수 있는 버튼입니다. <br>
+                    챌린지와 게임을 적극 활용하여 승급의 기회를 높이고,
+                    매일 건강해지는 삶을 누려보세요!
+                </div>
+                <div class="tooltip-arrow tooltip-arrow-top"></div>
+            </div>
+
+            <div class="tooltip" :style="{ top: '25%', left: '20%' }">
+                <div class="tooltip-text" style="width: 200px;">
+                    프로필 사진의 우측 상단의 설정을 클릭하면 변경할 수 있습니다. <br>
+                    귀여운 캐릭터로 변경해보세요!
+                </div>
+                <div class="tooltip-arrow tooltip-arrow-left"></div>
+            </div>
+            <button @click="showModal = false" class="close-button">닫기</button>
+        </div>
+    </div>
+
+    <div class="mypage-container">
         <div class="box user-info">
             <div v-if="user" class="user-details">
                 <h2 class="nickname">{{ user.nickname }}</h2>
@@ -26,7 +80,10 @@
 
                 <p class="user-email">{{ user.email }}</p>
 
-                <div @click="handleLogout" class="logout-item">로그아웃</div>
+                <div class="action-row">
+                    <div @click="showModal = true" class="help-button"> 튜토리얼 </div>
+                    <div @click="handleLogout" class="logout-item">로그아웃</div>
+                </div>
             </div>
 
             <div class="exp-info-container">
@@ -168,7 +225,7 @@
                 <div class="box3-and-buttons">
                     <div class="box box3 tier-container">
                         <h5 class="info-section">
-                            자세연습하기
+                            웹캠 위치 정하기
                         </h5>
 
                         <div class="webcam-button-container">
@@ -187,7 +244,7 @@
                                 </svg>
                             </button>
                         </div>
-                        
+
                         <ul class="footer-notes">
                             <li>1. 올바른 위치에 웹캠을 고정시켜주세요.</li>
                             <li>2. 웹캠을 가리지 않도록 주의해주세요.</li>
@@ -282,6 +339,8 @@ const { totalAchievedExp } = useAchievedExp(games, expByDifficulty, todayChallen
 const { achievedChallengeCount } = useAchievedExp(games, expByDifficulty, todayChallenges);
 const { groupedByExercise } = useAchievedExp(games, expByDifficulty, todayChallenges);
 const { processedChallenges } = useProcessedChallenges(todayChallenges, challenges);
+
+const showModal = ref(false);
 
 const toggleInfo = () => {
     showInfo.value = !showInfo.value;
@@ -503,7 +562,6 @@ onMounted(async () => {
     z-index: 10;
     position: relative;
     overflow: hidden;
-    /* gap: 20px; */
     transition: all 0.3s ease-in-out;
 }
 
@@ -1204,7 +1262,6 @@ onMounted(async () => {
     align-items: center;
     transition: transform 0.1s ease-in-out, background-color 0.2s;
     cursor: pointer;
-    margin-top: 10px;
 }
 
 .logout-item:hover {
@@ -1262,5 +1319,127 @@ onMounted(async () => {
     font-size: 1.5rem;
     line-height: 1.5;
     margin-top: 20px;
+}
+
+.action-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.help-button {
+    font-size: 1.5rem;
+    color: #514637;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.1s ease-in-out, background-color 0.2s;
+    cursor: pointer;
+}
+
+.help-button:hover {
+    transform: scale(1.3);
+    border-radius: 5px;
+}
+
+.description-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.description-modal-container {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    background: transparent;
+}
+
+.tooltip {
+    position: absolute;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: #333;
+    font-size: 1rem;
+    text-align: center;
+    transform: translate(-50%, -50%);
+}
+
+.tooltip-text {
+    position: relative;
+    font-size: 1.2rem;
+    width: 300px;
+    text-align: left;
+    z-index: 2;
+    line-height: 1.5;
+}
+
+.tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    z-index: 1;
+}
+
+.tooltip-arrow-bottom {
+    border-width: 10px 10px 0 10px;
+    border-color: white transparent transparent transparent;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-arrow-top {
+    border-width: 0 10px 10px 10px;
+    border-color: transparent transparent white transparent;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-arrow-left {
+    border-width: 10px 10px 10px 0;
+    border-color: transparent white transparent transparent;
+    top: 50%;
+    left: -10px;
+    transform: translateY(-50%);
+}
+
+.tooltip-arrow-right {
+    border-width: 10px 0 10px 10px;
+    border-color: transparent transparent transparent white;
+    top: 50%;
+    right: -10px;
+    transform: translateY(-50%);
+}
+
+.close-button {
+    position: absolute;
+    bottom: -20px;
+    right: -70px;
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    color: white;
+    background: #e74c3c;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+}
+
+.close-button:hover {
+    background: #c0392b;
 }
 </style>

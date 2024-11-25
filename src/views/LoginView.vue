@@ -23,13 +23,6 @@
                     <input type="password" v-model="password" class="input-field" placeholder="Password">
                 </div>
                 <div v-if="loginError" class="error-message">{{ loginError }}</div>
-                <div class="form-options">
-                    <label class="checkbox-container">
-                        <input type="checkbox" v-model="rememberMe" class="form-checkbox">
-                        <span class="checkbox-label">아이디 저장</span>
-                    </label>
-                    <a href="#" class="forgot-password">비밀번호를 잊어버리셨나요?</a>
-                </div>
                 <button type="submit" class="login-button">로그인하기</button>
             </form>
 
@@ -181,39 +174,6 @@ onMounted(() => {
 .input-field:focus {
     border-color: #ff7043;
     box-shadow: 0 0 0 4px rgba(255, 112, 67, 0.2);
-}
-
-.form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.checkbox-container {
-    display: flex;
-    align-items: center;
-}
-
-.form-checkbox {
-    height: 1rem;
-    width: 1rem;
-    accent-color: #ff7043;
-}
-
-.checkbox-label {
-    margin-left: 0.5rem;
-    color: #4a5568;
-}
-
-.forgot-password {
-    color: #ff7043;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.forgot-password:hover {
-    text-decoration: underline;
 }
 
 .login-button {

@@ -173,9 +173,9 @@ const startPixiAndTM = async () => {
             successLimit: 150,
             frameInterval: 1,
             difficulties: {
-                EASY: { countMoveSpeed: 200, penaltyMoveSpeed: 2 },
-                MEDIUM: { countMoveSpeed: 200, penaltyMoveSpeed: 3 },
-                HARD: { countMoveSpeed: 200, penaltyMoveSpeed: 4 },
+                EASY: { countMoveSpeed: 200, penaltyMoveSpeed: 1 },
+                MEDIUM: { countMoveSpeed: 200, penaltyMoveSpeed: 2 },
+                HARD: { countMoveSpeed: 200, penaltyMoveSpeed: 3 },
             },
         },
         GamePlayViewBomb: {
@@ -187,9 +187,9 @@ const startPixiAndTM = async () => {
             successLimit: 100,
             frameInterval: 3,
             difficulties: {
-                EASY: { countMoveSpeed: 200, penaltyMoveSpeed: 2 },
-                MEDIUM: { countMoveSpeed: 200, penaltyMoveSpeed: 3 },
-                HARD: { countMoveSpeed: 200, penaltyMoveSpeed: 4 },
+                EASY: { countMoveSpeed: 200, penaltyMoveSpeed: 1 },
+                MEDIUM: { countMoveSpeed: 200, penaltyMoveSpeed: 2 },
+                HARD: { countMoveSpeed: 200, penaltyMoveSpeed: 3 },
             },
         },
         GamePlayViewFlying: {
@@ -201,9 +201,9 @@ const startPixiAndTM = async () => {
             successLimit: 0,
             frameInterval: 3,
             difficulties: {
-                EASY: { countMoveSpeed: 150, penaltyMoveSpeed: 2 },
-                MEDIUM: { countMoveSpeed: 150, penaltyMoveSpeed: 3 },
-                HARD: { countMoveSpeed: 150, penaltyMoveSpeed: 4 },
+                EASY: { countMoveSpeed: 150, penaltyMoveSpeed: 1 },
+                MEDIUM: { countMoveSpeed: 150, penaltyMoveSpeed: 2 },
+                HARD: { countMoveSpeed: 150, penaltyMoveSpeed: 3 },
             },
         },
     };
