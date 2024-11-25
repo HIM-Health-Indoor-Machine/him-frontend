@@ -67,6 +67,7 @@
                             <div class="challenge-info">{{ challenge.icon }} {{ challenge.type === 'PUSHUP' ? 'Push Up'
                                 : 'Squat' }}</div>
                             <div class="challenge-info">⏰ {{ challenge.endDt }}</div>
+                            <div class="challenge-info"> ⏳ 현재: {{ getTodayChallengeCnt(challenge.id) }} </div>
                             <div class="challenge-info">🎯 목표: {{ challenge.goalCnt }}</div>
                             <div class="progress-bar">
                                 <div class="progress-fill"
@@ -249,6 +250,13 @@ const startChallenge = () => {
         alert("챌린지를 선택해주세요.");
     }
 }
+
+const getTodayChallengeCnt = (challengeId) => {
+    const todayChallenge = todayChallengeStore.todayChallenges.find(
+        (tc) => tc.challengeId === challengeId
+    );
+    return todayChallenge ? todayChallenge.cnt : 0;
+};
 
 const toggleEdit = (index) => {
     const challenge = challenges.value[index];
@@ -588,8 +596,9 @@ onMounted(async () => {
 
 .challenge-info {
     font-size: 25px;
-    line-height: 3;
-    margin: 8px 0;
+    line-height: 2.4;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 .challenge-box.selected {
