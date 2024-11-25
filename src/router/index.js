@@ -1,23 +1,83 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import StartView from '@/views/StartView.vue';
+import LoginView from '@/views/LoginView.vue';
+import SignUpView from '@/views/SignUpView.vue';
+import HomeView from '@/views/HomeView.vue';
+import WebcamView from '@/views/WebcamView.vue';
+import GameSelectView from '@/views/GameSelectView.vue';
+import GamePlayView from '@/views/GamePlayView.vue';
+import SuccessScreen from '@/components/SuccessScreen.vue';
+import FailScreen from '@/components/FailScreen.vue';
+import ChallengeSelectView from '@/views/ChallengeSelectView.vue';
+import ChallengePlayView from '@/views/ChallengePlayView.vue';
+import ChallengeSuccessScreen from '@/components/ChallengeSuccessScreen.vue';
+
+const routes = [
+  {
+    path: '/',
+    name: 'StartView',
+    component: StartView,
+  },
+  {
+    path: '/login-view',
+    name: 'LoginView',
+    component: LoginView,
+  },
+  {
+    path: '/signup-view',
+    name: 'SignUpView',
+    component: SignUpView,
+  },
+  {
+    path: '/home-view/:userId',
+    name: 'HomeView',
+    component: HomeView,
+  },
+  {
+    path: '/webcam-view/:userId/:type',
+    name: 'WebcamView',
+    component: WebcamView,
+  },
+  {
+    path: '/game-select-view/:userId',
+    name: 'GameSelectView',
+    component: GameSelectView,
+  },
+  {
+    path: '/game-play-view/:id/:type/:difficultyLevel/:theme/:userId',
+    name: 'GamePlayView',
+    component: GamePlayView,
+  },
+  {
+    path: '/challenge-select-view/:userId',
+    name: 'ChallengeSelectView',
+    component: ChallengeSelectView,
+  },
+  {
+    path: '/challenge-play-view/:challengeId/:userId',
+    name: 'ChallengePlayView',
+    component: ChallengePlayView,
+  },
+  {
+    path: '/fail-screen/:id/:type/:difficultyLevel/:theme/:userId',
+    name: 'FailScreen',
+    component: FailScreen,
+  },
+  {
+    path: '/success-screen/:id/:type/:difficultyLevel/:userId/:prevTier/:expPoints',
+    name: 'SuccessScreen',
+    component: SuccessScreen,
+  },
+  {
+    path: '/challenge-success-screen/:id/:userId/:prevTier/:prevExp',
+    name: 'ChallengeSuccessScreen',
+    component: ChallengeSuccessScreen, 
+  }
+];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-  ],
-})
+  history: createWebHistory(),
+  routes,
+});
 
-export default router
+export default router;
