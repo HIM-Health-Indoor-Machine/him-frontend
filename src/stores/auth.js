@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
     });
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080/api",
+        baseURL: "http://54.180.5.213:8080/api",
     });
 
     const signUp = async (userData) => {
