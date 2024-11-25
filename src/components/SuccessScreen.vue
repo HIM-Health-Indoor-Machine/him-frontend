@@ -171,7 +171,7 @@ const addedExpString = computed(() => `+${addedExp.value} EXP!`);
 
 .exp-tier-pic {
     width: 70px;
-    height: 74px;
+    height: auto;
     margin-bottom: 5px;
     margin-top: 5px;
 }
