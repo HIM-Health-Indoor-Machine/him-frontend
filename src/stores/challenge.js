@@ -40,14 +40,16 @@ export const useChallengeStore = defineStore('challenge', () => {
         })
     }
 
-    const addChallenge = (challenge) => {
-        axiosInstance.post(`/challenge`, challenge)
+    let id = 0;
+    const addChallenge = async (challenge) => {
+        await axiosInstance.post(`/challenge`, challenge)
         .then((response) => {
-            console.log(response);
+            id = response.data;
         })
         .catch((err) => {
             console.log(err);
         })
+        return id;
     }
 
     const updateChallenge = (challengeId, challenge) => {

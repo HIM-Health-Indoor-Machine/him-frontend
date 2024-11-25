@@ -184,6 +184,7 @@ const route = useRoute();
 
 const userId = route.params.userId;
 
+const { currentTodayChallenge } = storeToRefs(todayChallengeStore);
 const { todayChallenges } = storeToRefs(todayChallengeStore);
 const { challenges } = storeToRefs(challengeStore);
 const isCreating = ref(false);
@@ -200,6 +201,7 @@ const showInfo = ref(false);
 const selectedChallengeId = ref(0);
 
 const { processedChallenges } = useProcessedChallenges(todayChallenges, challenges);
+let id = 0;
 
 const calculateProgress = (achievedCnt, startDt, endDt) => {
     const totalDays = Math.ceil((new Date(endDt) - new Date(startDt)) / (1000 * 60 * 60 * 24)) + 1;
@@ -280,9 +282,11 @@ const resetForm = () => {
     editIndex.value = null;
 };
 
-const createChallenge = () => {
+const createChallenge = async () => {
     if (newChallenge.endDt && newChallenge.goalCnt) {
+        id = await challengeStore.addChallenge(newChallenge);
         challenges.value.push({
+            id: id,
             title: newChallenge.title,
             type: newChallenge.type,
             icon: newChallenge.type === "PUSHUP" ? "💪" : "🏋️‍♂️",
@@ -290,9 +294,12 @@ const createChallenge = () => {
             goalCnt: newChallenge.goalCnt,
             progress: 0,
         });
-
-        challengeStore.addChallenge(newChallenge);
         resetForm();
+        
+        await todayChallengeStore.fetchTodayChallenge(id, new Date().toISOString().split("T")[0]);
+        todayChallenges.value.push({ ...currentTodayChallenge.value })
+        
+        useProcessedChallenges(todayChallenges, challenges);
     } else {
         alert("날짜와 목표를 입력해주세요.");
     }
